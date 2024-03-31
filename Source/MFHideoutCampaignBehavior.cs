@@ -65,12 +65,9 @@ namespace ImprovedMinorFactions
 
         private void OnSettlementEntered(MobileParty party, Settlement settlement, Hero hero)
         {
-
             if (!Helpers.isMFHideout(settlement))
                 return;
-            
-            if (hero != null && hero.IsMinorFactionHero)
-                InformationManager.DisplayMessage(new InformationMessage($"{hero} entered {settlement}"));
+
             if (party != null && party.IsMainParty)
             {
                 foreach (Hero notable in settlement.Notables)
