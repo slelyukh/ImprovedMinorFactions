@@ -70,7 +70,7 @@ namespace ImprovedMinorFactions
                 return;
             
             if (hero != null && hero.IsMinorFactionHero)
-                InformationManager.DisplayMessage(new InformationMessage($"WOOOO {hero} ENTERED {settlement}"));
+                InformationManager.DisplayMessage(new InformationMessage($"{hero} entered {settlement}"));
             if (party != null && party.IsMainParty)
             {
                 foreach (Hero notable in settlement.Notables)

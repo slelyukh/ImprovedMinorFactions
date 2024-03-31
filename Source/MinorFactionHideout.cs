@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -9,7 +8,6 @@ using System.Xml;
 using TaleWorlds.ObjectSystem;
 using TaleWorlds.SaveSystem;
 using TaleWorlds.Library;
-using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using System.Linq;
 
 namespace ImprovedMinorFactions

@@ -23,7 +23,7 @@ namespace ImprovedMinorFactions.Patches
      }
 
     [HarmonyPatch(typeof(CampaignCheats), "ShowHideouts")]
-    public class DefaultEncounterGameMenuModelStateMenuPatch
+    public class ShowHideoutsPatch
     {
         static void Postfix(List<string> strings)
         {
