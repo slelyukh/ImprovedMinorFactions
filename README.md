@@ -9,5 +9,5 @@ This mod focuses on adding more flavor to Minor Factions in Mount and Blade II: 
 - Minor Faction Hideouts are 95% done
 - Quests are just getting started
 
-## Potential Future Plans
+## Future Plans
 - Giving unique Quests and/or hideout mechanics to different types of Minor Factions such as Nomad, Bandit, Mercenary and Sect factions.
