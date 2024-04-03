@@ -39,7 +39,7 @@ namespace ImprovedMinorFactions
             MFHideoutManager.Current = null;
         }
 
-        public void addLoadedMFHideout(MinorFactionHideout mfh)
+        public void AddLoadedMFHideout(MinorFactionHideout mfh)
         {
             _LoadedMFHideouts.Add(mfh.StringId, mfh);
         }
@@ -56,12 +56,12 @@ namespace ImprovedMinorFactions
                 return false;
             if (_factionHideoutsInitialized)
                 return true;
-            _factionHideouts = new Dictionary<IFaction, List<MinorFactionHideout>>();
+            _factionHideouts = new Dictionary<Clan, List<MinorFactionHideout>>();
             foreach (Settlement settlement in Campaign.Current.Settlements)
             {
                 if (settlement.OwnerClan?.IsMinorFaction ?? Helpers.isMFHideout(settlement))
                 {
-                    var key = settlement.MapFaction;
+                    var key = settlement.OwnerClan;
                     List<MinorFactionHideout> list = null;
                     if (!_factionHideouts.ContainsKey(key))
                         _factionHideouts[key] = new List<MinorFactionHideout>();
@@ -87,7 +87,7 @@ namespace ImprovedMinorFactions
         {
             if (!TryInitMFHideoutsLists())
                 throw new Exception("can't switch Hideout due to uninitialized Hideout Manager");
-            var hideouts = _factionHideouts[oldHideout.MapFaction];
+            var hideouts = _factionHideouts[oldHideout.OwnerClan];
             int activateIndex = MBRandom.RandomInt(hideouts.Count);
             while (hideouts[activateIndex].Settlement.Equals(oldHideout.Settlement))
                 activateIndex = MBRandom.RandomInt(hideouts.Count);
@@ -95,11 +95,9 @@ namespace ImprovedMinorFactions
             oldHideout.moveHideouts(newHideout);
         }
 
-        public MinorFactionHideout getHideoutOfFaction(IFaction minorFaction)
+        public MinorFactionHideout GetHideoutOfClan(Clan minorFaction)
         {
-            if (!minorFaction.IsMinorFaction)
-                throw new Exception("trying to get hideout of regular faction");
-            if (!this.hasFaction(minorFaction))
+            if (!minorFaction.IsMinorFaction || !this.HasFaction(minorFaction))
                 return null;
             foreach(var mfHideout in _factionHideouts[minorFaction])
             {
@@ -109,8 +107,10 @@ namespace ImprovedMinorFactions
             return null;
         }
 
-        public bool hasFaction(IFaction minorFaction)
+        public bool HasFaction(Clan minorFaction)
         {
+            if (!TryInitMFHideoutsLists())
+                throw new Exception("can't initialize hideouts list in Hideout Manager");
             return _factionHideouts.ContainsKey(minorFaction);
         }
 
@@ -118,7 +118,7 @@ namespace ImprovedMinorFactions
 
         private Dictionary<string, MinorFactionHideout> _LoadedMFHideouts;
 
-        private Dictionary<IFaction, List<MinorFactionHideout>> _factionHideouts;
+        private Dictionary<Clan, List<MinorFactionHideout>> _factionHideouts;
 
         private bool _factionHideoutsInitialized;
 

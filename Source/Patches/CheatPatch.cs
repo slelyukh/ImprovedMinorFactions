@@ -12,15 +12,6 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Patches
 {
-    // TODO: this is a debug patch and needs ot be moved
-    [HarmonyPatch(typeof(DefaultBanditDensityModel), "get_NumberOfMaximumTroopCountForFirstFightInHideout")]
-    public class DefaultMaxTroopsFirstHideoutBattlePatch
-    {
-        static void Postfix(ref int __result)
-        {
-            __result = 0;
-        }
-     }
 
     [HarmonyPatch(typeof(CampaignCheats), "ShowHideouts")]
     public class ShowHideoutsPatch

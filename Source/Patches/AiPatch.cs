@@ -7,6 +7,7 @@ using HarmonyLib;
 using SandBox.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors;
 using TaleWorlds.CampaignSystem.Encounters;
+using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 
@@ -24,4 +25,18 @@ namespace ImprovedMinorFactions.Patches
             __result = settlement.Party.MapEvent == null && mfHideout.IsActive && (mobileParty.Party.Owner.MapFaction == settlement.MapFaction || hideoutIsMercenaryOfParty);
         }
     }
+
+    // make minor faction lords more likely to patrol their hideouts
+    [HarmonyPatch(typeof(DefaultTargetScoreCalculatingModel), "CalculatePatrollingScoreForSettlement")]
+    public class CalculatePatrollingScoreForSettlementPatch
+    {
+        static void Postfix(ref float __result, Settlement settlement, MobileParty mobileParty)
+        {
+            if (!Helpers.isMFHideout(settlement) || !mobileParty.ActualClan.IsMinorFaction)
+                return;
+            __result *= 3;
+        }
+    }
+
+    
 }

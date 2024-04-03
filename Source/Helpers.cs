@@ -20,7 +20,7 @@ namespace ImprovedMinorFactions
     {
         internal static bool isMFHideout(Settlement s)
         {
-            return s.SettlementComponent as MinorFactionHideout != null;
+            return s != null && s.SettlementComponent as MinorFactionHideout != null;
         }
 
         internal static List<TooltipProperty> GetVillageOrMFHideoutMilitiaTooltip(Settlement s)
@@ -110,5 +110,8 @@ namespace ImprovedMinorFactions
             var method = instance.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
             method.Invoke(instance, args); 
         }
+
+
+
     }
 }

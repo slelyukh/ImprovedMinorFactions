@@ -5,11 +5,14 @@ using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.AgentOrigins;
+using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
+using TaleWorlds.CampaignSystem.MapNotificationTypes;
 using TaleWorlds.CampaignSystem.Overlay;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
@@ -35,66 +38,20 @@ namespace ImprovedMinorFactions
             this.AddGameMenus(campaignGameStarter);
         }
 
-        public void OnGameLoadFinished()
-        {
-            MFHideoutManager.initManagerIfNone();
-            if (Settlement.CurrentSettlement != null && !Hero.MainHero.IsPrisoner
-                && LocationComplex.Current != null && PlayerEncounter.LocationEncounter != null)
-            {
-                this.AddMFHLocationCharacters(Settlement.CurrentSettlement);
-            }
-        }
+        
         public override void RegisterEvents()
         {
             CampaignEvents.HourlyTickSettlementEvent.AddNonSerializedListener(this, new Action<Settlement>(this.HourlyTickSettlement));
             CampaignEvents.OnHideoutSpottedEvent.AddNonSerializedListener(this, new Action<PartyBase, PartyBase>(this.OnMFHideoutSpotted));
-            CampaignEvents.SettlementEntered.AddNonSerializedListener(this, new Action<MobileParty, Settlement, Hero>(this.OnSettlementEntered));
             CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(this.OnNewGameCreated));
             CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(this.OnGameLoaded));
-            CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, new Action(this.OnGameLoadFinished));
             // Location events
-            CampaignEvents.SettlementEntered.AddNonSerializedListener(this, new Action<MobileParty, Settlement, Hero>(this.OnSettlementEntered));
-            CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, new Action<IMission>(this.OnMissionEnded));
 
             // debug listeners
             CampaignEvents.OnQuarterDailyPartyTick.AddNonSerializedListener(this, new Action<MobileParty>(this.DEBUGMFPartyTick));
-
         }
 
         
-
-        private void OnSettlementEntered(MobileParty party, Settlement settlement, Hero hero)
-        {
-            if (!Helpers.isMFHideout(settlement))
-                return;
-
-            if (party != null && party.IsMainParty)
-            {
-                foreach (Hero notable in settlement.Notables)
-                {
-                    notable.SetHasMet();
-                }
-                var test = Campaign.Current.GameMenuManager.MenuLocations;
-                if (LocationComplex.Current != null && PlayerEncounter.LocationEncounter != null)
-                {
-                    if (party == null)
-                        return;
-                    if (party.IsMainParty)
-                        this.AddMFHLocationCharacters(settlement);
-                    else if (MobileParty.MainParty.CurrentSettlement == settlement)
-                        AddPartyHero(party, settlement);
-                    // add more if you want non party having notables to be able to be visible while you are here
-                }
-            }
-        }
-
-        private void OnMissionEnded(IMission mission)
-        {
-            if (LocationComplex.Current != null && PlayerEncounter.LocationEncounter != null && Settlement.CurrentSettlement != null && !Hero.MainHero.IsPrisoner && !Settlement.CurrentSettlement.IsUnderSiege)
-            {
-                this.AddMFHLocationCharacters(Settlement.CurrentSettlement);
-            }
-        }
 
         private void DEBUGMFPartyTick(MobileParty party)
         {
@@ -476,76 +433,6 @@ namespace ImprovedMinorFactions
             return !character.IsPlayerCharacter && !character.IsNotTransferableInHideouts;
         }
 
-        private void AddMFHLocationCharacters(Settlement settlement)
-        {
-            if (Helpers.isMFHideout(settlement))
-            {
-                List<MobileParty> list = Enumerable.ToList<MobileParty>(Settlement.CurrentSettlement.Parties);
-                this.AddNotableLocationCharacters(settlement);
-                foreach (MobileParty mobileParty in list)
-                {
-                    this.AddPartyHero(mobileParty, settlement);
-                }
-            }
-        }
-
-        private void AddNotableLocationCharacters(Settlement settlement)
-        {
-            if (Campaign.Current.GameMode == CampaignGameMode.Campaign)
-            {
-                foreach (Hero notable in settlement.Notables)
-                {
-                    this.AddNotableLocationCharacter(notable, settlement);
-                }
-            }
-        }
-
-        private void AddNotableLocationCharacter(Hero notable, Settlement settlement)
-        {
-            string suffix = notable.IsArtisan ? "_villager_artisan" : (notable.IsMerchant ? "_villager_merchant" : (notable.IsPreacher ? "_villager_preacher" : (notable.IsGangLeader ? "_villager_gangleader" : (notable.IsRuralNotable ? "_villager_ruralnotable" : (notable.IsFemale ? "_lord" : "_villager_merchant")))));
-            string text = notable.IsArtisan ? "sp_notable_artisan" : (notable.IsMerchant ? "sp_notable_merchant" : (notable.IsPreacher ? "sp_notable_preacher" : (notable.IsGangLeader ? "sp_notable_gangleader" : (notable.IsRuralNotable ? "sp_notable_rural_notable" : ((notable.GovernorOf == notable.CurrentSettlement.Town) ? "sp_governor" : "sp_notable")))));
-            Monster monsterWithSuffix = FaceGen.GetMonsterWithSuffix(notable.CharacterObject.Race, "_settlement");
-            AgentData agentData = new AgentData(
-                new PartyAgentOrigin(null, notable.CharacterObject)).Monster(monsterWithSuffix).NoHorses(true);
-
-            // TODO maybe use different CharacterRelations depending on peace/war with MF?
-            LocationCharacter locationCharacter = new LocationCharacter(agentData, 
-                new LocationCharacter.AddBehaviorsDelegate(SandBoxManager.Instance.AgentBehaviorManager.AddFixedCharacterBehaviors), 
-                text, true, LocationCharacter.CharacterRelations.Neutral, 
-                ActionSetCode.GenerateActionSetNameWithSuffix(agentData.AgentMonster, notable.IsFemale, suffix), true);
-
-            MFHCenter.AddCharacter(locationCharacter);
-        }
-
-        // Adds PartyHero character to MFHideout center to allow dialog
-        private void AddPartyHero(MobileParty mobileParty, Settlement settlement)
-        {
-            Hero leaderHero = mobileParty.LeaderHero;
-            if (leaderHero == null || leaderHero == Hero.MainHero)
-                return;
-
-            IFaction mapFaction = leaderHero.MapFaction;
-            uint color = (mapFaction != null) ? mapFaction.Color : 4291609515U;
-
-            (string actionSet, Monster monster) = GetActionSetAndMonster(leaderHero.CharacterObject);
-            AgentData agentData = new AgentData(new PartyAgentOrigin(mobileParty.Party, leaderHero.CharacterObject))
-                .Monster(monster).NoHorses(true).ClothingColor1(color).ClothingColor2(color);
-            string spawnTag = "sp_notable";
-            Location location = MFHCenter;
-            if (location != null)
-            {
-                location.AddCharacter(new LocationCharacter(
-                    agentData, new LocationCharacter.AddBehaviorsDelegate(SandBoxManager.Instance.AgentBehaviorManager.AddFixedCharacterBehaviors), 
-                    spawnTag, true, LocationCharacter.CharacterRelations.Neutral, actionSet, true));
-            }
-        }
-
-        private static Tuple<string, Monster> GetActionSetAndMonster(CharacterObject character)
-        {
-            Monster monsterWithSuffix = FaceGen.GetMonsterWithSuffix(character.Race, "_settlement");
-            return new Tuple<string, Monster>(ActionSetCode.GenerateActionSetNameWithSuffix(monsterWithSuffix, character.IsFemale, "_lord"), monsterWithSuffix);
-        }
-
         private const int MaxDistanceSquaredBetweenHideoutAndBoundVillage = 1600;
 
         private readonly int CanAttackHideoutStart = 23;
@@ -555,14 +442,6 @@ namespace ImprovedMinorFactions
         private float _hideoutWaitProgressHours;
 
         private float _hideoutWaitTargetHours;
-
-        private static Location MFHCenter
-        {
-            get
-            {
-                return LocationComplex.Current.GetLocationWithId("mf_hideout_center");
-            }
-        }
 
 
     }

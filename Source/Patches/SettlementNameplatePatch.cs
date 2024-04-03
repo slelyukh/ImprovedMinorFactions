@@ -31,18 +31,16 @@ namespace ImprovedMinorFactions.Patches
                 
                 if (Helpers.isMFHideout(nameplate.Settlement))
                 {
-                    //InformationManager.DisplayMessage(new InformationMessage($"WEEEE"));
                     mfhNameplates.Add(nameplate);
                 }
                     
             }
-            //InformationManager.DisplayMessage(new InformationMessage($"number of mfh nameplates = {mfhNameplates.Count}; total nameplates = {__instance.Nameplates.Count}"));
+
             foreach (var nameplate in mfhNameplates)
             {
                 if (!(nameplate.Settlement.SettlementComponent as MinorFactionHideout).IsSpotted)
                 {
                     var removed = __instance.Nameplates.Remove(nameplate);
-                    //InformationManager.DisplayMessage(new InformationMessage($"nameplate for {nameplate.Settlement} removed = {removed}"));
                 }
             }
         }

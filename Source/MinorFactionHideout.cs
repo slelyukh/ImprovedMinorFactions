@@ -45,7 +45,7 @@ namespace ImprovedMinorFactions
         private void OnLoad()
         {
             MFHideoutManager.initManagerIfNone();
-            MFHideoutManager.Current.addLoadedMFHideout(this);
+            MFHideoutManager.Current.AddLoadedMFHideout(this);
         }
 
         public void ActivateHideoutFirstTime()
@@ -53,6 +53,8 @@ namespace ImprovedMinorFactions
             HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
             HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
             activateHideout();
+            base.Settlement.Militia = 15;
+            this.Hearth = 400;
         }
 
         private void activateHideout(List<Hero> newNotables)
@@ -79,8 +81,12 @@ namespace ImprovedMinorFactions
             
             this._isActive = true;
             this._isSpotted = false;
-            base.Settlement.Militia = 15;
-            this.Hearth = 300;
+            base.Settlement.Militia = 10;
+            for (int i = 0; i < 4; i++)
+            {
+                this.upgradeOneMilitia();
+            }
+            this.Hearth = 200;
             Helpers.callPrivateMethod(this.OwnerClan, "set_HomeSettlement", new object[] { this.Settlement });
             foreach (Hero hero in this.OwnerClan.Heroes)
             {
@@ -113,11 +119,36 @@ namespace ImprovedMinorFactions
             this.Hearth = 0;
         }
 
+        private void upgradeOneMilitia()
+        {
+            var militiaParty = this.Settlement.MilitiaPartyComponent.Party;
+            var troopList = militiaParty.MemberRoster.GetTroopRoster();
+            CharacterObject troopToUpgrade = null;
+            foreach (var troop in troopList)
+            {
+                if (troop.Character.UpgradeTargets.Length != 0)
+                    troopToUpgrade = troop.Character;
+            }
+            if (troopToUpgrade != null)
+                militiaParty.MemberRoster.AddXpToTroop(troopToUpgrade.GetUpgradeXpCost(militiaParty, 0), troopToUpgrade);
+            
+        }
+
         public void DailyTick()
         {
-            
             if (Helpers.IsMFClanInitialized(_ownerclan))
-                base.Settlement.Militia += this.MilitiaChange.ResultNumber;
+            {
+                float curMil = base.Settlement.Militia;
+                float milChange = this.MilitiaChange.ResultNumber;
+                if (curMil + milChange > MFHideoutModels.GetMaxMilitiaInHideout()) {
+                    base.Settlement.Militia = (curMil + milChange) - 1;
+                    this.upgradeOneMilitia();
+                } else {
+                    base.Settlement.Militia += this.MilitiaChange.ResultNumber;
+                }
+                    
+            }
+                
             this.Hearth += this.HearthChange.ResultNumber;
         }
 
@@ -239,8 +270,7 @@ namespace ImprovedMinorFactions
         { 
             get
             {
-                ExplainedNumber eNum = new ExplainedNumber(MFHideoutModels.GetMilitiaChange(this.Settlement));
-                return eNum;
+                return MFHideoutModels.GetMilitiaChange(this.Settlement);
             }
         }
 
@@ -260,8 +290,7 @@ namespace ImprovedMinorFactions
         {
             get
             {
-                ExplainedNumber eNum = new ExplainedNumber(MFHideoutModels.GetHearthChange(this.Settlement));
-                return eNum;
+                return MFHideoutModels.GetHearthChange(this.Settlement, true);
             }
         }
 

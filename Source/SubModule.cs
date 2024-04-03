@@ -1,5 +1,6 @@
 ﻿
 using HarmonyLib;
+using ImprovedMinorFactions.Source;
 using StoryMode;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -37,6 +38,7 @@ namespace ImprovedMinorFactions
         {
             CampaignGameStarter? starter = gameStarterObject as CampaignGameStarter;
             starter.AddBehavior(new MFHideoutCampaignBehavior());
+            starter.AddBehavior(new MFHNotablesCampaignBehavior());
         }
 
         public override void OnGameEnd(Game game)
