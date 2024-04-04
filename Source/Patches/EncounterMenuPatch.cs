@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
+using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -20,8 +21,14 @@ namespace ImprovedMinorFactions.Patches
 
             MobileParty mainParty = MobileParty.MainParty;
             Settlement currentSettlement = mainParty.CurrentSettlement;
-            if (mainParty.AttachedTo == null && mainParty.CurrentSettlement != null && Helpers.isMFHideout(currentSettlement))
+            if (PlayerEncounter.Current?.IsPlayerWaiting == true)
+            {
+                __result = "mf_hideout_wait";
+            }
+            else if (mainParty.AttachedTo == null && mainParty.CurrentSettlement != null && Helpers.isMFHideout(currentSettlement))
+            {
                 __result = "mf_hideout_place";
+            }
         }
     }
 

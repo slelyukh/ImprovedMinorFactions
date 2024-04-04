@@ -7,6 +7,7 @@ using HarmonyLib;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
+using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -21,7 +22,7 @@ namespace ImprovedMinorFactions
         // TODO: make a real calculation
         public static float GetDailyVolunteerProductionProbability(Hero hero, int index, Settlement settlement)
         {
-            return 0.2f;
+            return 0.05f;
         }
 
         public static int GetMaxMilitiaInHideout()
@@ -43,15 +44,14 @@ namespace ImprovedMinorFactions
         {
             var eNum = new ExplainedNumber(0f, includeDescriptions);
             eNum.Add(0.2f, BaseText);
-            eNum.Add(-(settlement.Militia * 0.0066f), RetiredText);
-            eNum.Add((settlement.SettlementComponent as MinorFactionHideout).Hearth * 0.00033f, FromHearthsText);
+            eNum.Add((settlement.SettlementComponent as MinorFactionHideout).Hearth * 0.0005f, FromHearthsText);
             return eNum;
         }
 
         // TODO: monitor minor faction finances
         public static float CalculateHideoutIncome(MinorFactionHideout mfHideout)
         {
-            return mfHideout.Hearth * 2;
+            return mfHideout.Hearth * 1.5f;
         }
 
         // copied from bandit hideouts
@@ -72,10 +72,10 @@ namespace ImprovedMinorFactions
             return eNum;
         }
 
+        internal static int MinRelationToBeMFHFriend = 20;
+
         private static readonly TextObject BaseText = new TextObject("{=militarybase}Base", null);
-
         private static readonly TextObject RetiredText = new TextObject("{=gHnfFi1s}Retired", null);
-
         private static readonly TextObject FromHearthsText = new TextObject("{=ecdZglky}From Hearths", null);
     }
 

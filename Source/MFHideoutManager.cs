@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -92,7 +93,7 @@ namespace ImprovedMinorFactions
             while (hideouts[activateIndex].Settlement.Equals(oldHideout.Settlement))
                 activateIndex = MBRandom.RandomInt(hideouts.Count);
             var newHideout = hideouts[activateIndex];
-            oldHideout.moveHideouts(newHideout);
+            oldHideout.MoveHideouts(newHideout);
         }
 
         public MinorFactionHideout GetHideoutOfClan(Clan minorFaction)
@@ -112,6 +113,28 @@ namespace ImprovedMinorFactions
             if (!TryInitMFHideoutsLists())
                 throw new Exception("can't initialize hideouts list in Hideout Manager");
             return _factionHideouts.ContainsKey(minorFaction);
+        }
+
+        internal void RemoveClan(Clan destroyedClan)
+        {
+            if (!this.HasFaction(destroyedClan))
+                return;
+            foreach (var mfHideout in _factionHideouts[destroyedClan])
+            {
+                if (mfHideout.IsActive)
+                {
+                    // need to do this because can't kill notables and iterate over Notables list simultaneously.
+                    var notablesToKill = new List<Hero>();
+                    notablesToKill.AddRange(mfHideout.Settlement.Notables);
+                    foreach (Hero notable in notablesToKill)
+                    {
+                        KillCharacterAction.ApplyByRemove(notable, true, true);
+                    }
+                    mfHideout.DeactivateHideout();
+                }
+            }
+                
+            _factionHideouts.Remove(destroyedClan);
         }
 
         public static MFHideoutManager Current { get; private set; }

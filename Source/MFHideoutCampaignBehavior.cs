@@ -4,48 +4,31 @@ using System.Linq;
 using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
-using TaleWorlds.CampaignSystem.AgentOrigins;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
-using TaleWorlds.CampaignSystem.MapNotificationTypes;
 using TaleWorlds.CampaignSystem.Overlay;
 using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.CampaignSystem.Party.PartyComponents;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
-using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using MathF = TaleWorlds.Library.MathF;
+using Options = TaleWorlds.CampaignSystem.GameMenus.GameMenuOption;
 
 namespace ImprovedMinorFactions
 {
     internal class MFHideoutCampaignBehavior : CampaignBehaviorBase
     {
-
-        public void OnNewGameCreated(CampaignGameStarter campaignGameStarter)
-        {
-            this.AddGameMenus(campaignGameStarter);
-            MFHideoutManager.initManagerIfNone();
-            MFHideoutManager.Current.ActivateAllFactionHideouts();
-        }
-
-        public void OnGameLoaded(CampaignGameStarter campaignGameStarter)
-        {
-            this.AddGameMenus(campaignGameStarter);
-        }
-
-        
         public override void RegisterEvents()
         {
             CampaignEvents.HourlyTickSettlementEvent.AddNonSerializedListener(this, new Action<Settlement>(this.HourlyTickSettlement));
             CampaignEvents.OnHideoutSpottedEvent.AddNonSerializedListener(this, new Action<PartyBase, PartyBase>(this.OnMFHideoutSpotted));
             CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(this.OnNewGameCreated));
             CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(this.OnGameLoaded));
-            // Location events
+            CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, new Action<Clan>(this.OnClanDestroyed));
 
             // debug listeners
             CampaignEvents.OnQuarterDailyPartyTick.AddNonSerializedListener(this, new Action<MobileParty>(this.DEBUGMFPartyTick));
@@ -61,6 +44,12 @@ namespace ImprovedMinorFactions
             }
         }
 
+        private void OnClanDestroyed(Clan destroyedClan)
+        {
+            if (destroyedClan.IsMinorFaction)
+                MFHideoutManager.Current.RemoveClan(destroyedClan);
+        }
+
         private void OnMFHideoutSpotted(PartyBase party, PartyBase mfHideoutParty)
         {
             MinorFactionHideout? mfHideout= mfHideoutParty.Settlement.SettlementComponent as MinorFactionHideout;
@@ -68,12 +57,6 @@ namespace ImprovedMinorFactions
             {
                 mfHideout.IsSpotted = true;
             }
-        }
-
-        public override void SyncData(IDataStore dataStore)
-        {
-            dataStore.SyncData<float>("_mfHideoutWaitProgressHours", ref this._hideoutWaitProgressHours);
-            dataStore.SyncData<float>("_mfHideoutWaitTargetHours", ref this._hideoutWaitTargetHours);
         }
 
 
@@ -102,43 +85,49 @@ namespace ImprovedMinorFactions
         {
             // entered hideout menu
             campaignGameStarter.AddGameMenu("mf_hideout_place", "{=!}{MF_HIDEOUT_TEXT}", 
-                new OnInitDelegate(this.game_menu_hideout_place_on_init),
+                new OnInitDelegate(game_menu_hideout_place_on_init),
                 GameOverlays.MenuOverlayType.SettlementWithBoth);
-            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "attack", "Attack hideout",
-                new GameMenuOption.OnConditionDelegate(this.menu_attack_on_condition),
-                new GameMenuOption.OnConsequenceDelegate(this.menu_attack_on_consequence));
+            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "attack", "Attack Hideout",
+                new Options.OnConditionDelegate(menu_attack_on_condition),
+                new Options.OnConsequenceDelegate(menu_attack_on_consequence));
+            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "hostile_action", "Take Hostile Action",
+                new Options.OnConditionDelegate(menu_hostile_action_on_condition),
+                new Options.OnConsequenceDelegate(menu_hostile_action_on_consequence));
             campaignGameStarter.AddGameMenuOption("mf_hideout_place", "recruit_volunteers", "Recruit troops", 
-                new GameMenuOption.OnConditionDelegate(this.recruit_troops_on_condition), 
-                new GameMenuOption.OnConsequenceDelegate(this.recruit_troops_on_consequence));
-            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "trade", "Buy products", 
-                new GameMenuOption.OnConditionDelegate(this.menu_trade_on_condition),
-                new GameMenuOption.OnConsequenceDelegate(this.menu_trade_on_consequence));
-            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "wait", "Wait until nightfall",
-                new GameMenuOption.OnConditionDelegate(this.menu_wait_on_condition),
-                new GameMenuOption.OnConsequenceDelegate(this.menu_wait_on_consequence));
+                new Options.OnConditionDelegate(recruit_troops_on_condition), 
+                new Options.OnConsequenceDelegate(recruit_troops_on_consequence));
+            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "wait", "Wait here for some time",
+                new Options.OnConditionDelegate(menu_wait_on_condition),
+                new Options.OnConsequenceDelegate(menu_wait_on_consequence));
             campaignGameStarter.AddGameMenuOption("mf_hideout_place", "leave", "Leave",
-                new GameMenuOption.OnConditionDelegate(this.menu_leave_on_condition),
-                new GameMenuOption.OnConsequenceDelegate(this.menu_leave_on_consequence));
+                new Options.OnConditionDelegate(menu_leave_on_condition),
+                new Options.OnConsequenceDelegate(menu_leave_on_consequence));
 
-            // wait until nightfall menu
-            campaignGameStarter.AddWaitGameMenu("mf_hideout_wait", "Waiting until nightfall to attack.",
-                null,
-                new OnConditionDelegate(this.wait_menu_start_on_condition),
-                null,
-                new OnTickDelegate(this.wait_menu_on_tick),
-                GameMenu.MenuAndOptionType.WaitMenuShowOnlyProgressOption,
-                GameOverlays.MenuOverlayType.SettlementWithCharacters,
-                this._hideoutWaitTargetHours);
-            campaignGameStarter.AddGameMenuOption("mf_hideout_wait", "leave", "Leave",
-                new GameMenuOption.OnConditionDelegate(this.menu_leave_on_condition),
-                new GameMenuOption.OnConsequenceDelegate(this.menu_leave_on_consequence));
+            campaignGameStarter.AddWaitGameMenu("mf_hideout_wait", "{=ydbVysqv}You are waiting in {CURRENT_SETTLEMENT}.", 
+                new OnInitDelegate(wait_menu_on_init), 
+                new OnConditionDelegate(menu_wait_on_condition), 
+                null, 
+                new OnTickDelegate(wait_menu_on_tick),
+                GameMenu.MenuAndOptionType.WaitMenuHideProgressAndHoursOption,
+                GameOverlays.MenuOverlayType.SettlementWithBoth);
+            campaignGameStarter.AddGameMenuOption("mf_hideout_wait", "stop_waiting", "{=UqDNAZqM}Stop waiting", 
+                new Options.OnConditionDelegate(menu_leave_on_condition), 
+                new Options.OnConsequenceDelegate(stop_wait_on_consequence));
 
+            campaignGameStarter.AddGameMenu("mf_hideout_hostile_action", "{=YVNZaVCA}What action do you have in mind?", 
+                new OnInitDelegate(hostile_menu_on_init), 
+                GameOverlays.MenuOverlayType.SettlementWithBoth);
+            campaignGameStarter.AddGameMenuOption("mf_hideout_hostile_action", "attack", "Attack Hideout",
+                new Options.OnConditionDelegate(hostile_action_menu_attack_on_condition), 
+                new Options.OnConsequenceDelegate(menu_attack_on_consequence));
+            campaignGameStarter.AddGameMenuOption("mf_hideout_hostile_action", "forget_it", "{=sP9ohQTs}Forget it", 
+                new Options.OnConditionDelegate(menu_leave_on_condition), 
+                new Options.OnConsequenceDelegate(menu_hostile_action_forget_on_consequence));
         }
 
-        public bool menu_attack_on_condition(MenuCallbackArgs args)
+        private void ProcessMenusForAttack(MenuCallbackArgs args)
         {
-            args.optionLeaveType = GameMenuOption.LeaveType.Raid;
-            
+            args.optionLeaveType = Options.LeaveType.Raid;
             if (Hero.MainHero.IsWounded)
             {
                 args.IsEnabled = false;
@@ -149,7 +138,13 @@ namespace ImprovedMinorFactions
                 args.IsEnabled = true;
                 args.Tooltip = new TextObject($"Attacking this hideout will significantly decrease your relation with this Clan");
             }
-            return true;
+            var curSettlement = Settlement.CurrentSettlement;
+        }
+
+        public bool menu_attack_on_condition(MenuCallbackArgs args)
+        {
+            ProcessMenusForAttack(args);
+            return Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
         }
 
         public void menu_attack_on_consequence(MenuCallbackArgs args)
@@ -171,11 +166,24 @@ namespace ImprovedMinorFactions
             Settlement curSettlement = Settlement.CurrentSettlement;
         }
 
+        public bool menu_hostile_action_on_condition(MenuCallbackArgs args)
+        {
+            args.optionLeaveType = Options.LeaveType.Submenu;
+            Settlement curSettlement = Settlement.CurrentSettlement;
+            args.Tooltip = new TextObject($"Taking hostile action will start a war between you and this Clan or whoever hired them.");
+            return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
+        }
+
+        public void menu_hostile_action_on_consequence(MenuCallbackArgs args)
+        {
+            GameMenu.SwitchToMenu("mf_hideout_hostile_action");
+        }
+
         public bool recruit_troops_on_condition(MenuCallbackArgs args)
         {
-            args.optionLeaveType = GameMenuOption.LeaveType.Recruit;
+            args.optionLeaveType = Options.LeaveType.Recruit;
             Settlement curSettlement = Settlement.CurrentSettlement;
-            if (Clan.PlayerClan.GetRelationWithClan(curSettlement.OwnerClan) <0)
+            if (Clan.PlayerClan.GetRelationWithClan(curSettlement.OwnerClan) < MFHideoutModels.MinRelationToBeMFHFriend)
             {
                 args.IsEnabled = false;
                 args.Tooltip = new TextObject("your relation with this clan is too low to recruit troops");
@@ -183,43 +191,34 @@ namespace ImprovedMinorFactions
             {
                 args.IsEnabled = true;
             }
-            return true;
+            return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
         }
 
         public void recruit_troops_on_consequence(MenuCallbackArgs args)
         {
-            InformationManager.DisplayMessage(new InformationMessage($"recruitTroops Pressed"));
         }
 
-        public bool menu_trade_on_condition(MenuCallbackArgs args)
-        {
-            args.optionLeaveType = GameMenuOption.LeaveType.Trade;
-            return true;
-        }
-
-        public void menu_trade_on_consequence(MenuCallbackArgs args)
-        {
-            InformationManager.DisplayMessage(new InformationMessage($"trade Pressed"));
-            
-        }
         private bool menu_wait_on_condition(MenuCallbackArgs args)
         {
-            args.optionLeaveType = GameMenuOption.LeaveType.Wait;
-            //Settlement curSettlement = Settlement.CurrentSettlement;
-            //Clan.PlayerClan.GetRelationWithClan(curSettlement.OwnerClan);
-            // return relation > 20
-            return true;
+            args.optionLeaveType = Options.LeaveType.Wait;
+            MBTextManager.SetTextVariable("CURRENT_SETTLEMENT", Settlement.CurrentSettlement.Name);
+            var curSettlement = Settlement.CurrentSettlement;
+            if (Clan.PlayerClan.GetRelationWithClan(curSettlement.OwnerClan) < MFHideoutModels.MinRelationToBeMFHFriend)
+            {
+                args.IsEnabled = false;
+                args.Tooltip = new TextObject("You don't have enough relation to stay in this hideout.");
+            }
+            return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
         }
 
         private void menu_wait_on_consequence(MenuCallbackArgs args)
         {
-            Settlement curSettlement = Settlement.CurrentSettlement;
-            InformationManager.DisplayMessage(new InformationMessage($"my relation with this clan =  {Clan.PlayerClan.GetRelationWithClan(curSettlement.OwnerClan)}"));
             GameMenu.SwitchToMenu("mf_hideout_wait");
         }
+        
         private bool menu_leave_on_condition(MenuCallbackArgs args)
         {
-            args.optionLeaveType = GameMenuOption.LeaveType.Leave;
+            args.optionLeaveType = Options.LeaveType.Leave;
             return true;
         }
 
@@ -232,19 +231,51 @@ namespace ImprovedMinorFactions
             }
             PlayerEncounter.Finish(true);
         }
+
+        private void wait_menu_on_init(MenuCallbackArgs args)
+        {
+            if (PlayerEncounter.Current != null)
+            {
+                PlayerEncounter.Current.IsPlayerWaiting = true;
+            }
+        }
         public bool wait_menu_start_on_condition(MenuCallbackArgs args)
         {
+            args.optionLeaveType = Options.LeaveType.Wait;
             return true;
         }
 
-        public void wait_menu_on_tick(MenuCallbackArgs args, CampaignTime campaignTime)
+        public void wait_menu_on_tick(MenuCallbackArgs args, CampaignTime dt)
         {
-            this._hideoutWaitProgressHours += (float)campaignTime.ToHours;
+            this._hideoutWaitProgressHours += (float)dt.ToHours;
             if (this._hideoutWaitTargetHours.ApproximatelyEqualsTo(0f, 1E-05f))
             {
                 this.CalculateHideoutAttackTime();
             }
-            args.MenuContext.GameMenu.SetProgressOfWaitingInMenu(this._hideoutWaitProgressHours / this._hideoutWaitTargetHours);
+            //args.MenuContext.GameMenu.SetProgressOfWaitingInMenu(this._hideoutWaitProgressHours / this._hideoutWaitTargetHours);
+
+            // if interrupted go to another menu
+            SwitchToMenuIfThereIsAnInterrupt(args.MenuContext.GameMenu.StringId);
+        }
+
+        public void stop_wait_on_consequence(MenuCallbackArgs args)
+        {
+            PlayerEncounter.Current.IsPlayerWaiting = false;
+            SwitchToMenuIfThereIsAnInterrupt(args.MenuContext.GameMenu.StringId);
+        }
+
+        private void SwitchToMenuIfThereIsAnInterrupt(string currentMenuId)
+        {
+            string genericStateMenu = Campaign.Current.Models.EncounterGameMenuModel.GetGenericStateMenu();
+            if (genericStateMenu != currentMenuId)
+            {
+                if (!string.IsNullOrEmpty(genericStateMenu))
+                {
+                    GameMenu.SwitchToMenu(genericStateMenu);
+                    return;
+                }
+                GameMenu.ExitToLast();
+            }
         }
 
 
@@ -260,13 +291,6 @@ namespace ImprovedMinorFactions
         {
             args.MenuContext.OpenRecruitVolunteers();
         }
-
-
-
-        //public void hideout_wait_menu_on_consequence(MenuCallbackArgs args)
-        //{
-        //    GameMenu.SwitchToMenu("hideout_after_wait");
-        //}
 
 
         [GameMenuInitializationHandler("mf_hideout_place")]
@@ -349,6 +373,19 @@ namespace ImprovedMinorFactions
             }
         }
 
+        private void menu_hostile_action_forget_on_consequence(MenuCallbackArgs args)
+        {
+            GameMenu.SwitchToMenu("mf_hideout_place");
+        }
+        private void hostile_menu_on_init(MenuCallbackArgs args)
+        {
+        }
+        private bool hostile_action_menu_attack_on_condition(MenuCallbackArgs args)
+        {
+            this.ProcessMenusForAttack(args);
+            return true;
+        }
+
         private void CalculateHideoutAttackTime()
         {
             this._hideoutWaitTargetHours = (((float)this.CanAttackHideoutStart > CampaignTime.Now.CurrentHourInDay) ? ((float)this.CanAttackHideoutStart - CampaignTime.Now.CurrentHourInDay) : (24f - CampaignTime.Now.CurrentHourInDay + (float)this.CanAttackHideoutStart));
@@ -399,10 +436,24 @@ namespace ImprovedMinorFactions
                 Settlement.CurrentSettlement.Parties, (MobileParty x) => x.IsMilitia).ToMBList<MobileParty>();
         }
 
+        private void ApplyHideoutRaidConsequences()
+        {
+            var settlement = Settlement.CurrentSettlement;
+            Clan mfClan = settlement.OwnerClan;
+            BeHostileAction.ApplyEncounterHostileAction(PartyBase.MainParty, Settlement.CurrentSettlement.Party);
+            if (mfClan.IsUnderMercenaryService)
+                ChangeRelationAction.ApplyPlayerRelation(mfClan.Leader, -20);
+            else
+                ChangeRelationAction.ApplyPlayerRelation(mfClan.Leader, -10);
+            foreach (Hero notable in settlement.Notables)
+            {
+                ChangeRelationAction.ApplyPlayerRelation(notable, -15);
+            }
+        }
+
         private void OnTroopRosterManageDone(TroopRoster playerTroops)
         {
-            // Declare war
-            BeHostileAction.ApplyEncounterHostileAction(PartyBase.MainParty, Settlement.CurrentSettlement.Party);
+            ApplyHideoutRaidConsequences();
 
             this.ArrangeHideoutTroopCountsForMission();
             GameMenu.SwitchToMenu("mf_hideout_place");
@@ -443,6 +494,42 @@ namespace ImprovedMinorFactions
 
         private float _hideoutWaitTargetHours;
 
+        public override void SyncData(IDataStore dataStore)
+        {
+            dataStore.SyncData<float>("_mfHideoutWaitProgressHours", ref this._hideoutWaitProgressHours);
+            dataStore.SyncData<float>("_mfHideoutWaitTargetHours", ref this._hideoutWaitTargetHours);
+        }
 
+        public void OnNewGameCreated(CampaignGameStarter campaignGameStarter)
+        {
+            this.AddGameMenus(campaignGameStarter);
+            MFHideoutManager.initManagerIfNone();
+            MFHideoutManager.Current.ActivateAllFactionHideouts();
+        }
+
+        public void OnGameLoaded(CampaignGameStarter campaignGameStarter)
+        {
+            this.AddGameMenus(campaignGameStarter);
+        }
     }
+
+    // archive
+
+    //public void hideout_wait_menu_on_consequence(MenuCallbackArgs args)
+    //{
+    //    GameMenu.SwitchToMenu("hideout_after_wait");
+    //}
+
+    // wait until nightfall menu
+    //campaignGameStarter.AddWaitGameMenu("mf_hideout_wait", "Waiting until nightfall to attack.",
+    //    null,
+    //    new OnConditionDelegate(this.wait_menu_start_on_condition),
+    //    null,
+    //    new OnTickDelegate(this.wait_menu_on_tick),
+    //    GameMenu.MenuAndOptionType.WaitMenuShowOnlyProgressOption,
+    //    GameOverlays.MenuOverlayType.SettlementWithCharacters,
+    //    this._hideoutWaitTargetHours);
+    //campaignGameStarter.AddGameMenuOption("mf_hideout_wait", "leave", "Leave",
+    //    new Options.OnConditionDelegate(this.menu_leave_on_condition),
+    //    new Options.OnConsequenceDelegate(this.menu_leave_on_consequence));
 }

@@ -52,22 +52,22 @@ namespace ImprovedMinorFactions
         {
             HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
             HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
-            activateHideout();
-            base.Settlement.Militia = 15;
-            this.Hearth = 400;
+            ActivateHideout();
+            base.Settlement.Militia += 5;
+            this.Hearth = 300;
         }
 
-        private void activateHideout(List<Hero> newNotables)
+        private void ActivateHideout(List<Hero> newNotables)
         {
             foreach (Hero notable in newNotables)
             {
-                moveNotableIn(notable);
+                MoveNotableIn(notable);
             }
 
-            activateHideout();
+            ActivateHideout();
         }
 
-        private void activateHideout()
+        private void ActivateHideout()
         {
             if (!Helpers.IsMFClanInitialized(this.OwnerClan))
             {
@@ -81,12 +81,20 @@ namespace ImprovedMinorFactions
             
             this._isActive = true;
             this._isSpotted = false;
-            base.Settlement.Militia = 10;
-            for (int i = 0; i < 4; i++)
-            {
-                this.upgradeOneMilitia();
-            }
+
+            // add 3 high tier militias
+            base.Settlement.Militia = 3;
+            UpgradeMilitia(3);
+            UpgradeMilitia(3);
+
+            // add 5 mid tier militias
+            base.Settlement.Militia += 5;
+            UpgradeMilitia(5);
+
+            base.Settlement.Militia += 7;
             this.Hearth = 200;
+
+
             Helpers.callPrivateMethod(this.OwnerClan, "set_HomeSettlement", new object[] { this.Settlement });
             foreach (Hero hero in this.OwnerClan.Heroes)
             {
@@ -94,23 +102,23 @@ namespace ImprovedMinorFactions
             }
         }
 
-        public void moveHideouts(MinorFactionHideout newHideout)
+        public void MoveHideouts(MinorFactionHideout newHideout)
         {
             // TODO: move hideout inventory
             List<Hero> notables = this.Settlement.Notables.ToList<Hero>();
-            newHideout.activateHideout(notables);
-            this.deactivateHideout();
+            newHideout.ActivateHideout(notables);
+            this.DeactivateHideout();
         }
 
         // updates notable info and removes notable from old settlement and adds to new settlement
-        private void moveNotableIn(Hero notable)
+        private void MoveNotableIn(Hero notable)
         {
             notable.VolunteerTypes = new CharacterObject[6];
             notable.StayingInSettlement = this.Settlement;
             notable.UpdateHomeSettlement();
         }
 
-        private void deactivateHideout()
+        internal void DeactivateHideout()
         {
             this._isActive = false;
             this._isSpotted = false;
@@ -119,18 +127,32 @@ namespace ImprovedMinorFactions
             this.Hearth = 0;
         }
 
-        private void upgradeOneMilitia()
+        private void UpgradeMilitia(int count)
         {
             var militiaParty = this.Settlement.MilitiaPartyComponent.Party;
-            var troopList = militiaParty.MemberRoster.GetTroopRoster();
+            var militiaRoster = militiaParty.MemberRoster;
+            var troopList = militiaRoster.GetTroopRoster();
             CharacterObject troopToUpgrade = null;
-            foreach (var troop in troopList)
+            while (count > 0)
             {
-                if (troop.Character.UpgradeTargets.Length != 0)
-                    troopToUpgrade = troop.Character;
+                foreach (var troop in troopList)
+                {
+                    if (troop.Character.UpgradeTargets.Length != 0)
+                        troopToUpgrade = troop.Character;
+                }
+                if (troopToUpgrade != null)
+                {
+                    int amountToUpgrade = militiaRoster.GetTroopCount(troopToUpgrade);
+                    var upgradeTarget = troopToUpgrade.UpgradeTargets[MBRandom.RandomInt(troopToUpgrade.UpgradeTargets.Length)];
+                    militiaRoster.AddToCounts(troopToUpgrade, -amountToUpgrade);
+                    militiaRoster.AddToCounts(upgradeTarget, amountToUpgrade);
+                    count -= amountToUpgrade;
+                }
+                else
+                {
+                    break;
+                }
             }
-            if (troopToUpgrade != null)
-                militiaParty.MemberRoster.AddXpToTroop(troopToUpgrade.GetUpgradeXpCost(militiaParty, 0), troopToUpgrade);
             
         }
 
@@ -142,7 +164,7 @@ namespace ImprovedMinorFactions
                 float milChange = this.MilitiaChange.ResultNumber;
                 if (curMil + milChange > MFHideoutModels.GetMaxMilitiaInHideout()) {
                     base.Settlement.Militia = (curMil + milChange) - 1;
-                    this.upgradeOneMilitia();
+                    this.UpgradeMilitia(1);
                 } else {
                     base.Settlement.Militia += this.MilitiaChange.ResultNumber;
                 }
