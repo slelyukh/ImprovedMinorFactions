@@ -50,8 +50,10 @@ namespace ImprovedMinorFactions
 
         public void ActivateHideoutFirstTime()
         {
-            HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
-            HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
+            var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
+            notable1.IsMinorFactionHero = true;
+            var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
+            notable2.IsMinorFactionHero = true;
             ActivateHideout();
             base.Settlement.Militia += 5;
             this.Hearth = 300;
@@ -142,7 +144,7 @@ namespace ImprovedMinorFactions
                 }
                 if (troopToUpgrade != null)
                 {
-                    int amountToUpgrade = militiaRoster.GetTroopCount(troopToUpgrade);
+                    int amountToUpgrade = MathF.Min(militiaRoster.GetTroopCount(troopToUpgrade), count);
                     var upgradeTarget = troopToUpgrade.UpgradeTargets[MBRandom.RandomInt(troopToUpgrade.UpgradeTargets.Length)];
                     militiaRoster.AddToCounts(troopToUpgrade, -amountToUpgrade);
                     militiaRoster.AddToCounts(upgradeTarget, amountToUpgrade);
@@ -162,7 +164,7 @@ namespace ImprovedMinorFactions
             {
                 float curMil = base.Settlement.Militia;
                 float milChange = this.MilitiaChange.ResultNumber;
-                if (curMil + milChange > MFHideoutModels.GetMaxMilitiaInHideout()) {
+                if (curMil + milChange > MFHideoutModels.GetMaxMilitiaInHideout() + 1) {
                     base.Settlement.Militia = (curMil + milChange) - 1;
                     this.UpgradeMilitia(1);
                 } else {

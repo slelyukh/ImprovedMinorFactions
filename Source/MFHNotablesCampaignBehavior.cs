@@ -23,7 +23,6 @@ namespace ImprovedMinorFactions.Source
             CampaignEvents.SettlementEntered.AddNonSerializedListener(this, new Action<MobileParty, Settlement, Hero>(this.OnSettlementEntered));
             CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, new Action(this.OnGameLoadFinished));
             // Location events
-            CampaignEvents.SettlementEntered.AddNonSerializedListener(this, new Action<MobileParty, Settlement, Hero>(this.OnSettlementEntered));
             CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, new Action<IMission>(this.OnMissionEnded));
 
             // debug listeners
@@ -145,11 +144,11 @@ namespace ImprovedMinorFactions.Source
 
             if (party != null && party.IsMainParty)
             {
+                InformationManager.DisplayMessage(new InformationMessage($"I have {settlement.OwnerClan.GetRelationWithClan(Clan.PlayerClan)} relation with the {settlement.OwnerClan}"));
                 foreach (Hero notable in settlement.Notables)
                 {
                     notable.SetHasMet();
                 }
-                var test = Campaign.Current.GameMenuManager.MenuLocations;
                 if (LocationComplex.Current != null && PlayerEncounter.LocationEncounter != null)
                 {
                     if (party == null)

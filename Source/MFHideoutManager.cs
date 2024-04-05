@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ImprovedMinorFactions.Patches;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
@@ -21,6 +22,7 @@ namespace ImprovedMinorFactions
         public MFHideoutManager() 
         {
             _LoadedMFHideouts = new Dictionary<string, MinorFactionHideout>();
+            _factionsWaitingForWar = new HashSet<Clan>();
         }
 
         public static void initManager()
@@ -135,6 +137,23 @@ namespace ImprovedMinorFactions
             }
                 
             _factionHideouts.Remove(destroyedClan);
+            _factionsWaitingForWar.Remove(destroyedClan);
+        }
+
+        public void RegisterClanForPlayerWarOnEndingMercenaryContract(Clan minorFaction)
+        {
+            if (!minorFaction.IsMinorFaction)
+                throw new MBIllegalValueException($"{minorFaction} is not a minor faction clan, you cannot register it for a later war with Player.");
+            _factionsWaitingForWar.Add(minorFaction);
+        }
+
+        public void DeclareWarOnPlayerIfNeeded(Clan minorFaction)
+        {
+            if (_factionsWaitingForWar.Contains(minorFaction))
+            {
+                DeclareWarAction.ApplyByPlayerHostility(minorFaction.MapFaction, Clan.PlayerClan.MapFaction);
+                _factionsWaitingForWar.Remove(minorFaction);
+            }
         }
 
         public static MFHideoutManager Current { get; private set; }
@@ -142,6 +161,8 @@ namespace ImprovedMinorFactions
         private Dictionary<string, MinorFactionHideout> _LoadedMFHideouts;
 
         private Dictionary<Clan, List<MinorFactionHideout>> _factionHideouts;
+
+        private HashSet<Clan> _factionsWaitingForWar;
 
         private bool _factionHideoutsInitialized;
 

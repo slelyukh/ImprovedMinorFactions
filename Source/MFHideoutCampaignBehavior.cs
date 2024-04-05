@@ -8,6 +8,7 @@ using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
+using TaleWorlds.CampaignSystem.Issues;
 using TaleWorlds.CampaignSystem.Overlay;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
@@ -29,12 +30,31 @@ namespace ImprovedMinorFactions
             CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(this.OnNewGameCreated));
             CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(this.OnGameLoaded));
             CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, new Action<Clan>(this.OnClanDestroyed));
+            CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, new Action<Clan, Kingdom, Kingdom, ChangeKingdomAction.ChangeKingdomActionDetail, bool>(this.OnClanChangedKingdom));
 
             // debug listeners
             CampaignEvents.OnQuarterDailyPartyTick.AddNonSerializedListener(this, new Action<MobileParty>(this.DEBUGMFPartyTick));
+            CampaignEvents.OnCheckForIssueEvent.AddNonSerializedListener(this, new Action<Hero>(this.OnCheckForIssue));
         }
 
-        
+        public void OnCheckForIssue(Hero hero)
+        {
+            var debug = Campaign.Current.DeadOrDisabledHeroes;
+            if (hero.IsMinorFactionHero)
+            {
+                InformationManager.DisplayMessage(new InformationMessage($"{hero} is a minorfactionhero"));
+                return;
+            }
+            //Campaign.Current.IssueManager.AddPotentialIssueData(hero, new PotentialIssueData(typeof(GangLeaderNeedsRecruitsIssueBehavior.GangLeaderNeedsRecruitsIssue), IssueBase.IssueFrequency.VeryCommon));
+        }
+
+        private static bool ConditionsHold(Hero issueGiver)
+        {
+            return issueGiver.IsMinorFactionHero;
+            //return Helpers.isMFHideout(issueGiver.CurrentSettlement) && issueGiver.IsGangLeader; AND not in player clan?
+        }
+
+
 
         private void DEBUGMFPartyTick(MobileParty party)
         {
@@ -48,6 +68,13 @@ namespace ImprovedMinorFactions
         {
             if (destroyedClan.IsMinorFaction)
                 MFHideoutManager.Current.RemoveClan(destroyedClan);
+        }
+
+        // todo: Maybe move to another file such as MinorFactionDiplomacyCampaignBehavior
+        private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification = true)
+        {
+            if (clan.IsMinorFaction && detail == ChangeKingdomAction.ChangeKingdomActionDetail.LeaveAsMercenary)
+                MFHideoutManager.Current.DeclareWarOnPlayerIfNeeded(clan);
         }
 
         private void OnMFHideoutSpotted(PartyBase party, PartyBase mfHideoutParty)
@@ -442,9 +469,15 @@ namespace ImprovedMinorFactions
             Clan mfClan = settlement.OwnerClan;
             BeHostileAction.ApplyEncounterHostileAction(PartyBase.MainParty, Settlement.CurrentSettlement.Party);
             if (mfClan.IsUnderMercenaryService)
+            {
                 ChangeRelationAction.ApplyPlayerRelation(mfClan.Leader, -20);
+                MFHideoutManager.Current.RegisterClanForPlayerWarOnEndingMercenaryContract(mfClan);
+            }
             else
+            {
                 ChangeRelationAction.ApplyPlayerRelation(mfClan.Leader, -10);
+            }
+                
             foreach (Hero notable in settlement.Notables)
             {
                 ChangeRelationAction.ApplyPlayerRelation(notable, -15);
