@@ -105,10 +105,15 @@ namespace ImprovedMinorFactions
             fieldInfo.SetValue(instance, value);
         }
 
-        internal static void callPrivateMethod<I>(I instance, string methodName, object[] args)
+        // if method is static use null for instance and provide a type
+        internal static object callPrivateMethod(object instance, string methodName, object[] args, Type type = null)
         {
-            var method = instance.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
-            method.Invoke(instance, args); 
+            MethodInfo method;
+            if (type == null)
+                method = instance.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
+            else
+                method = type.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
+            return method.Invoke(instance, args); 
         }
 
 

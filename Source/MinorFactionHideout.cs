@@ -9,6 +9,10 @@ using TaleWorlds.ObjectSystem;
 using TaleWorlds.SaveSystem;
 using TaleWorlds.Library;
 using System.Linq;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
+using TaleWorlds.MountAndBlade.Network.Gameplay.Perks.Effects;
+using System.Diagnostics.CodeAnalysis;
+using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions
 {
@@ -48,12 +52,42 @@ namespace ImprovedMinorFactions
             MFHideoutManager.Current.AddLoadedMFHideout(this);
         }
 
+        // CreateHeroAtOccupation copypasta
+        private void RenameHeroToNewOccupation(Hero heroToRename, Occupation occupation, uint seed)
+        {
+            IEnumerable<CharacterObject> enumerable = Enumerable.Where<CharacterObject>(
+                this.Settlement.Culture.NotableAndWandererTemplates, 
+                (CharacterObject x) => x.Occupation == occupation);
+            int randNum = this.Settlement.RandomIntWithSeed(seed, enumerable.Count());
+            int i = 0;
+            CharacterObject template = null;
+            foreach (CharacterObject characterObject in enumerable)
+            {
+                if (i == randNum)
+                {
+                    template = characterObject;
+                    break;
+                }
+                i++;
+            }
+            if (template == null)
+                throw new System.Exception("random number failure");
+            Hero hero = (Hero) Helpers.callPrivateMethod(null, "CreateNewHero", new object[] { template, 25 }, typeof(HeroCreator));
+            TextObject firstName;
+            TextObject fullName;
+            NameGenerator.Current.GenerateHeroNameAndHeroFullName(hero, out firstName, out fullName, false);
+            heroToRename.SetName(fullName, firstName);
+        }
+
         public void ActivateHideoutFirstTime()
         {
-            var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
+            var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.Preacher, this.Settlement);
+            RenameHeroToNewOccupation(notable1, Occupation.GangLeader, 1);
             notable1.IsMinorFactionHero = true;
-            var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
+            var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.Preacher, this.Settlement);
+            RenameHeroToNewOccupation(notable2, Occupation.GangLeader, 2);
             notable2.IsMinorFactionHero = true;
+
             ActivateHideout();
             base.Settlement.Militia += 5;
             this.Hearth = 300;

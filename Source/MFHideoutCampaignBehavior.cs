@@ -39,21 +39,12 @@ namespace ImprovedMinorFactions
 
         public void OnCheckForIssue(Hero hero)
         {
-            var debug = Campaign.Current.DeadOrDisabledHeroes;
-            if (hero.IsMinorFactionHero)
+            if (hero.IsMinorFactionHero && Helpers.isMFHideout(hero.CurrentSettlement) && hero.IsPreacher)
             {
-                InformationManager.DisplayMessage(new InformationMessage($"{hero} is a minorfactionhero"));
                 return;
             }
             //Campaign.Current.IssueManager.AddPotentialIssueData(hero, new PotentialIssueData(typeof(GangLeaderNeedsRecruitsIssueBehavior.GangLeaderNeedsRecruitsIssue), IssueBase.IssueFrequency.VeryCommon));
         }
-
-        private static bool ConditionsHold(Hero issueGiver)
-        {
-            return issueGiver.IsMinorFactionHero;
-            //return Helpers.isMFHideout(issueGiver.CurrentSettlement) && issueGiver.IsGangLeader; AND not in player clan?
-        }
-
 
 
         private void DEBUGMFPartyTick(MobileParty party)
@@ -213,7 +204,7 @@ namespace ImprovedMinorFactions
             if (Clan.PlayerClan.GetRelationWithClan(curSettlement.OwnerClan) < MFHideoutModels.MinRelationToBeMFHFriend)
             {
                 args.IsEnabled = false;
-                args.Tooltip = new TextObject("your relation with this clan is too low to recruit troops");
+                args.Tooltip = new TextObject($"Your relation with this clan must be at least {MFHideoutModels.MinRelationToBeMFHFriend} to recruit troops.");
             } else
             {
                 args.IsEnabled = true;

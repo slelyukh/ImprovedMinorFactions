@@ -40,7 +40,7 @@ namespace ImprovedMinorFactions
             CampaignGameStarter? starter = gameStarterObject as CampaignGameStarter;
             starter.AddBehavior(new MFHideoutCampaignBehavior());
             starter.AddBehavior(new MFHNotablesCampaignBehavior());
-            starter.AddBehavior(new MFNotableDebugIssue());
+            starter.AddBehavior(new DebugCampaignBehavior());
         }
 
         public override void OnGameEnd(Game game)
