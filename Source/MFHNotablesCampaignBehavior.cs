@@ -129,9 +129,9 @@ namespace ImprovedMinorFactions.Source
             {
                 // TODO: debug remove
                 InformationManager.DisplayMessage(new InformationMessage($"{victim} died in {victim.CurrentSettlement}"));
-                Hero hero = HeroCreator.CreateRelativeNotableHero(victim);
-                if (victim.CurrentSettlement != null)
+                if (victim.CurrentSettlement != null && victim.CurrentSettlement.OwnerClan.Heroes.Count > 0)
                 {
+                    Hero hero = HeroCreator.CreateRelativeNotableHero(victim);
                     this.ChangeDeadNotable(victim, hero, victim.CurrentSettlement);
                 }
             }

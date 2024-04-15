@@ -2,6 +2,7 @@
 using HarmonyLib;
 using ImprovedMinorFactions.Source;
 using ImprovedMinorFactions.Source.Patches;
+using ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits;
 using StoryMode;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -41,14 +42,13 @@ namespace ImprovedMinorFactions
             starter.AddBehavior(new MFHideoutCampaignBehavior());
             starter.AddBehavior(new MFHNotablesCampaignBehavior());
             starter.AddBehavior(new DebugCampaignBehavior());
+            starter.AddBehavior(new MFHNotableNeedsRecruitsIssueBehavior());
         }
 
         public override void OnGameEnd(Game game)
         {
             MFHideoutManager.clearManager();
         }
-
-
 
         public override void BeginGameStart(Game game)
         {

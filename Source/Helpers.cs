@@ -116,6 +116,12 @@ namespace ImprovedMinorFactions
             return method.Invoke(instance, args); 
         }
 
+        public static bool mfIsMounted(Clan minorFaction)
+        {
+            var name = minorFaction.StringId;
+            return name == "ghilman" || name == "jawwal" || name == "eleftheroi" || name == "karakhuzaits";
+        }
+
 
 
     }

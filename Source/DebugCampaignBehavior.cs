@@ -21,17 +21,16 @@ namespace ImprovedMinorFactions.Source
             {
                 //Campaign.Current.IssueManager.AddPotentialIssueData(hero,
                 //    new PotentialIssueData(null, 
-                //    typeof(GangLeaderNeedsRecruitsIssueBehavior.GangLeaderNeedsRecruitsIssue),
+                //    typeof(MFHNotableNeedsRecruitsIssueBehavior.MFHNotableNeedsRecruitsIssue),
                 //    IssueBase.IssueFrequency.VeryCommon, null));
                 return;
             }
-            Campaign.Current.IssueManager.AddPotentialIssueData(hero, new PotentialIssueData(typeof(GangLeaderNeedsRecruitsIssueBehavior.GangLeaderNeedsRecruitsIssue), IssueBase.IssueFrequency.VeryCommon));
         }
 
 
         private static bool ConditionsHold(Hero issueGiver)
         {
-            return Helpers.isMFHideout(issueGiver.CurrentSettlement) && issueGiver.IsGangLeader;
+            return Helpers.isMFHideout(issueGiver.CurrentSettlement) && issueGiver.IsNotable;
         }
 
         public override void SyncData(IDataStore dataStore)

@@ -43,7 +43,7 @@ namespace ImprovedMinorFactions
             {
                 return;
             }
-            //Campaign.Current.IssueManager.AddPotentialIssueData(hero, new PotentialIssueData(typeof(GangLeaderNeedsRecruitsIssueBehavior.GangLeaderNeedsRecruitsIssue), IssueBase.IssueFrequency.VeryCommon));
+            //Campaign.Current.IssueManager.AddPotentialIssueData(hero, new PotentialIssueData(typeof(MFHNotableNeedsRecruitsIssueBehavior.MFHNotableNeedsRecruitsIssue), IssueBase.IssueFrequency.VeryCommon));
         }
 
 

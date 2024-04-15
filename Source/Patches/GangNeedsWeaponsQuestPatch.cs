@@ -19,14 +19,14 @@ namespace ImprovedMinorFactions.Source.Patches
 
     // TODO: give more reason for needing weapons
     // lots to patch maybe I should use other quests
-    //[HarmonyPatch(typeof(GangLeaderNeedsSpecialWeaponsIssueBehavior), "ConditionsHold")]
+    //[HarmonyPatch(typeof(MFHNotableNeedsSpecialWeaponsIssueBehavior), "ConditionsHold")]
     //public class NeedsSpecialWeaponsPatch
     //{
     //    static void Postfix(ref bool __result, Hero IssueOwner)
     //    {
     //        if (__result == true || !Helpers.isMFHideout(IssueOwner.CurrentSettlement))
     //            return;
-    //        __result = IssueOwner.IsGangLeader;
+    //        __result = IssueOwner.IsMFHNotable;
     //    }
     //}
 }
