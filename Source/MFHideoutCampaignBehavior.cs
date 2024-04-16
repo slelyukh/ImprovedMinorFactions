@@ -61,7 +61,6 @@ namespace ImprovedMinorFactions
                 MFHideoutManager.Current.RemoveClan(destroyedClan);
         }
 
-        // todo: Maybe move to another file such as MinorFactionDiplomacyCampaignBehavior
         private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification = true)
         {
             if (clan.IsMinorFaction && detail == ChangeKingdomAction.ChangeKingdomActionDetail.LeaveAsMercenary)
@@ -456,9 +455,13 @@ namespace ImprovedMinorFactions
 
         private void ApplyHideoutRaidConsequences()
         {
-            var settlement = Settlement.CurrentSettlement;
-            Clan mfClan = settlement.OwnerClan;
-            BeHostileAction.ApplyEncounterHostileAction(PartyBase.MainParty, Settlement.CurrentSettlement.Party);
+            ApplyHideoutRaidConsequences(Settlement.CurrentSettlement);
+        }
+
+        public static void ApplyHideoutRaidConsequences(Settlement mfHideout)
+        {
+            Clan mfClan = mfHideout.OwnerClan;
+            BeHostileAction.ApplyEncounterHostileAction(PartyBase.MainParty, mfHideout.Party);
             if (mfClan.IsUnderMercenaryService)
             {
                 ChangeRelationAction.ApplyPlayerRelation(mfClan.Leader, -20);
@@ -468,8 +471,8 @@ namespace ImprovedMinorFactions
             {
                 ChangeRelationAction.ApplyPlayerRelation(mfClan.Leader, -10);
             }
-                
-            foreach (Hero notable in settlement.Notables)
+
+            foreach (Hero notable in mfHideout.Notables)
             {
                 ChangeRelationAction.ApplyPlayerRelation(notable, -15);
             }

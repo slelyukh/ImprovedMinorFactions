@@ -8,6 +8,7 @@ using ImprovedMinorFactions.Patches;
 using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
@@ -90,10 +91,23 @@ namespace ImprovedMinorFactions
             }
         }
 
-        public void SwitchActiveHideout(MinorFactionHideout oldHideout)
+        public void ClearHideout(MinorFactionHideout oldHideout)
         {
             if (!TryInitMFHideoutsLists())
                 throw new Exception("can't switch Hideout due to uninitialized Hideout Manager");
+
+            var oldSettlement = oldHideout.Settlement;
+            if (oldSettlement.Parties.Count > 0)
+            {
+                foreach (MobileParty mobileParty in new List<MobileParty>(oldSettlement.Parties))
+                {
+                    LeaveSettlementAction.ApplyForParty(mobileParty);
+                    mobileParty.Ai.SetDoNotAttackMainParty(3);
+                }
+            }
+            oldHideout.IsSpotted = false;
+            oldSettlement.IsVisible = false;
+
             var hideouts = _factionHideouts[oldHideout.OwnerClan];
             int activateIndex = MBRandom.RandomInt(hideouts.Count);
             while (hideouts[activateIndex].Settlement.Equals(oldHideout.Settlement))

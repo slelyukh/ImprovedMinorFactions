@@ -22,8 +22,6 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 {
     public class NearbyMFHideoutIssueBehavior : CampaignBehaviorBase
     {
-
-        // TODO: prevent multiple villages from having same issue??? or don't
         private Settlement FindSuitableHideout(Hero issueOwner)
         {
             Settlement result = null;
@@ -31,7 +29,9 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             foreach (var mfHideout in (from mfh in MFHideoutManager.Current.AllMFHideouts where mfh.IsActive && Helpers.IsRivalMinorFaction(issueOwner.MapFaction, mfh.OwnerClan) select mfh))
             {
                 float distance = mfHideout.Settlement.GatePosition.Distance(issueOwner.GetMapPoint().Position2D);
-                if (distance <= NearbyHideoutMaxDistance && distance < minDistance)
+                if (distance <= NearbyHideoutMaxDistance 
+                    && distance < minDistance 
+                    && mfHideout.Hearth >= MFHideoutModels.MinimumMFHHearthToAffectVillage)
                 {
                     minDistance = distance;
                     result = mfHideout.Settlement;
@@ -71,7 +71,6 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
         private bool ConditionsHold(Hero issueGiver)
         {
-            // TODO: check if there is near enough mf hideout
             return issueGiver.IsNotable && issueGiver.IsHeadman && issueGiver.CurrentSettlement != null && issueGiver.CurrentSettlement.Village.Bound.Town.Security <= 50f;
         }
 
@@ -313,7 +312,6 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, 2);
             }
 
-            // TODO: destroy hideout and apply all consequences such as war declaration
             protected override void AlternativeSolutionEndWithSuccessConsequence()
             {
                 this.RelationshipChangeWithIssueOwner = AltSolRelationRewardOnSuccess;
@@ -324,14 +322,16 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                     new Tuple<TraitObject, int>(DefaultTraits.Honor, 50)
                 });
                 GainRenownAction.Apply(Hero.MainHero, 1f);
+                MFHideoutCampaignBehavior.ApplyHideoutRaidConsequences(_targetHideout);
+                MFHideoutManager.Current.ClearHideout(Helpers.GetSettlementMFHideout(_targetHideout));
             }
 
-            // TODO: apply all same consequences as attacking a hideout and failing
             protected override void AlternativeSolutionEndWithFailureConsequence()
             {
                 this.RelationshipChangeWithIssueOwner = AltSolRelationPenaltyOnFail;
                 base.IssueOwner.AddPower(IssueOwnerPowerPenaltyOnFail);
                 this._issueSettlement.Village.Bound.Town.Prosperity += SettlementProsperityPenaltyOnFail;
+                MFHideoutCampaignBehavior.ApplyHideoutRaidConsequences(_targetHideout);
             }
 
             protected override void OnGameLoad()
@@ -375,7 +375,8 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                     && base.IssueOwner.CurrentSettlement.IsVillage 
                     && !base.IssueOwner.CurrentSettlement.IsRaided 
                     && !base.IssueOwner.CurrentSettlement.IsUnderRaid 
-                    && base.IssueOwner.CurrentSettlement.Village.Bound.Town.Security <= 80f;
+                    && base.IssueOwner.CurrentSettlement.Village.Bound.Town.Security <= 80f
+                    && FactionManager.IsAtWarAgainstFaction(this._targetHideout.OwnerClan.MapFaction, base.IssueOwner.MapFaction);
             }
 
             protected override void CompleteIssueWithTimedOutConsequences()
@@ -509,7 +510,6 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                     .CloseDialog();
             }
 
-            // Token: 0x06005249 RID: 21065 RVA: 0x001758FC File Offset: 0x00173AFC
             private void OnQuestAccepted()
             {
                 base.StartQuest();
@@ -519,12 +519,11 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 base.AddTrackedObject(this._targetHideout);
                 QuestHelper.AddMapArrowFromPointToTarget(new TextObject("Direction to Hideout"), this._questSettlement.Position2D, this._targetHideout.Position2D, 5f, 0.1f);
                 TextObject textObject = new TextObject("{=XGa8MkbJ}{QUEST_GIVER.NAME} has marked the hideout on your map");
-                StringHelpers.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject, textObject);
+                textObject.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
                 MBInformationManager.AddQuickInformation(textObject);
                 base.AddLog(this._onQuestStartedLogText);
             }
 
-            // Token: 0x0600524A RID: 21066 RVA: 0x001759A8 File Offset: 0x00173BA8
             private void OnQuestSucceeded()
             {
                 base.AddLog(this._onQuestSucceededLogText);
@@ -539,21 +538,20 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 this._questSettlement.Village.Bound.Town.Prosperity += TownProsperityBonus;
                 base.CompleteQuestWithSuccess();
             }
-            // Token: 0x0600524A RID: 21066 RVA: 0x001759A8 File Offset: 0x00173BA8
+
             private void OnQuestFailed(bool isTimedOut)
             {
                 base.AddLog(this._onQuestFailedLogText);
-                this.RelationshipChangeWithQuestGiver = QuestGiverRelationPenalty;
-                base.QuestGiver.AddPower(QuestGiverPowerPenalty);
-                this._questSettlement.Village.Bound.Town.Prosperity += TownProsperityPenalty;
-                this._questSettlement.Village.Bound.Town.Security += TownSecurityPenalty;
                 if (!isTimedOut)
                 {
+                    base.QuestGiver.AddPower(QuestGiverPowerPenalty);
+                    this._questSettlement.Village.Bound.Town.Prosperity += TownProsperityPenalty;
+                    this._questSettlement.Village.Bound.Town.Security += TownSecurityPenalty;
+                    this.RelationshipChangeWithQuestGiver = QuestGiverRelationPenalty;
                     base.CompleteQuestWithFail();
                 }
             }
 
-            // TODO: not right
             private void OnQuestCanceled()
             {
                 base.AddLog(this._onQuestCanceledLogText);
@@ -572,9 +570,9 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 CampaignEvents.MapEventStarted.AddNonSerializedListener(this, new Action<MapEvent, PartyBase, PartyBase>(this.OnMapEventStarted));
             }
 
-            // Token: 0x0600524A RID: 21066 RVA: 0x001759A8 File Offset: 0x00173BA8
             private void OnMapEventStarted(MapEvent mapEvent, PartyBase attackerParty, PartyBase defenderParty)
             {
+                // Fails quest if player tries raiding/coercing village
                 if (QuestHelper.CheckMinorMajorCoercion(this, mapEvent, attackerParty))
                 {
                     QuestHelper.ApplyGenericMinorMajorCoercionConsequences(this, mapEvent);
@@ -645,8 +643,8 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
             protected override void DefineClassTypes()
             {
-                base.AddClassDefinition(typeof(NearbyMFHideoutIssue), 1, null);
-                base.AddClassDefinition(typeof(NearbyMFHideoutIssueQuest), 2, null);
+                base.AddClassDefinition(typeof(NearbyMFHideoutIssue), 1);
+                base.AddClassDefinition(typeof(NearbyMFHideoutIssueQuest), 2);
             }
         }
     }

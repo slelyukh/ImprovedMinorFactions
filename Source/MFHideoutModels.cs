@@ -69,6 +69,8 @@ namespace ImprovedMinorFactions
         private static readonly TextObject BaseText = new TextObject("{=militarybase}Base", null);
         private static readonly TextObject RetiredText = new TextObject("{=gHnfFi1s}Retired", null);
         private static readonly TextObject FromHearthsText = new TextObject("{=ecdZglky}From Hearths", null);
+
+        public static float MinimumMFHHearthToAffectVillage = 300f;
     }
 
     // No limit for Minor Faction Hideouts :)

@@ -34,9 +34,6 @@ namespace ImprovedMinorFactions.Patches
             if (____mapEvent == null && ____defenderParty != null &&
                 ____defenderParty.IsSettlement && Helpers.isMFHideout(____defenderParty.Settlement))
             {
-                // TODO make MFHideoutEventComponent
-
-                // set _mapEvent value
                 Helpers.setPrivateField(__instance, "_mapEvent", HideoutEventComponent.CreateHideoutEvent(____attackerParty, ____defenderParty).MapEvent);
                 //____mapEvent = HideoutEventComponent.CreateHideoutEvent(____attackerParty, ____defenderParty).MapEvent;
                 var method = __instance.GetType().GetMethod("CheckNearbyPartiesToJoinPlayerMapEvent", BindingFlags.NonPublic | BindingFlags.Instance);
@@ -96,17 +93,7 @@ namespace ImprovedMinorFactions.Patches
 
             if (battleState == BattleState.AttackerVictory)
             {
-                if (settlement.Parties.Count > 0)
-                {
-                    foreach (MobileParty mobileParty in new List<MobileParty>(settlement.Parties))
-                    {
-                        LeaveSettlementAction.ApplyForParty(mobileParty);
-                        mobileParty.Ai.SetDoNotAttackMainParty(3);
-                    }
-                }
-                mfHideout.IsSpotted = false;
-                settlement.IsVisible = false;
-                MFHideoutManager.Current.SwitchActiveHideout(mfHideout);
+                MFHideoutManager.Current.ClearHideout(mfHideout);
                 return false;
             }
             if (battleState == BattleState.None)
