@@ -1,15 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
+﻿using HarmonyLib;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.CampaignSystem.GameComponents;
-using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions.Patches
 {
@@ -18,7 +12,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(Settlement settlement)
         {
-            var mfHideout = settlement.SettlementComponent as MinorFactionHideout;
+            var mfHideout = Helpers.GetSettlementMFHideout(settlement);
             if (mfHideout == null || !Helpers.IsMFClanInitialized(mfHideout.OwnerClan))
                 return;
 
@@ -90,7 +84,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(int __result, Hero buyerHero, Hero sellerHero, int useValueAsRelation = -101)
         {
-            var mfHideout = sellerHero.CurrentSettlement.SettlementComponent as MinorFactionHideout;
+            var mfHideout = Helpers.GetSettlementMFHideout(sellerHero.CurrentSettlement);
             if (mfHideout == null)
                 return;
             //InformationManager.DisplayMessage(new InformationMessage($"{buyerHero} can recruit max index {__result}"));

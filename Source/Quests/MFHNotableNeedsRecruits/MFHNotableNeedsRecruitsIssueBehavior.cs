@@ -14,6 +14,7 @@ using TaleWorlds.SaveSystem;
 using TaleWorlds.CampaignSystem.Extensions;
 using MathF = TaleWorlds.Library.MathF;
 using TaleWorlds.CampaignSystem.GameMenus;
+using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 {
@@ -94,7 +95,13 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 
             public override TextObject IssueQuestSolutionExplanationByIssueGiver
             {
-                get => new TextObject("Look, I know that warriors like you can sometimes recruit bandits to your party. Some of those men might want to take their chances working for me. More comfortable living here, where there's always drink and women on hand, then roaming endlessly about the countryside, eh? For each one that signs up with me I'll give you a bounty, more if they have some experience.[if:convo_innocent_smile][ib:hip]");
+                get
+                {
+                    if (getIssueClan().IsOutlaw)
+                        return new TextObject("Look, I know that warriors like you can sometimes recruit bandits to your party. Some of those men might want to take their chances working for me. More comfortable living here, where there's always drink and women on hand, then roaming endlessly about the countryside, eh? For each one that signs up with me I'll give you a bounty, more if they have some experience.[if:convo_innocent_smile][ib:hip]");
+                    else
+                        return new TextObject("Look, I know that warriors like you can recruit troops to your party. Some of those men might want to take their chances joining us. More comfortable living here, where there's always drink and women on hand, then roaming endlessly about the countryside, eh? For each one that signs up with me I'll give you a bounty, more if they have some experience.[if:convo_innocent_smile][ib:hip]");
+                }
             }
 
             public override TextObject IssueQuestSolutionAcceptByPlayer
@@ -104,7 +111,13 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 
             public override TextObject IssueAlternativeSolutionExplanationByIssueGiver
             {
-                get => new TextObject("{=bKfaMFVK}You can also send me a recruiter: a trustworthy companion who is good at leading men, and also enough of a rogue to win the trust of other rogues...[if:convo_undecided_open][ib:confident]");
+                get
+                {
+                    if (getIssueClan().IsOutlaw)
+                        return new TextObject("{=bKfaMFVK}You can also send me a recruiter: a trustworthy companion who is good at leading men, and also enough of a rogue to win the trust of other rogues...[if:convo_undecided_open][ib:confident]");
+                    else
+                        return new TextObject("You can also send me a recruiter: a trustworthy companion who is good at leading men, and also enough of a leader to recruit soldiers...[if:convo_undecided_open][ib:confident]");
+                }
             }
 
             public override TextObject IssueAlternativeSolutionAcceptByPlayer
@@ -151,7 +164,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 var questSettlement = base.IssueOwner.CurrentSettlement;
                 if (questSettlement.OwnerClan.IsOutlaw)
-                    t.SetTextVariable("TROOP_TYPE", "looters or bandits");
+                    t.SetTextVariable("TROOP_TYPE", "bandits");
                 else
                     t.SetTextVariable("TROOP_TYPE", "soldiers");
 
@@ -175,7 +188,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\\?} Clan.");
+                    TextObject textObject = new TextObject("A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\\?} Clan");
                     textObject.SetTextVariable("MINOR_FACTION", base.IssueOwner.CurrentSettlement.OwnerClan.Name);
                     textObject.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject, false);
                     return textObject;
@@ -199,7 +212,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 
             public override ValueTuple<SkillObject, int> GetAlternativeSolutionSkill(Hero hero)
             {
-                return new ValueTuple<SkillObject, int>((hero.GetSkillValue(DefaultSkills.Leadership) >= hero.GetSkillValue(DefaultSkills.Roguery)) ? DefaultSkills.Leadership : DefaultSkills.Roguery, CompanionRequiredSkillLevel);
+                if (getIssueClan().IsOutlaw)
+                    return new ValueTuple<SkillObject, int>((hero.GetSkillValue(DefaultSkills.Leadership) >= hero.GetSkillValue(DefaultSkills.Roguery)) ? DefaultSkills.Leadership : DefaultSkills.Roguery, CompanionRequiredSkillLevel);
+                else
+                    return new ValueTuple<SkillObject, int>(DefaultSkills.Leadership, CompanionRequiredSkillLevel);
             }
 
             public override bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, out TextObject explanation)
@@ -276,6 +292,11 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                 this.RelationshipChangeWithIssueOwner = AlternativeSolutionRelationBonus;
             }
 
+            private Clan getIssueClan()
+            {
+                return base.IssueOwner.CurrentSettlement.OwnerClan;
+            }
+
             private const int IssueAndQuestDuration = 30;
 
             private const int AlternativeSolutionTroopTierRequirement = 2;
@@ -311,7 +332,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\\?} Clan.");
+                    TextObject textObject = new TextObject("A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\\?} Clan");
                     textObject.SetTextVariable("MINOR_FACTION", base.QuestGiver.CurrentSettlement.OwnerClan.Name);
                     textObject.SetCharacterProperties("ISSUE_GIVER", base.QuestGiver.CharacterObject, false);
                     return textObject;
@@ -341,7 +362,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{QUEST_GIVER.LINK}, a Notable in {SETTLEMENT}, told you that {?QUEST_GIVER.GENDER}she{?}he{\\?} needs recruits for {?QUEST_GIVER.GENDER}her{?}his{\\?} Clan. " +
+                    TextObject textObject = new TextObject("{QUEST_GIVER.LINK}, a Notable in {SETTLEMENT}, told you that {?QUEST_GIVER.GENDER}she{?}he{\\?} needs recruits for {?QUEST_GIVER.GENDER}her{?}his{\\?} Clan" +
                         "{?QUEST_GIVER.GENDER}She{?}He{\\?} asked you to recruit {NEEDED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} into your party, then transfer them to {?QUEST_GIVER.GENDER}her{?}him{\\?}. You will be paid for the recruits depending on their experience.");
                     setTextTroopDescriptions(textObject);
 
@@ -555,7 +576,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                 {
                     new Tuple<TraitObject, int>(DefaultTraits.Honor, PlayerHonorBonusOnSuccess)
                 });
-                var mfHideout = base.QuestGiver.CurrentSettlement.SettlementComponent as MinorFactionHideout;
+                var mfHideout = Helpers.GetSettlementMFHideout(base.QuestGiver.CurrentSettlement);
                 mfHideout.Hearth += QuestSettlementHearthBonusOnSuccess;
                 mfHideout.Settlement.Militia += QuestSettlementMilitiaBonusOnSuccess;
                 ChangeRelationAction.ApplyPlayerRelation(this.QuestGiver.CurrentSettlement.OwnerClan.Leader, ClanRelationBonusOnSuccess);

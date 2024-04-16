@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem;
@@ -22,14 +18,14 @@ namespace ImprovedMinorFactions.Patches
 
             if (village != null)
                 return true;
-            Settlement currentSettlement = Settlement.CurrentSettlement;
-            MinorFactionHideout? mfHideout = currentSettlement.SettlementComponent as MinorFactionHideout;
+            Settlement curSettlement = Settlement.CurrentSettlement;
+            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(curSettlement);
             if (mfHideout == null)
             {
                 return true;
             }
             __result = CampaignUIHelper.GetSettlementPropertyTooltip(
-                currentSettlement, new TextObject("Militia").ToString(), currentSettlement.Militia, mfHideout.MilitiaChange);
+                curSettlement, new TextObject("Militia").ToString(), curSettlement.Militia, mfHideout.MilitiaChange);
             return false;
         }
     }
@@ -41,12 +37,12 @@ namespace ImprovedMinorFactions.Patches
         {
             if (village != null)
                 return true;
-            Settlement currentSettlement = Settlement.CurrentSettlement;
-            MinorFactionHideout? mfHideout = currentSettlement.SettlementComponent as MinorFactionHideout;
+            Settlement curSettlement = Settlement.CurrentSettlement;
+            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(curSettlement);
             if (mfHideout == null)
                 return true;
             __result = CampaignUIHelper.GetSettlementPropertyTooltip(
-                currentSettlement, new TextObject("Hearth").ToString(), mfHideout.Hearth, mfHideout.HearthChange);
+                curSettlement, new TextObject("Hearth").ToString(), mfHideout.Hearth, mfHideout.HearthChange);
 
             return false;
         }
@@ -58,20 +54,18 @@ namespace ImprovedMinorFactions.Patches
         static bool Prefix(SettlementMenuOverlayVM __instance)
         {
             MobileParty mainParty = MobileParty.MainParty;
-            Settlement currentSettlement = mainParty.CurrentSettlement ?? mainParty.LastVisitedSettlement;
-            MinorFactionHideout? mfHideout = currentSettlement.SettlementComponent as MinorFactionHideout;
+            Settlement curSettlement = mainParty.CurrentSettlement ?? mainParty.LastVisitedSettlement;
+            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(curSettlement);
             if (mfHideout == null)
-            {
                 return true;
-            }
 
-            IFaction mapFaction = currentSettlement.MapFaction;
+            IFaction mapFaction = curSettlement.MapFaction;
             __instance.IsCrimeEnabled = mapFaction != null && mapFaction.MainHeroCrimeRating > 0f;
-            __instance.CrimeLbl = ((int)(currentSettlement.MapFaction?.MainHeroCrimeRating).Value).ToString();
-            __instance.CrimeChangeAmount = (int)(currentSettlement.MapFaction?.DailyCrimeRatingChange).Value;
+            __instance.CrimeLbl = ((int)(curSettlement.MapFaction?.MainHeroCrimeRating).Value).ToString();
+            __instance.CrimeChangeAmount = (int)(curSettlement.MapFaction?.DailyCrimeRatingChange).Value;
             __instance.RemainingFoodText = "-";
             __instance.FoodChangeAmount = 0;
-            __instance.MilitasLbl = ((int)currentSettlement.Militia).ToString();
+            __instance.MilitasLbl = ((int)curSettlement.Militia).ToString();
             __instance.MilitiaChangeAmount = (int)mfHideout.MilitiaChange.ResultNumber;
             __instance.IsLoyaltyRebellionWarning = false;
             __instance.GarrisonChangeAmount = 0;
@@ -80,7 +74,7 @@ namespace ImprovedMinorFactions.Patches
             __instance.WallsLevel = 1;
             __instance.ProsperityLbl = ((int)mfHideout.Hearth).ToString();
             __instance.ProsperityChangeAmount = (int)mfHideout.HearthChange.ResultNumber;
-            __instance.SettlementNameLbl = currentSettlement.Name.ToString();
+            __instance.SettlementNameLbl = curSettlement.Name.ToString();
             __instance.LoyaltyChangeAmount = 0;
             __instance.LoyaltyLbl = "-";
             __instance.SecurityChangeAmount = 0;

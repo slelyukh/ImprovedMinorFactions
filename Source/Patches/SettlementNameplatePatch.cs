@@ -38,7 +38,7 @@ namespace ImprovedMinorFactions.Patches
 
             foreach (var nameplate in mfhNameplates)
             {
-                if (!(nameplate.Settlement.SettlementComponent as MinorFactionHideout).IsSpotted)
+                if (!Helpers.GetSettlementMFHideout(nameplate.Settlement).IsSpotted)
                 {
                     var removed = __instance.Nameplates.Remove(nameplate);
                 }

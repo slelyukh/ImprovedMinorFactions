@@ -1,12 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
-using SandBox.CampaignBehaviors;
+﻿using HarmonyLib;
 using TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors;
-using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -20,7 +13,7 @@ namespace ImprovedMinorFactions.Patches
         {
             if (__result == true || !Helpers.isMFHideout(settlement))
                 return;
-            var mfHideout = settlement.SettlementComponent as MinorFactionHideout;
+            var mfHideout = Helpers.GetSettlementMFHideout(settlement);
             bool hideoutIsMercenaryOfParty = settlement.OwnerClan.IsUnderMercenaryService && settlement.OwnerClan.Kingdom == mobileParty.ActualClan.Kingdom;
             __result = settlement.Party.MapEvent == null && mfHideout.IsActive && (mobileParty.Party.Owner.MapFaction == settlement.MapFaction || hideoutIsMercenaryOfParty);
         }

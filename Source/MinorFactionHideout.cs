@@ -156,6 +156,8 @@ namespace ImprovedMinorFactions
 
         internal void DeactivateHideout()
         {
+            // TODO: might not need this
+            CampaignEventDispatcher.Instance.OnHideoutDeactivated(this.Settlement);
             this._isActive = false;
             this._isSpotted = false;
             this.Settlement.IsVisible = false;

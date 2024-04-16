@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
+﻿using HarmonyLib;
 using System.Xml;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem;
@@ -11,10 +6,6 @@ using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
 using TaleWorlds.CampaignSystem.Party;
 using System.Reflection;
-using TaleWorlds.Library;
-using SandBox.ViewModelCollection.Nameplate;
-using TaleWorlds.Engine;
-using TaleWorlds.CampaignSystem.Extensions;
 
 namespace ImprovedMinorFactions.Patches
 {
@@ -26,7 +17,7 @@ namespace ImprovedMinorFactions.Patches
         {
             if (__result == null)
             {
-                MinorFactionHideout? mfHideout = __instance.SettlementComponent as MinorFactionHideout;
+                MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(__instance);
                 if (mfHideout != null)
                 {
                     __result = mfHideout.MapFaction;
@@ -43,7 +34,7 @@ namespace ImprovedMinorFactions.Patches
         {
             if (__result == null)
             {
-                MinorFactionHideout? mfHideout = __instance.SettlementComponent as MinorFactionHideout;
+                MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(__instance);
                 if (mfHideout != null)
                 {
                     __result = mfHideout.OwnerClan;
@@ -57,7 +48,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static bool Prefix(Settlement __instance, MobileParty militaParty, int militiaToAdd)
         {
-            MinorFactionHideout? mfHideout = __instance.SettlementComponent as MinorFactionHideout;
+            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(__instance);
             if (mfHideout == null)
                 return true;
 
@@ -81,7 +72,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(Campaign __instance, Settlement settlement)
         {
-            MinorFactionHideout? mfHideout = settlement.SettlementComponent as MinorFactionHideout;
+            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(settlement);
             if (mfHideout == null)
                 return;
             mfHideout.DailyTick();
@@ -99,7 +90,7 @@ namespace ImprovedMinorFactions.Patches
                 // bla
             }
             // SettlementComponent assumed to be initialized at this point
-            MinorFactionHideout? mfHideout = __instance.SettlementComponent as MinorFactionHideout;
+            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(__instance);
             if (mfHideout == null)
                 return;
 
@@ -138,9 +129,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(Settlement __instance, ref TextObject ____name)
         {
-            // SettlementComponent assumed to be initialized at this point
-            MinorFactionHideout? mfHideout = __instance.SettlementComponent as MinorFactionHideout;
-            if (mfHideout == null)
+            if (!Helpers.isMFHideout(__instance))
                 return;
             ____name.SetTextVariable("IS_MINORFACTIONHIDEOUT", 1);
         }

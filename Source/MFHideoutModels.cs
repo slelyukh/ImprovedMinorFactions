@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using HarmonyLib;
-using Newtonsoft.Json.Linq;
+﻿using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
-using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
-using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions
@@ -33,7 +25,7 @@ namespace ImprovedMinorFactions
         // TODO: maybe increase hearths upon certain actions such as attacking a party for bandits, etc
         public static ExplainedNumber GetHearthChange(Settlement settlement, bool includeDescriptions = false)
         {
-            var mfHideout = settlement.SettlementComponent as MinorFactionHideout;
+            var mfHideout = Helpers.GetSettlementMFHideout(settlement);
             var eNum = new ExplainedNumber(0f, includeDescriptions, null);
             eNum.Add((mfHideout.Hearth < 300f) ? 0.6f : ((mfHideout.Hearth < 600f) ? 0.4f : 0.2f), BaseText);
             return eNum;
@@ -44,7 +36,7 @@ namespace ImprovedMinorFactions
         {
             var eNum = new ExplainedNumber(0f, includeDescriptions);
             eNum.Add(0.2f, BaseText);
-            eNum.Add((settlement.SettlementComponent as MinorFactionHideout).Hearth * 0.0005f, FromHearthsText);
+            eNum.Add((Helpers.GetSettlementMFHideout(settlement)).Hearth * 0.0005f, FromHearthsText);
             return eNum;
         }
 

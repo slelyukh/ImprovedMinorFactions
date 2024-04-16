@@ -68,10 +68,14 @@ namespace ImprovedMinorFactions
                     List<MinorFactionHideout> list = null;
                     if (!_factionHideouts.ContainsKey(key))
                         _factionHideouts[key] = new List<MinorFactionHideout>();
-                    _factionHideouts[key].Add(settlement.SettlementComponent as MinorFactionHideout);
+                    _factionHideouts[key].Add(Helpers.GetSettlementMFHideout(settlement));
                 }
             }
             _factionHideoutsInitialized = true;
+            this._hideouts =
+                (from x in Campaign.Current.Settlements
+                where Helpers.isMFHideout(x)
+                select Helpers.GetSettlementMFHideout(x)).ToMBList();
             return true;
         }
 
@@ -156,6 +160,11 @@ namespace ImprovedMinorFactions
             }
         }
 
+        internal MBReadOnlyList<MinorFactionHideout> AllMFHideouts
+        {
+            get => this._hideouts;
+        }
+
         public static MFHideoutManager Current { get; private set; }
 
         private Dictionary<string, MinorFactionHideout> _LoadedMFHideouts;
@@ -165,6 +174,8 @@ namespace ImprovedMinorFactions
         private HashSet<Clan> _factionsWaitingForWar;
 
         private bool _factionHideoutsInitialized;
+
+        private MBList<MinorFactionHideout> _hideouts;
 
         // TODO: make private
         public IEnumerable<Tuple<Settlement, GameEntity>> _allMFHideouts;

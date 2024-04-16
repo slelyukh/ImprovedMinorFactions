@@ -1,18 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.Encounters;
-using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.ViewModelCollection;
 using TaleWorlds.Core.ViewModelCollection.Information;
-using TaleWorlds.Library.CodeGeneration;
-using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions
 {
@@ -20,7 +13,7 @@ namespace ImprovedMinorFactions
     {
         internal static bool isMFHideout(Settlement s)
         {
-            return s != null && s.SettlementComponent as MinorFactionHideout != null;
+            return s != null && GetSettlementMFHideout(s) != null;
         }
 
         internal static List<TooltipProperty> GetVillageOrMFHideoutMilitiaTooltip(Settlement s)
@@ -28,7 +21,7 @@ namespace ImprovedMinorFactions
             if (s.IsVillage) {
                 return CampaignUIHelper.GetVillageMilitiaTooltip(s.Village);
             } else {
-                MinorFactionHideout? mfHideout = s.SettlementComponent as MinorFactionHideout;
+                MinorFactionHideout? mfHideout = GetSettlementMFHideout(s);
                 if (mfHideout == null)
                     throw new Exception("There should not be a non Minor Faction Hideout here. (getMilitiaTooltip)");
                 return CampaignUIHelper.GetSettlementPropertyTooltip(
@@ -41,7 +34,7 @@ namespace ImprovedMinorFactions
             if (s.IsVillage) {
                 return CampaignUIHelper.GetVillageMilitiaTooltip(s.Village);
             } else {
-                MinorFactionHideout? mfHideout = s.SettlementComponent as MinorFactionHideout;
+                MinorFactionHideout? mfHideout = GetSettlementMFHideout(s);
                 if (mfHideout == null)
                     throw new Exception("There should not be a non Minor Faction Hideout here. (getprosperityTooltip)");
                 return CampaignUIHelper.GetSettlementPropertyTooltip(
@@ -49,6 +42,15 @@ namespace ImprovedMinorFactions
             }
         }
 
+        internal static bool IsRivalMinorFaction(IFaction kingdom, Clan minorFaction)
+        {
+            return minorFaction.IsOutlaw && kingdom.IsAtWarWith(minorFaction);
+        }
+
+        internal static MinorFactionHideout GetSettlementMFHideout(Settlement s)
+        {
+            return s.SettlementComponent as MinorFactionHideout;
+        }
         internal static bool IsMFClanInitialized(Clan c)
         {
             return c.Culture != null && c.BasicTroop != c.Culture.BasicTroop;

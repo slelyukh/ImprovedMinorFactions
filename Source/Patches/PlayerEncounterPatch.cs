@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using HarmonyLib;
-using SandBox.ViewModelCollection.Nameplate;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.GameMenus;
@@ -17,9 +10,6 @@ using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
-using TaleWorlds.Engine;
-using TaleWorlds.Library;
-using TaleWorlds.CampaignSystem.Siege;
 using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions.Patches
@@ -65,7 +55,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(ref IEnumerable<PartyBase> __result, Settlement settlement, MapEvent.BattleTypes mapEventType)
         {
-            var mfHideout = settlement.SettlementComponent as MinorFactionHideout;
+            var mfHideout = Helpers.GetSettlementMFHideout(settlement);
             if (__result == null || mfHideout != null)
             {
                 __result = mfHideout.GetDefenderParties(mapEventType);
@@ -84,7 +74,7 @@ namespace ImprovedMinorFactions.Patches
             if (mapEvent == null || mapEvent.MapEventSettlement == null)
                 return true;
             Settlement settlement = mapEvent.MapEventSettlement;
-            var mfHideout = settlement.SettlementComponent as MinorFactionHideout;
+            var mfHideout = Helpers.GetSettlementMFHideout(settlement);
             if (mfHideout == null || !mapEvent.IsHideoutBattle)
                 return true;
 
@@ -145,7 +135,7 @@ namespace ImprovedMinorFactions.Patches
             var settlement = mapEvent?.MapEventSettlement;
             if (mapEvent == null || settlement == null || !Helpers.isMFHideout(settlement) || !mapEvent.IsHideoutBattle)
                 return true;
-            var mfHideout = settlement.SettlementComponent as MinorFactionHideout;
+            var mfHideout = Helpers.GetSettlementMFHideout(settlement);
             
             MBTextManager.SetTextVariable("PARTY", MapEvent.PlayerMapEvent.GetLeaderParty(PartyBase.MainParty.OpponentSide).Name);
             if (!PlayerEncounter.EncounteredPartySurrendered)

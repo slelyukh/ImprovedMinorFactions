@@ -3,6 +3,7 @@ using HarmonyLib;
 using ImprovedMinorFactions.Source;
 using ImprovedMinorFactions.Source.Patches;
 using ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits;
+using ImprovedMinorFactions.Source.Quests.NearbyHideout;
 using StoryMode;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -43,6 +44,7 @@ namespace ImprovedMinorFactions
             starter.AddBehavior(new MFHNotablesCampaignBehavior());
             starter.AddBehavior(new DebugCampaignBehavior());
             starter.AddBehavior(new MFHNotableNeedsRecruitsIssueBehavior());
+            starter.AddBehavior(new NearbyMFHideoutIssueBehavior());
         }
 
         public override void OnGameEnd(Game game)

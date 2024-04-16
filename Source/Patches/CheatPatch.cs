@@ -1,13 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.CampaignSystem.GameComponents;
-using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Patches
@@ -30,7 +23,7 @@ namespace ImprovedMinorFactions.Patches
 
             foreach (Settlement settlement in Settlement.All)
             {
-                var mfHideout = settlement.SettlementComponent as MinorFactionHideout; 
+                var mfHideout = Helpers.GetSettlementMFHideout(settlement); 
                 if (mfHideout != null && (num != 1 || mfHideout.IsActive)) {
                     mfHideout.IsSpotted = true;
                     mfHideout.Owner.Settlement.IsVisible = true;
