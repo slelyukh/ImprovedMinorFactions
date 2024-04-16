@@ -1,7 +1,7 @@
 ﻿
 using HarmonyLib;
 using ImprovedMinorFactions.Source;
-using ImprovedMinorFactions.Source.Patches;
+using ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits;
 using ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits;
 using ImprovedMinorFactions.Source.Quests.NearbyHideout;
 using StoryMode;
@@ -44,6 +44,7 @@ namespace ImprovedMinorFactions
             starter.AddBehavior(new MFHNotablesCampaignBehavior());
             starter.AddBehavior(new DebugCampaignBehavior());
             starter.AddBehavior(new MFHNotableNeedsRecruitsIssueBehavior());
+            starter.AddBehavior(new MFHLordNeedsRecruitsIssueBehavior());
             starter.AddBehavior(new NearbyMFHideoutIssueBehavior());
         }
 

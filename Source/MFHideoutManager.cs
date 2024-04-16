@@ -1,20 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ImprovedMinorFactions.Patches;
-using Newtonsoft.Json.Linq;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
-using TaleWorlds.InputSystem;
 using TaleWorlds.Library;
-using TaleWorlds.MountAndBlade.Network.Gameplay.Perks.Effects;
 
 namespace ImprovedMinorFactions
 {

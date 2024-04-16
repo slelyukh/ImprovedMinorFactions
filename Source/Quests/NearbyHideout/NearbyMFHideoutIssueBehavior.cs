@@ -157,7 +157,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             public override TextObject IssueAlternativeSolutionAcceptByPlayer
             {
                 get => new TextObject("{=IFasMslv}I will assign a companion with {TROOP_COUNT} good men for {RETURN_DAYS} days.")
-                        .SetTextVariable("TROOP_COUNT", base.GetTotalAlternativeSolutionNeededMenCount())
+                        .SetTextVariable("TROOP_COUNT", (int)(base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f))
                         .SetTextVariable("RETURN_DAYS", base.GetTotalAlternativeSolutionDurationInDays());
             }
 
@@ -179,7 +179,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             public override TextObject IssueAlternativeSolutionExplanationByIssueGiver
             {
                 get => new TextObject("{=VNXgZ8mt}Alternatively, if you can assign a companion with {TROOP_COUNT} or so men to this task, they can do the job.[ib:closed][if:convo_undecided_open]")
-                        .SetTextVariable("TROOP_COUNT", base.GetTotalAlternativeSolutionNeededMenCount());
+                        .SetTextVariable("TROOP_COUNT", (int)(base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f));
             }
 
             public override TextObject IssueAsRumorInSettlement
@@ -271,9 +271,9 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             protected override float GetIssueEffectAmountInternal(IssueEffect issueEffect)
             {
                 if (issueEffect == DefaultIssueEffects.SettlementProsperity)
-                    return -0.5f;
+                    return -0.3f * (Helpers.GetSettlementMFHideout(_targetHideout).Hearth / 300);
                 if (issueEffect == DefaultIssueEffects.SettlementSecurity)
-                    return -1f;
+                    return -0.6f * (Helpers.GetSettlementMFHideout(_targetHideout).Hearth / 300);
                 return 0f;
             }
 
@@ -298,7 +298,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             public override bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, out TextObject explanation)
             {
                 explanation = TextObject.Empty;
-                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, 2, false);
+                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, (int) (base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f), ref explanation, 2, false);
             }
 
             public override bool IsTroopTypeNeededByAlternativeSolution(CharacterObject character)
@@ -309,7 +309,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             public override bool AlternativeSolutionCondition(out TextObject explanation)
             {
                 explanation = TextObject.Empty;
-                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, 2);
+                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, (int)(base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f), ref explanation, 2);
             }
 
             protected override void AlternativeSolutionEndWithSuccessConsequence()
@@ -568,6 +568,8 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 CampaignEvents.MapEventEnded.AddNonSerializedListener(this, new Action<MapEvent>(this.OnMapEventEnded));
                 CampaignEvents.OnHideoutDeactivatedEvent.AddNonSerializedListener(this, new Action<Settlement>(this.OnHideoutCleared));
                 CampaignEvents.MapEventStarted.AddNonSerializedListener(this, new Action<MapEvent, PartyBase, PartyBase>(this.OnMapEventStarted));
+                CampaignEvents.WarDeclared.AddNonSerializedListener(this, new Action<IFaction, IFaction, DeclareWarAction.DeclareWarDetail>(this.OnWarDeclared));
+                CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, new Action<Clan, Kingdom, Kingdom, ChangeKingdomAction.ChangeKingdomActionDetail, bool>(this.OnClanChangedKingdom));
             }
 
             private void OnMapEventStarted(MapEvent mapEvent, PartyBase attackerParty, PartyBase defenderParty)
@@ -609,6 +611,18 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                         this.OnQuestCanceled();
                     }
                 }
+            }
+
+            private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification = true)
+            {
+                if (!FactionManager.IsAtWarAgainstFaction(QuestGiver.MapFaction, _targetHideout.OwnerClan))
+                    this.OnQuestCanceled();
+            }
+
+            private void OnWarDeclared(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail)
+            {
+                if (!FactionManager.IsAtWarAgainstFaction(QuestGiver.MapFaction, _targetHideout.OwnerClan))
+                    this.OnQuestCanceled();
             }
 
             private const int QuestGiverRelationBonus = 5;
