@@ -14,7 +14,7 @@ namespace ImprovedMinorFactions.Source.Patches
 {
     // Assumes 1 active hideout per Minor Faction
     [HarmonyPatch(typeof(DefaultClanFinanceModel), "AddSettlementIncome")]
-    public class CalculatePatrollingScoreForSettlementPatch
+    public class AddSettlementIncomePatch
     {
         static void Postfix(Clan clan, ref ExplainedNumber goldChange, bool applyWithdrawals, bool includeDetails)
         {

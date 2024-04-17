@@ -62,14 +62,14 @@ namespace ImprovedMinorFactions
                     List<MinorFactionHideout> list = null;
                     if (!_factionHideouts.ContainsKey(key))
                         _factionHideouts[key] = new List<MinorFactionHideout>();
-                    _factionHideouts[key].Add(Helpers.GetSettlementMFHideout(settlement));
+                    _factionHideouts[key].Add(Helpers.GetMFHideout(settlement));
                 }
             }
             _factionHideoutsInitialized = true;
             this._hideouts =
                 (from x in Campaign.Current.Settlements
                 where Helpers.isMFHideout(x)
-                select Helpers.GetSettlementMFHideout(x)).ToMBList();
+                select Helpers.GetMFHideout(x)).ToMBList();
             return true;
         }
 
@@ -184,7 +184,6 @@ namespace ImprovedMinorFactions
 
         private MBList<MinorFactionHideout> _hideouts;
 
-        // TODO: make private
         public IEnumerable<Tuple<Settlement, GameEntity>> _allMFHideouts;
     }
 }

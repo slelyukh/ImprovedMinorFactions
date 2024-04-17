@@ -69,7 +69,7 @@ namespace ImprovedMinorFactions
 
         private void OnMFHideoutSpotted(PartyBase party, PartyBase mfHideoutParty)
         {
-            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(mfHideoutParty.Settlement);
+            MinorFactionHideout? mfHideout = Helpers.GetMFHideout(mfHideoutParty.Settlement);
             if (mfHideout != null)
             {
                 mfHideout.IsSpotted = true;
@@ -79,7 +79,7 @@ namespace ImprovedMinorFactions
 
         public void HourlyTickSettlement(Settlement settlement)
         {
-            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(settlement);
+            MinorFactionHideout? mfHideout = Helpers.GetMFHideout(settlement);
             if (mfHideout == null || !mfHideout.IsActive)
                 return;
             
@@ -339,7 +339,7 @@ namespace ImprovedMinorFactions
         private void game_menu_hideout_place_on_init(MenuCallbackArgs args)
         {
             Settlement curSettlement = Settlement.CurrentSettlement;
-            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(curSettlement);
+            MinorFactionHideout? mfHideout = Helpers.GetMFHideout(curSettlement);
             if (mfHideout == null)
                 return;
 
@@ -484,7 +484,7 @@ namespace ImprovedMinorFactions
 
             this.ArrangeHideoutTroopCountsForMission();
             GameMenu.SwitchToMenu("mf_hideout_place");
-            var mfHideout = Helpers.GetSettlementMFHideout(Settlement.CurrentSettlement); 
+            var mfHideout = Helpers.GetMFHideout(Settlement.CurrentSettlement); 
             if (!Helpers.isMFHideout(Settlement.CurrentSettlement))
                 return;
             mfHideout.UpdateNextPossibleAttackTime();

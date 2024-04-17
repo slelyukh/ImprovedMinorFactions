@@ -12,7 +12,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(Settlement settlement)
         {
-            var mfHideout = Helpers.GetSettlementMFHideout(settlement);
+            var mfHideout = Helpers.GetMFHideout(settlement);
             if (mfHideout == null || !Helpers.IsMFClanInitialized(mfHideout.OwnerClan))
                 return;
 
@@ -84,7 +84,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(int __result, Hero buyerHero, Hero sellerHero, int useValueAsRelation = -101)
         {
-            var mfHideout = Helpers.GetSettlementMFHideout(sellerHero.CurrentSettlement);
+            var mfHideout = Helpers.GetMFHideout(sellerHero.CurrentSettlement);
             if (mfHideout == null)
                 return;
             //InformationManager.DisplayMessage(new InformationMessage($"{buyerHero} can recruit max index {__result}"));

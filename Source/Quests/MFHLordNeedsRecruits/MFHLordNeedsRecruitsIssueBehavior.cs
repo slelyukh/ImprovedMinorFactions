@@ -91,8 +91,13 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             public override TextObject IssueBriefByIssueGiver
             {
-                get => new TextObject("Yes... As you no doubt know, this is rough work, and I've lost a lot of good lads recently. I haven't had much luck replacing them. " +
-                    "I need men who understand how things work in our business, and that's not always easy to find. I need capable volunteers...[ib:hip][if:convo_undecided_closed]");
+                get 
+                {
+                    var text = new TextObject("Yes... As you no doubt know, this is rough work, and I've lost a lot of good lads recently. I haven't had much luck replacing them. " +
+                    "I need men who understand how things work in our business, and that's not always easy to find. I need capable {MOUNTED}{TROOP_TYPE}...[ib:hip][if:convo_undecided_closed]");
+                    setTextTroopDescriptions(text);
+                    return text;
+                }
             }
 
             public override TextObject IssueAcceptByPlayer
@@ -104,14 +109,12 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
             {
                 get
                 {
-                    if (getIssueClan().IsOutlaw)
-                        return new TextObject("Look, I know that warriors like you can sometimes recruit bandits to your party. Some of those men might want to take their chances working " +
-                            "for me. More comfortable with us, where there's always drink and women on hand, then roaming endlessly about the countryside, eh?" +
-                            " For each one that signs up with me I'll give you a bounty, more if they have some experience.[if:convo_innocent_smile][ib:hip]");
-                    else
-                        return new TextObject("Look, I know that warriors like you can recruit troops to your party. Some of those men might want to take their chances joining us. " +
-                            "More comfortable working as a mercenary, where the pay is high and women are always on hand, than working for a lord eh? For each one that signs up with me " +
-                            "I'll give you a bounty, more if they have some experience.[if:convo_innocent_smile][ib:hip]");
+                    var text = new TextObject("Look, I know that warriors like you can sometimes recruit {MOUNTED}{TROOP_TYPE} to your party. Some of those men might want to take their chances working " +
+                            "for me. More comfortable with us, where there's always drink and women on hand, than {ACTION}, eh?" +
+                            " For each one that signs up with me I'll give you a bounty, more if they have some experience.[if:convo_innocent_smile][ib:hip]")
+                        .SetTextVariable("ACTION", IssueClan().IsOutlaw ? "roaming endlessly about the countryside" : "working for a lord");
+                    setTextTroopDescriptions(text);
+                    return text;
                 }
             }
 
@@ -124,12 +127,12 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
             {
                 get
                 {
-                    if (getIssueClan().IsOutlaw)
+                    if (IssueClan().IsOutlaw)
                         return new TextObject("{=bKfaMFVK}You can also send me a recruiter: a trustworthy companion who is good at leading men, " +
                             "and also enough of a rogue to win the trust of other rogues...[if:convo_undecided_open][ib:confident]");
                     else
-                        return new TextObject("You can also send me a recruiter: a trustworthy companion who is good at leading men, " +
-                            "and also enough of a leader to recruit soldiers...[if:convo_undecided_open][ib:confident]");
+                        return new TextObject("You can also send me a recruiter: a trustworthy companion who is good at leading men... " +
+                            "[if:convo_undecided_open][ib:confident]");
                 }
             }
 
@@ -145,7 +148,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             public override TextObject IssueDiscussAlternativeSolution
             {
-                get => new TextObject("{=TkvsBd4H}Your companion seems to have a knack with the local never-do-wells. I hear a lot of fine lads have already signed up." +
+                get => new TextObject("Your companion seems to have a knack with the local youth. I hear a lot of fine lads have already signed up." +
                     "[if:convo_relaxed_happy][ib:hip2]");
             }
 
@@ -176,12 +179,12 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             private void setTextTroopDescriptions(TextObject t)
             {
-                if (getIssueClan().IsOutlaw)
+                if (IssueClan().IsOutlaw)
                     t.SetTextVariable("TROOP_TYPE", "bandits");
                 else
                     t.SetTextVariable("TROOP_TYPE", "soldiers");
 
-                if (Helpers.mfIsMounted(getIssueClan()))
+                if (Helpers.mfIsMounted(IssueClan()))
                     t.SetTextVariable("MOUNTED", "mounted ");
                 else
                     t.SetTextVariable("MOUNTED", "");
@@ -212,7 +215,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             public override ValueTuple<SkillObject, int> GetAlternativeSolutionSkill(Hero hero)
             {
-                if (getIssueClan().IsOutlaw)
+                if (IssueClan().IsOutlaw)
                     return new ValueTuple<SkillObject, int>((hero.GetSkillValue(DefaultSkills.Leadership) >= hero.GetSkillValue(DefaultSkills.Roguery)) ? DefaultSkills.Leadership : DefaultSkills.Roguery, CompanionRequiredSkillLevel);
                 else
                     return new ValueTuple<SkillObject, int>(DefaultSkills.Leadership, CompanionRequiredSkillLevel);
@@ -221,14 +224,14 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
             public override bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, out TextObject explanation)
             {
                 explanation = TextObject.Empty;
-                bool mountedRequired = Helpers.mfIsMounted(getIssueClan());
+                bool mountedRequired = Helpers.mfIsMounted(IssueClan());
                 return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             public override bool AlternativeSolutionCondition(out TextObject explanation)
             {
                 explanation = TextObject.Empty;
-                bool mountedRequired = Helpers.mfIsMounted(getIssueClan());
+                bool mountedRequired = Helpers.mfIsMounted(IssueClan());
                 return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
@@ -265,7 +268,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
                 }
-                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction))
+                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction)
+                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction as Kingdom, issueGiver.Clan))
                 {
                     flag |= PreconditionFlags.AtWar;
                 }
@@ -300,7 +304,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             }
 
-            private Clan getIssueClan()
+            private Clan IssueClan()
             {
                 return base.IssueOwner.Clan;
             }
@@ -323,6 +327,22 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
             protected override void RegisterEvents()
             {
                 CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, new Action<Hero, Hero, KillCharacterAction.KillCharacterActionDetail, bool>(this.OnHeroKilled));
+                CampaignEvents.WarDeclared.AddNonSerializedListener(this, new Action<IFaction, IFaction, DeclareWarAction.DeclareWarDetail>(this.OnWarDeclared));
+                CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, new Action<Clan, Kingdom, Kingdom, ChangeKingdomAction.ChangeKingdomActionDetail, bool>(this.OnClanChangedKingdom));
+            }
+
+            private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification = true)
+            {
+                if (FactionManager.IsAtWarAgainstFaction(QuestGiver.MapFaction, Hero.MainHero.MapFaction))
+                    base.CompleteQuestWithCancel();
+            }
+
+            private void OnWarDeclared(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail)
+            {
+                if (FactionManager.IsAtWarAgainstFaction(QuestGiver.MapFaction, Hero.MainHero.MapFaction))
+                    if (detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility && !QuestGiver.Clan.IsUnderMercenaryService)
+                        CompleteQuestWithFail();
+                base.CompleteQuestWithCancel();
             }
 
             private void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
@@ -333,7 +353,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                 }
             }
 
-            private Clan getQuestClan()
+            private Clan QuestClan()
             {
                 return base.QuestGiver.Clan;
             }
@@ -351,12 +371,12 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             private void setTextTroopDescriptions(TextObject t)
             {
-                if (getQuestClan().IsOutlaw)
+                if (QuestClan().IsOutlaw)
                     t.SetTextVariable("TROOP_TYPE", "bandits");
                 else
                     t.SetTextVariable("TROOP_TYPE", "soldiers");
 
-                if (Helpers.mfIsMounted(getQuestClan()))
+                if (Helpers.mfIsMounted(QuestClan()))
                     t.SetTextVariable("MOUNTED", "mounted ");
                 else
                     t.SetTextVariable("MOUNTED", "");
@@ -554,13 +574,13 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             private bool IsTroopUsable(CharacterObject character)
             {
-                return (character.Occupation == Occupation.Bandit) == getQuestClan().IsOutlaw
-                    && (!Helpers.mfIsMounted(getQuestClan()) || character.IsMounted);
+                return (character.Occupation == Occupation.Bandit) == QuestClan().IsOutlaw
+                    && (!Helpers.mfIsMounted(QuestClan()) || character.IsMounted);
             }
 
             private bool IsTroopTransferable(CharacterObject character, PartyScreenLogic.TroopType troopType, PartyScreenLogic.PartyRosterSide side, PartyBase leftOwnerParty)
             {
-                bool questGiverIsOutlaw = getQuestClan().IsOutlaw;
+                bool questGiverIsOutlaw = QuestClan().IsOutlaw;
                 return this._requestedRecruitCount - this._deliveredRecruitCount >= 0
                     && (side == PartyScreenLogic.PartyRosterSide.Left
                         || (MobileParty.MainParty.MemberRoster.Contains(character) && IsTroopUsable(character)));

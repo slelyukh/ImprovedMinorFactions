@@ -17,7 +17,7 @@ namespace ImprovedMinorFactions.Patches
         {
             if (__result == null)
             {
-                MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(__instance);
+                MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
                 if (mfHideout != null)
                 {
                     __result = mfHideout.MapFaction;
@@ -34,7 +34,7 @@ namespace ImprovedMinorFactions.Patches
         {
             if (__result == null)
             {
-                MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(__instance);
+                MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
                 if (mfHideout != null)
                 {
                     __result = mfHideout.OwnerClan;
@@ -48,7 +48,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static bool Prefix(Settlement __instance, MobileParty militaParty, int militiaToAdd)
         {
-            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(__instance);
+            MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
             if (mfHideout == null)
                 return true;
 
@@ -59,7 +59,7 @@ namespace ImprovedMinorFactions.Patches
             // Reflection to call private method
             var methodInfo = __instance.GetType().GetMethod("AddTroopToMilitiaParty", BindingFlags.NonPublic | BindingFlags.Instance);
             methodInfo.Invoke(__instance, new object[] { militaParty, mfHideout.OwnerClan.BasicTroop, mfHideout.OwnerClan.BasicTroop, 1f, militiaToAdd });
-            Helpers.removeImposters(__instance);
+            Helpers.removeMilitiaImposters(__instance);
 
             return false;
         }
@@ -72,7 +72,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(Campaign __instance, Settlement settlement)
         {
-            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(settlement);
+            MinorFactionHideout? mfHideout = Helpers.GetMFHideout(settlement);
             if (mfHideout == null)
                 return;
             mfHideout.DailyTick();
@@ -90,7 +90,7 @@ namespace ImprovedMinorFactions.Patches
                 // bla
             }
             // SettlementComponent assumed to be initialized at this point
-            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(__instance);
+            MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
             if (mfHideout == null)
                 return;
 

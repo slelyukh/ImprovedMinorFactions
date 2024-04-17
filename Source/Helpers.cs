@@ -13,7 +13,7 @@ namespace ImprovedMinorFactions
     {
         internal static bool isMFHideout(Settlement s)
         {
-            return s != null && GetSettlementMFHideout(s) != null;
+            return s != null && GetMFHideout(s) != null;
         }
 
         internal static List<TooltipProperty> GetVillageOrMFHideoutMilitiaTooltip(Settlement s)
@@ -21,7 +21,7 @@ namespace ImprovedMinorFactions
             if (s.IsVillage) {
                 return CampaignUIHelper.GetVillageMilitiaTooltip(s.Village);
             } else {
-                MinorFactionHideout? mfHideout = GetSettlementMFHideout(s);
+                MinorFactionHideout? mfHideout = GetMFHideout(s);
                 if (mfHideout == null)
                     throw new Exception("There should not be a non Minor Faction Hideout here. (getMilitiaTooltip)");
                 return CampaignUIHelper.GetSettlementPropertyTooltip(
@@ -34,7 +34,7 @@ namespace ImprovedMinorFactions
             if (s.IsVillage) {
                 return CampaignUIHelper.GetVillageMilitiaTooltip(s.Village);
             } else {
-                MinorFactionHideout? mfHideout = GetSettlementMFHideout(s);
+                MinorFactionHideout? mfHideout = GetMFHideout(s);
                 if (mfHideout == null)
                     throw new Exception("There should not be a non Minor Faction Hideout here. (getprosperityTooltip)");
                 return CampaignUIHelper.GetSettlementPropertyTooltip(
@@ -42,12 +42,17 @@ namespace ImprovedMinorFactions
             }
         }
 
-        internal static bool IsRivalMinorFaction(IFaction kingdom, Clan minorFaction)
+        internal static bool IsEnemyOfMinorFaction(IFaction kingdom, Clan minorFaction)
         {
             return minorFaction.IsOutlaw && kingdom.IsAtWarWith(minorFaction);
         }
 
-        internal static MinorFactionHideout GetSettlementMFHideout(Settlement s)
+        internal static bool IsRivalOfMinorFaction(Kingdom kingdom, Clan minorFaction)
+        {
+            return kingdom != null && minorFaction.IsOutlaw && kingdom.Culture == minorFaction.Culture;
+        }
+
+        internal static MinorFactionHideout GetMFHideout(Settlement s)
         {
             return s.SettlementComponent as MinorFactionHideout;
         }
@@ -56,7 +61,7 @@ namespace ImprovedMinorFactions
             return c.Culture != null && c.BasicTroop != c.Culture.BasicTroop;
         }
 
-        internal static void removeImposters(Settlement s)
+        internal static void removeMilitiaImposters(Settlement s)
         {
             if (!isMFHideout(s))
                 return;
@@ -115,7 +120,7 @@ namespace ImprovedMinorFactions
                 method = instance.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
             else
                 method = type.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
-            return method.Invoke(instance, args); 
+            return method.Invoke(instance, args);
         }
 
         public static bool mfIsMounted(Clan minorFaction)
@@ -123,7 +128,6 @@ namespace ImprovedMinorFactions
             var name = minorFaction.StringId;
             return name == "ghilman" || name == "jawwal" || name == "eleftheroi" || name == "karakhuzaits";
         }
-
 
 
     }

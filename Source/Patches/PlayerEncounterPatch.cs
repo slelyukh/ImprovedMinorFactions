@@ -52,7 +52,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(ref IEnumerable<PartyBase> __result, Settlement settlement, MapEvent.BattleTypes mapEventType)
         {
-            var mfHideout = Helpers.GetSettlementMFHideout(settlement);
+            var mfHideout = Helpers.GetMFHideout(settlement);
             if (__result == null || mfHideout != null)
             {
                 __result = mfHideout.GetDefenderParties(mapEventType);
@@ -71,7 +71,7 @@ namespace ImprovedMinorFactions.Patches
             if (mapEvent == null || mapEvent.MapEventSettlement == null)
                 return true;
             Settlement settlement = mapEvent.MapEventSettlement;
-            var mfHideout = Helpers.GetSettlementMFHideout(settlement);
+            var mfHideout = Helpers.GetMFHideout(settlement);
             if (mfHideout == null || !mapEvent.IsHideoutBattle)
                 return true;
 
@@ -122,7 +122,7 @@ namespace ImprovedMinorFactions.Patches
             var settlement = mapEvent?.MapEventSettlement;
             if (mapEvent == null || settlement == null || !Helpers.isMFHideout(settlement) || !mapEvent.IsHideoutBattle)
                 return true;
-            var mfHideout = Helpers.GetSettlementMFHideout(settlement);
+            var mfHideout = Helpers.GetMFHideout(settlement);
             
             MBTextManager.SetTextVariable("PARTY", MapEvent.PlayerMapEvent.GetLeaderParty(PartyBase.MainParty.OpponentSide).Name);
             if (!PlayerEncounter.EncounteredPartySurrendered)

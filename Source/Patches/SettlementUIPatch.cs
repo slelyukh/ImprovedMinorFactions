@@ -19,7 +19,7 @@ namespace ImprovedMinorFactions.Patches
             if (village != null)
                 return true;
             Settlement curSettlement = Settlement.CurrentSettlement;
-            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(curSettlement);
+            MinorFactionHideout? mfHideout = Helpers.GetMFHideout(curSettlement);
             if (mfHideout == null)
             {
                 return true;
@@ -38,7 +38,7 @@ namespace ImprovedMinorFactions.Patches
             if (village != null)
                 return true;
             Settlement curSettlement = Settlement.CurrentSettlement;
-            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(curSettlement);
+            MinorFactionHideout? mfHideout = Helpers.GetMFHideout(curSettlement);
             if (mfHideout == null)
                 return true;
             __result = CampaignUIHelper.GetSettlementPropertyTooltip(
@@ -55,7 +55,7 @@ namespace ImprovedMinorFactions.Patches
         {
             MobileParty mainParty = MobileParty.MainParty;
             Settlement curSettlement = mainParty.CurrentSettlement ?? mainParty.LastVisitedSettlement;
-            MinorFactionHideout? mfHideout = Helpers.GetSettlementMFHideout(curSettlement);
+            MinorFactionHideout? mfHideout = Helpers.GetMFHideout(curSettlement);
             if (mfHideout == null)
                 return true;
 

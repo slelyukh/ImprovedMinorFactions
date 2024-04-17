@@ -23,7 +23,7 @@ namespace ImprovedMinorFactions.Patches
 
             foreach (Settlement settlement in Settlement.All)
             {
-                var mfHideout = Helpers.GetSettlementMFHideout(settlement); 
+                var mfHideout = Helpers.GetMFHideout(settlement); 
                 if (mfHideout != null && (num != 1 || mfHideout.IsActive)) {
                     mfHideout.IsSpotted = true;
                     mfHideout.Owner.Settlement.IsVisible = true;

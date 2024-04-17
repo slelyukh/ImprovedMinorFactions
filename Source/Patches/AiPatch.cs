@@ -13,7 +13,7 @@ namespace ImprovedMinorFactions.Patches
         {
             if (__result == true || !Helpers.isMFHideout(settlement))
                 return;
-            var mfHideout = Helpers.GetSettlementMFHideout(settlement);
+            var mfHideout = Helpers.GetMFHideout(settlement);
             bool hideoutIsMercenaryOfParty = settlement.OwnerClan.IsUnderMercenaryService && settlement.OwnerClan.Kingdom == mobileParty.ActualClan.Kingdom;
             __result = settlement.Party.MapEvent == null && mfHideout.IsActive && (mobileParty.Party.Owner.MapFaction == settlement.MapFaction || hideoutIsMercenaryOfParty);
         }
