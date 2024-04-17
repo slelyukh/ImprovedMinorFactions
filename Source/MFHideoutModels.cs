@@ -64,11 +64,11 @@ namespace ImprovedMinorFactions
             return eNum;
         }
 
-        internal static int MinRelationToBeMFHFriend = 20;
+        internal static int MinRelationToBeMFHFriend = 15;
 
-        private static readonly TextObject BaseText = new TextObject("{=militarybase}Base", null);
-        private static readonly TextObject RetiredText = new TextObject("{=gHnfFi1s}Retired", null);
-        private static readonly TextObject FromHearthsText = new TextObject("{=ecdZglky}From Hearths", null);
+        private static readonly TextObject BaseText = new TextObject("{=militarybase}Base");
+        private static readonly TextObject RetiredText = new TextObject("{=gHnfFi1s}Retired");
+        private static readonly TextObject FromHearthsText = new TextObject("{=ecdZglky}From Hearths");
 
         public static float MinimumMFHHearthToAffectVillage = 300f;
     }

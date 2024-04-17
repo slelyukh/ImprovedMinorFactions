@@ -90,7 +90,7 @@ namespace ImprovedMinorFactions
 
             ActivateHideout();
             base.Settlement.Militia += 5;
-            this.Hearth = 300;
+            this.Hearth = 350;
         }
 
         private void ActivateHideout(List<Hero> newNotables)

@@ -65,8 +65,9 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
         private IssueBase OnIssueSelected(in PotentialIssueData pid, Hero issueOwner)
         {
-            PotentialIssueData potentialIssueData = pid;
-            return new NearbyMFHideoutIssue(issueOwner, potentialIssueData.RelatedObject as Settlement);
+            float distance = (pid.RelatedObject as Settlement).GatePosition.Distance(issueOwner.GetMapPoint().Position2D);
+            InformationManager.DisplayMessage(new InformationMessage($"{issueOwner} is {distance} from {(pid.RelatedObject as Settlement).Name}"));
+            return new NearbyMFHideoutIssue(issueOwner, pid.RelatedObject as Settlement);
         }
 
         private bool ConditionsHold(Hero issueGiver)
@@ -357,7 +358,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 flags = PreconditionFlags.None;
                 relationHero = null;
                 skill = null;
-                if (issueGiver.GetRelationWithPlayer() < -20f)
+                if (issueGiver.GetRelationWithPlayer() < -50f)
                 {
                     flags |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
@@ -595,7 +596,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 {
                     if (Enumerable.Contains<PartyBase>(mapEvent.InvolvedParties, PartyBase.MainParty))
                     {
-                        if (mapEvent.BattleState == BattleState.DefenderVictory)
+                        if (mapEvent.BattleState == BattleState.DefenderVictory || mapEvent.BattleState == BattleState.None)
                         {
                             this.OnQuestFailed(false);
                             return;
@@ -646,7 +647,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             private readonly Settlement _questSettlement;
         }
 
-        private const int NearbyHideoutMaxDistance = 45;
+        private const int NearbyHideoutMaxDistance = 40;
 
         private const IssueBase.IssueFrequency NearbyHideoutIssueFrequency = IssueBase.IssueFrequency.VeryCommon;
         public class NearbyMFHideoutIssueTypeDefiner : SaveableTypeDefiner

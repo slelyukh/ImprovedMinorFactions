@@ -14,6 +14,7 @@ using TaleWorlds.SaveSystem;
 using TaleWorlds.CampaignSystem.Extensions;
 using MathF = TaleWorlds.Library.MathF;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Party;
+using TaleWorlds.CampaignSystem.Encounters;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 {
@@ -188,22 +189,12 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             public override TextObject Title
             {
-                get
-                {
-                    TextObject textObject = new TextObject("{ISSUE_GIVER.LINK} Needs Recruits");
-                    textObject.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject);
-                    return textObject;
-                }
+                get => new TextObject("{ISSUE_GIVER} needs recruits").SetTextVariable("ISSUE_GIVER", base.IssueOwner.Name);
             }
 
             public override TextObject Description
             {
-                get
-                {
-                    TextObject textObject = new TextObject("{ISSUE_GIVER.LINK} needs recruits");
-                    textObject.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject, false);
-                    return textObject;
-                }
+                get => new TextObject("{ISSUE_GIVER} needs recruits").SetTextVariable("ISSUE_GIVER", base.IssueOwner.Name);
             }
 
             public MFHLordNeedsRecruitsIssue(Hero issueOwner) : base(issueOwner, CampaignTime.DaysFromNow(IssueAndQuestDuration))
@@ -269,10 +260,14 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                 flag = PreconditionFlags.None;
                 relationHero = null;
                 skill = null;
-                if (issueGiver.GetRelationWithPlayer() < -20f)
+                if (issueGiver.GetRelationWithPlayer() <  -30f)
                 {
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
+                }
+                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction))
+                {
+                    flag |= PreconditionFlags.AtWar;
                 }
                 return flag == PreconditionFlags.None;
             }
@@ -281,7 +276,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
             {
                 var party = base.IssueOwner.PartyBelongedTo;
                 return base.IssueOwner.IsPartyLeader 
-                    && PartyBaseHelper.FindPartySizeNormalLimit(party) > party.MemberRoster.TotalManCount + this.RequestedRecruitCount;
+                    && party.LimitedPartySize > party.MemberRoster.TotalManCount + this.RequestedRecruitCount;
             }
 
             protected override void CompleteIssueWithTimedOutConsequences()
@@ -346,12 +341,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             public override TextObject Title
             {
-                get
-                {
-                    TextObject textObject = new TextObject("{ISSUE_GIVER.LINK} Needs Recruits");
-                    textObject.SetCharacterProperties("ISSUE_GIVER", base.QuestGiver.CharacterObject);
-                    return textObject;
-                }
+                get => new TextObject("{ISSUE_GIVER} needs recruits").SetTextVariable("ISSUE_GIVER", base.QuestGiver.Name);
             }
 
             public override bool IsRemainingTimeHidden
@@ -376,7 +366,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{QUEST_GIVER.LINK} told you that {?QUEST_GIVER.GENDER}she{?}he{\\?} needs recruits." +
+                    TextObject textObject = new TextObject("{QUEST_GIVER.LINK} told you that {?QUEST_GIVER.GENDER}she{?}he{\\?} needs recruits. " +
                         "{?QUEST_GIVER.GENDER}She{?}He{\\?} asked you to recruit {NEEDED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} into your party, " +
                         "then transfer them to {?QUEST_GIVER.GENDER}her{?}him{\\?}. You will be paid for the recruits depending on their experience.");
                     setTextTroopDescriptions(textObject);

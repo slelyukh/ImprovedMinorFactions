@@ -19,10 +19,12 @@ namespace ImprovedMinorFactions.Patches
         static void Postfix(ref bool __result)
         {
             PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
+            Hero encounteredHero = Hero.OneToOneConversationHero;
             if (!(encounteredParty?.IsSettlement ?? false)
                 || encounteredParty.Settlement == null
                 || __result == true
-                || !Helpers.isMFHideout(encounteredParty.Settlement))
+                || !Helpers.isMFHideout(encounteredParty.Settlement)
+                || encounteredHero.IsNotable)
             {
                 return;
             }

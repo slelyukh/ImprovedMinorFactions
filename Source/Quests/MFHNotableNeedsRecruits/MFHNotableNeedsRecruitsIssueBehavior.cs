@@ -265,6 +265,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
                 }
+                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction))
+                {
+                    flag |= PreconditionFlags.AtWar;
+                }
                 return flag == PreconditionFlags.None;
             }
 
