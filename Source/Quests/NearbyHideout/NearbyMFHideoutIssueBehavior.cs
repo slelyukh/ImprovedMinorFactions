@@ -358,7 +358,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 flags = PreconditionFlags.None;
                 relationHero = null;
                 skill = null;
-                if (issueGiver.GetRelationWithPlayer() < -30f)
+                if (issueGiver.GetRelationWithPlayer() < MFHideoutModels.MinRelationToGetMFQuest)
                 {
                     flags |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
@@ -658,7 +658,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
         private const IssueBase.IssueFrequency NearbyHideoutIssueFrequency = IssueBase.IssueFrequency.VeryCommon;
         public class NearbyMFHideoutIssueTypeDefiner : SaveableTypeDefiner
         {
-            public NearbyMFHideoutIssueTypeDefiner() : base(322_929)
+            public NearbyMFHideoutIssueTypeDefiner() : base(404_322_929)
             {
             }
 

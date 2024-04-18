@@ -263,7 +263,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                 flag = PreconditionFlags.None;
                 relationHero = null;
                 skill = null;
-                if (issueGiver.GetRelationWithPlayer() <  -30f)
+                if (issueGiver.GetRelationWithPlayer() <  MFHideoutModels.MinRelationToGetMFQuest)
                 {
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
@@ -667,7 +667,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
         public class MFHLordNeedsRecruitsIssueBehaviorTypeDefiner : SaveableTypeDefiner
         {
-            public MFHLordNeedsRecruitsIssueBehaviorTypeDefiner() : base(723_929)
+            public MFHLordNeedsRecruitsIssueBehaviorTypeDefiner() : base(020_723_929)
             {
             }
 

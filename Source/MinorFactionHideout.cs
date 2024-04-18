@@ -19,7 +19,7 @@ namespace ImprovedMinorFactions
 
     public class MFHideoutTypeDefiner : SaveableTypeDefiner
     {
-        public MFHideoutTypeDefiner() : base(1_346_751)
+        public MFHideoutTypeDefiner() : base(231_346_751)
         {
         }
 
@@ -165,12 +165,13 @@ namespace ImprovedMinorFactions
             this.Hearth = 0;
         }
 
-        private void UpgradeMilitia(int count)
+        public void UpgradeMilitia(int count)
         {
             var militiaParty = this.Settlement.MilitiaPartyComponent.Party;
             var militiaRoster = militiaParty.MemberRoster;
             var troopList = militiaRoster.GetTroopRoster();
             CharacterObject troopToUpgrade = null;
+            count = MathF.Min(count, (int) this.Settlement.Militia);
             while (count > 0)
             {
                 foreach (var troop in troopList)

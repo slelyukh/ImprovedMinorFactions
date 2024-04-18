@@ -82,6 +82,13 @@ namespace ImprovedMinorFactions
             return troop == culture.MeleeMilitiaTroop || troop == culture.RangedMilitiaTroop || troop == culture.MeleeEliteMilitiaTroop || troop == culture.RangedEliteMilitiaTroop;
         }
 
+        internal static CharacterObject GetBasicTroop(Clan minorFaction)
+        {
+            if (minorFaction.BasicTroop == minorFaction.Culture.BasicTroop)
+                DetermineBasicTroopsForMinorFactionsCopypasta();
+            return minorFaction.BasicTroop;
+        }
+
         // copypasta from ClanVariablesCampaignBehavior
         internal static void DetermineBasicTroopsForMinorFactionsCopypasta()
         {

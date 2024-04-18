@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System.Runtime.CompilerServices;
+using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.GameComponents;
@@ -65,6 +66,7 @@ namespace ImprovedMinorFactions
         }
 
         internal static int MinRelationToBeMFHFriend = 15;
+        internal static float MinRelationToGetMFQuest = -30;
 
         private static readonly TextObject BaseText = new TextObject("{=militarybase}Base");
         private static readonly TextObject RetiredText = new TextObject("{=gHnfFi1s}Retired");

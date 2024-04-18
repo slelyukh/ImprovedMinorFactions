@@ -3,6 +3,7 @@ using HarmonyLib;
 using ImprovedMinorFactions.Source;
 using ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits;
 using ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits;
+using ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained;
 using ImprovedMinorFactions.Source.Quests.NearbyHideout;
 using StoryMode;
 using TaleWorlds.CampaignSystem;
@@ -42,8 +43,8 @@ namespace ImprovedMinorFactions
             CampaignGameStarter? starter = gameStarterObject as CampaignGameStarter;
             starter.AddBehavior(new MFHideoutCampaignBehavior());
             starter.AddBehavior(new MFHNotablesCampaignBehavior());
-            starter.AddBehavior(new DebugCampaignBehavior());
             starter.AddBehavior(new MFHNotableNeedsRecruitsIssueBehavior());
+            starter.AddBehavior(new MFHNotableNeedsTroopsTrainedIssueBehavior());
             starter.AddBehavior(new MFHLordNeedsRecruitsIssueBehavior());
             starter.AddBehavior(new NearbyMFHideoutIssueBehavior());
         }
