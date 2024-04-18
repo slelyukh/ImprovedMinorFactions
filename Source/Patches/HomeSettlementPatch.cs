@@ -11,7 +11,6 @@ using TaleWorlds.CampaignSystem.Party;
 
 namespace ImprovedMinorFactions.Patches
 {
-    
     // Nasty Nasty recursive Harmony patch
     [HarmonyPatch(typeof(Clan), "set_HomeSettlement")]
     public class ClanSetHomeSettlementPatch

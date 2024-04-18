@@ -34,16 +34,6 @@ namespace ImprovedMinorFactions
 
             // debug listeners
             CampaignEvents.OnQuarterDailyPartyTick.AddNonSerializedListener(this, new Action<MobileParty>(this.DEBUGMFPartyTick));
-            CampaignEvents.OnCheckForIssueEvent.AddNonSerializedListener(this, new Action<Hero>(this.OnCheckForIssue));
-        }
-
-        public void OnCheckForIssue(Hero hero)
-        {
-            if (hero.IsMinorFactionHero && Helpers.isMFHideout(hero.CurrentSettlement) && hero.IsPreacher)
-            {
-                return;
-            }
-            //Campaign.Current.IssueManager.AddPotentialIssueData(hero, new PotentialIssueData(typeof(MFHNotableNeedsRecruitsIssueBehavior.MFHNotableNeedsRecruitsIssue), IssueBase.IssueFrequency.VeryCommon));
         }
 
 
@@ -100,7 +90,6 @@ namespace ImprovedMinorFactions
 
         protected void AddGameMenus(CampaignGameStarter campaignGameStarter)
         {
-            // entered hideout menu
             campaignGameStarter.AddGameMenu("mf_hideout_place", "{=!}{MF_HIDEOUT_TEXT}", 
                 new OnInitDelegate(game_menu_hideout_place_on_init),
                 GameOverlays.MenuOverlayType.SettlementWithBoth);
@@ -269,9 +258,8 @@ namespace ImprovedMinorFactions
             {
                 this.CalculateHideoutAttackTime();
             }
-            //args.MenuContext.GameMenu.SetProgressOfWaitingInMenu(this._hideoutWaitProgressHours / this._hideoutWaitTargetHours);
+            //args.MenuContext.GameMenu.SetProgressOfWaitingInMenu(this._hideoutWaitProgressHours / this._hideoutWaitTargetHours); NIGHT MODE
 
-            // if interrupted go to another menu
             SwitchToMenuIfThereIsAnInterrupt(args.MenuContext.GameMenu.StringId);
         }
 
@@ -355,7 +343,7 @@ namespace ImprovedMinorFactions
                 this._hideoutWaitTargetHours = 0f;
             }
 
-            // TODO: calculate num of defenders better
+            // TODO: clean ur mess
             int num = 1;
             if (!mfHideout.NextPossibleAttackTime.IsPast)
             {
@@ -446,11 +434,10 @@ namespace ImprovedMinorFactions
             MBInformationManager.AddQuickInformation(new TextObject("{=o0qwDa0q}Your relation increased by {RELATION_VALUE} with nearby notables.", null), 0, null, "");
         }
 
-        // copied from regular hideouts, does nothing right now
         private void ArrangeHideoutTroopCountsForMission()
         {
             MBList<MobileParty> hideoutParties = Enumerable.Where<MobileParty>(
-                Settlement.CurrentSettlement.Parties, (MobileParty x) => x.IsMilitia).ToMBList<MobileParty>();
+                Settlement.CurrentSettlement.Parties, (MobileParty x) => x.IsMilitia).ToMBList();
         }
 
         private void ApplyHideoutRaidConsequences()
@@ -509,7 +496,7 @@ namespace ImprovedMinorFactions
         {
             return !character.IsPlayerCharacter && !character.IsNotTransferableInHideouts;
         }
-
+        // TODO: use this???
         private const int MaxDistanceSquaredBetweenHideoutAndBoundVillage = 1600;
 
         private readonly int CanAttackHideoutStart = 23;
@@ -539,7 +526,7 @@ namespace ImprovedMinorFactions
         }
     }
 
-    // archive
+    // NIGHT MODE archive
 
     //public void hideout_wait_menu_on_consequence(MenuCallbackArgs args)
     //{

@@ -9,9 +9,6 @@ using TaleWorlds.ObjectSystem;
 using TaleWorlds.SaveSystem;
 using TaleWorlds.Library;
 using System.Linq;
-using TaleWorlds.CampaignSystem.CharacterDevelopment;
-using TaleWorlds.MountAndBlade.Network.Gameplay.Perks.Effects;
-using System.Diagnostics.CodeAnalysis;
 using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions
