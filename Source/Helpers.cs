@@ -61,25 +61,28 @@ namespace ImprovedMinorFactions
             return c.Culture != null && c.BasicTroop != c.Culture.BasicTroop;
         }
 
-        internal static void removeMilitiaImposters(Settlement s)
+        internal static int removeMilitiaImposters(Settlement s)
         {
             if (!isMFHideout(s))
-                return;
+                return 0;
             MobileParty militiaParty = s.MilitiaPartyComponent.MobileParty;
             var militiaRoster = militiaParty.MemberRoster;
+            int removedCount = 0;
             for (int i = 0; i < militiaRoster.Count; i++)
             {
-                if (IsMilitiaOfCulture(militiaRoster.GetElementCopyAtIndex(i).Character, s.OwnerClan.Culture))
+                if (IsMilitiaOfCulture(militiaRoster.GetElementCopyAtIndex(i).Character, s.Culture))
                 {
-                    militiaRoster.AddToCountsAtIndex(i, -militiaRoster.GetElementNumber(i), 0, 0, false);
+                    removedCount += militiaRoster.GetElementNumber(i);
+                    militiaRoster.AddToCountsAtIndex(i, -militiaRoster.GetElementNumber(i));
                 }
             }
             militiaRoster.RemoveZeroCounts();
+            return removedCount;
         }
 
         internal static bool IsMilitiaOfCulture(CharacterObject troop, CultureObject culture)
         {
-            return troop == culture.MeleeMilitiaTroop || troop == culture.RangedMilitiaTroop || troop == culture.MeleeEliteMilitiaTroop || troop == culture.RangedEliteMilitiaTroop;
+            return troop.StringId.Contains("militia") || troop == culture.MeleeMilitiaTroop || troop == culture.RangedMilitiaTroop || troop == culture.MeleeEliteMilitiaTroop || troop == culture.RangedEliteMilitiaTroop;
         }
 
         internal static CharacterObject GetBasicTroop(Clan minorFaction)

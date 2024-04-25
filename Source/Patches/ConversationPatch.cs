@@ -17,7 +17,7 @@ namespace ImprovedMinorFactions.Patches
                 || encounteredParty.Settlement == null
                 || __result == true
                 || !Helpers.isMFHideout(encounteredParty.Settlement)
-                || encounteredHero.IsNotable)
+                || (encounteredHero?.IsNotable ?? false))
             {
                 return;
             }

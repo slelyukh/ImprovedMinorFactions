@@ -58,7 +58,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             return new MFHNotableNeedsTroopsTrainedIssue(issueOwner);
         }
 
-        private const IssueBase.IssueFrequency _IssueFrequency = IssueBase.IssueFrequency.VeryCommon;
+        private const IssueBase.IssueFrequency _IssueFrequency = IssueBase.IssueFrequency.Common;
 
         public class MFHNotableNeedsTroopsTrainedIssue : IssueBase
         {
@@ -352,7 +352,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             {
                 if (upgradeFromTroop == this._questGivenChar && upgradeToTroop == this._questTargetChar && number > 0)
                 {
-                    base.UpdateQuestTaskStage(this._playerStartsQuestLog, PartyBase.MainParty.MemberRoster.GetTroopCount(this._questTargetChar));
+                    this._upgradedTroopsCount = MathF.Min(_upgradedTroopsCount + number, _borrowedTroopCount);
+                    base.UpdateQuestTaskStage(this._playerStartsQuestLog, this._upgradedTroopsCount);
                 }
                 if (!this.CheckFail())
                 {
@@ -421,9 +422,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 
             private void CheckSuccess(bool isConversationEnded = false)
             {
-                if (PartyBase.MainParty.MemberRoster.GetTroopCount(this._questGivenChar) == 0 
-                    && PartyBase.MainParty.MemberRoster.GetTroopCount(this._questTargetChar) > 0 && !this._popUpOpened 
-                    && (Campaign.Current.ConversationManager.OneToOneConversationHero == null || isConversationEnded))
+                if ((PartyBase.MainParty.MemberRoster.GetTroopCount(this._questGivenChar) == 0 || this._upgradedTroopsCount == this._borrowedTroopCount) 
+                    && !this._popUpOpened && (Campaign.Current.ConversationManager.OneToOneConversationHero == null || isConversationEnded))
                 {
                     this.OpenDecisionPopUp();
                 }
@@ -431,8 +431,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 
             private void RemoveBorrowedTroopsFromParty(PartyBase party)
             {
-                int basicToRemove = MathF.Min(party.MemberRoster.GetTroopCount(this._questGivenChar), this._borrowedTroopCount);
-                int upgradedToRemove = MathF.Min(party.MemberRoster.GetTroopCount(this._questTargetChar), this._borrowedTroopCount - basicToRemove);
+                int basicToRemove = MathF.Min(party.MemberRoster.GetTroopCount(this._questGivenChar), this._borrowedTroopCount - _upgradedTroopsCount);
+                int upgradedToRemove = MathF.Min(party.MemberRoster.GetTroopCount(this._questTargetChar), _upgradedTroopsCount);
                 if (basicToRemove > 0)
                     party.MemberRoster.AddToCounts(this._questGivenChar, -basicToRemove);
                 if (upgradedToRemove > 0)
@@ -457,21 +457,23 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             private void CompleteQuestSuccessfully()
             {
                 Campaign.Current.TimeControlMode = this._campaignTimeControlModeCacheForDecisionPopUp;
-                int basicTroopCount = PartyBase.MainParty.MemberRoster.GetTroopCount(this._questTargetChar);
-                PartyBase.MainParty.MemberRoster.AddToCounts(this._questTargetChar, -basicTroopCount);
-                int upgradedTroopCount = PartyBase.MainParty.MemberRoster.GetTroopCount(this._questGivenChar);
-                PartyBase.MainParty.MemberRoster.AddToCounts(this._questGivenChar, -upgradedTroopCount);
-                if (basicTroopCount >= this._borrowedTroopCount)
+
+                var memberRoster = PartyBase.MainParty.MemberRoster;
+                int upgradedTroopCount = MathF.Min(memberRoster.GetTroopCount(this._questTargetChar), _upgradedTroopsCount);
+                memberRoster.AddToCounts(this._questTargetChar, -upgradedTroopCount);
+                int basicTroopCount = MathF.Min(memberRoster.GetTroopCount(this._questGivenChar), this._borrowedTroopCount - _upgradedTroopsCount);
+                memberRoster.AddToCounts(this._questGivenChar, -basicTroopCount);
+                if (upgradedTroopCount >= this._borrowedTroopCount)
                 {
                     this.TotalSuccess();
                     return;
                 }
-                if (this._borrowedTroopCount * 0.5f < basicTroopCount && basicTroopCount < this._borrowedTroopCount)
+                if (this._borrowedTroopCount * 0.5f < upgradedTroopCount && upgradedTroopCount < this._borrowedTroopCount)
                 {
                     this.PartialSuccess();
                     return;
                 }
-                if (0 < basicTroopCount && basicTroopCount <= this._borrowedTroopCount * 0.5f)
+                if (0 < upgradedTroopCount && upgradedTroopCount <= this._borrowedTroopCount * 0.5f)
                 {
                     this.WeakSuccess();
                 }
@@ -716,11 +718,13 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 this._questTargetChar = _questGivenChar.UpgradeTargets[0];
                 this._questTargetChar.SetTransferableInPartyScreen(false);
                 PartyBase.MainParty.AddElementToMemberRoster(this._questGivenChar, this._borrowedTroopCount);
+                this._upgradedTroopsCount = 0;
+
                 PartyBase.MainParty.ItemRoster.AddToCounts(DefaultItems.Grain, 3);
                 this._playerStartsQuestLog = base.AddDiscreteLog(
-                    this._questStartLog, 
-                    new TextObject("{=wUb5h4a3}Trained Troops"), 
-                    PartyBase.MainParty.MemberRoster.GetTroopCount(this._questTargetChar),
+                    this._questStartLog,
+                    new TextObject("{=wUb5h4a3}Trained Troops"),
+                    this._upgradedTroopsCount,
                     this._borrowedTroopCount);
             }
 
@@ -760,7 +764,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 if (this._playerStartsQuestLog == null)
                 {
                     this._playerStartsQuestLog = Enumerable.First<JournalLog>(base.JournalEntries);
-                    base.UpdateQuestTaskStage(this._playerStartsQuestLog, PartyBase.MainParty.MemberRoster.GetTroopCount(this._questTargetChar));
+                    base.UpdateQuestTaskStage(this._playerStartsQuestLog, this._upgradedTroopsCount);
                 }
                 this.SetDialogs();
             }
@@ -801,6 +805,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 
             [SaveableField(2)]
             private JournalLog _playerStartsQuestLog;
+
+            [SaveableField(3)]
+            private int _upgradedTroopsCount;
         }
 
         public class MFHNotableNeedsTroopsTrainedIssueBehaviorTypeDefiner : SaveableTypeDefiner

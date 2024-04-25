@@ -53,13 +53,13 @@ namespace ImprovedMinorFactions.Patches
                 return true;
 
             // TODO: remove other lines and only have this
-            if (!Helpers.IsMFClanInitialized(mfHideout.OwnerClan))
-                return false;
+            //if (!Helpers.IsMFClanInitialized(mfHideout.OwnerClan))
+            //    return false;
 
             // Reflection to call private method
             var methodInfo = __instance.GetType().GetMethod("AddTroopToMilitiaParty", BindingFlags.NonPublic | BindingFlags.Instance);
-            methodInfo.Invoke(__instance, new object[] { militaParty, mfHideout.OwnerClan.BasicTroop, mfHideout.OwnerClan.BasicTroop, 1f, militiaToAdd });
-            Helpers.removeMilitiaImposters(__instance);
+            int removedImposters = Helpers.removeMilitiaImposters(__instance);
+            methodInfo.Invoke(__instance, new object[] { militaParty, Helpers.GetBasicTroop(mfHideout.OwnerClan), Helpers.GetBasicTroop(mfHideout.OwnerClan), 1f, militiaToAdd + removedImposters });
 
             return false;
         }
@@ -73,7 +73,7 @@ namespace ImprovedMinorFactions.Patches
         static void Postfix(Campaign __instance, Settlement settlement)
         {
             MinorFactionHideout? mfHideout = Helpers.GetMFHideout(settlement);
-            if (mfHideout == null)
+            if (mfHideout == null || !mfHideout.IsActive)
                 return;
             mfHideout.DailyTick();
         }

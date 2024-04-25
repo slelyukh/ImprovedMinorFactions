@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using Helpers;
 using TaleWorlds.CampaignSystem;
@@ -91,41 +90,24 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
         public class NearbyMFHideoutIssue : IssueBase
         {
-
-            public override AlternativeSolutionScaleFlag AlternativeSolutionScaleFlags
-            {
-                get => AlternativeSolutionScaleFlag.Casualties | AlternativeSolutionScaleFlag.FailureRisk;
-            }
-
-            public override int AlternativeSolutionBaseNeededMenCount
-            {
-                get => AltSolFinalMenCount;
-            }
-
-            protected override int AlternativeSolutionBaseDurationInDaysInternal
-            {
-                get => 4 + MathF.Ceiling(6f * base.IssueDifficultyMultiplier);
-            }
-
-            protected override int RewardGold
-            {
-                get => 3000;
-            }
-
-            internal Settlement TargetHideout
-            {
-                get => this._targetHideout;
-            }
-
             protected Clan MFClan
             {
                 get => _targetHideout.OwnerClan;
             }
 
+            public override TextObject Title
+            {
+                get => setCommonTextVariables(new TextObject("{MINOR_FACTION} Base Near {ISSUE_SETTLEMENT.NAME}"));
+            }
+
+            public override TextObject Description
+            {
+                get => setCommonTextVariables(new TextObject("{ISSUE_GIVER.LINK} wants you to clear the {MINOR_FACTION} hideout that causes trouble in {?ISSUE_GIVER.GENDER}her{?}his{\\?} region."));
+            }
             public override TextObject IssueBriefByIssueGiver
             {
-                get => new TextObject("Yes... There's this old ruin, a place that offers a good view of the roads, and is yet hard to reach. The {MINOR_FACTION} have moved in and they have been giving hell to the caravans and travellers passing by.[ib:closed][if:convo_undecided_open]")
-                    .SetTextVariable("MINOR_FACTION", MFClan.Name);
+                get => setCommonTextVariables(new TextObject("Yes... There's this old ruin, a place that offers a good view of the roads, and is yet hard to reach. " +
+                    "The {MINOR_FACTION} have moved in and they have been giving hell to the caravans and travellers passing by.[ib:closed][if:convo_undecided_open]"));
             }
 
             public override TextObject IssueAcceptByPlayer
@@ -135,31 +117,18 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
             public override TextObject IssueQuestSolutionExplanationByIssueGiver
             {
-                get => new TextObject("{=zstiYI49}Any {MINOR_FACTION} bandits there can easily spot and evade a large army moving against them, but if you can enter the hideout with a small group of determined warriors you can catch them unaware.[ib:closed][if:convo_thinking]")
-                    .SetTextVariable("MINOR_FACTION", MFClan.Name);
+                get => setCommonTextVariables(new TextObject("{=zstiYI49}Any {MINOR_FACTION} bandits there can easily spot and evade a large army moving against them, " +
+                    "but if you can enter the hideout with a small group of determined warriors you can catch them unaware.[ib:closed][if:convo_thinking]"));
             }
 
             public override TextObject IssueQuestSolutionAcceptByPlayer
             {
-                get => new TextObject("{=uhYprSnG}I will go to the {MINOR_FACTION} hideout myself and ambush the bandits.")
-                        .SetTextVariable("MINOR_FACTION", MFClan.Name);
-            }
-
-            protected override int CompanionSkillRewardXP
-            {
-                get => (int)(1000f + 1250f * base.IssueDifficultyMultiplier);
-            }
-
-            public override bool CanBeCompletedByAI()
-            {
-                return false;
+                get => setCommonTextVariables(new TextObject("{=uhYprSnG}I will go to the {MINOR_FACTION} hideout myself and ambush the bandits."));
             }
 
             public override TextObject IssueAlternativeSolutionAcceptByPlayer
             {
-                get => new TextObject("{=IFasMslv}I will assign a companion with {TROOP_COUNT} good men for {RETURN_DAYS} days.")
-                        .SetTextVariable("TROOP_COUNT", (int)(base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f))
-                        .SetTextVariable("RETURN_DAYS", base.GetTotalAlternativeSolutionDurationInDays());
+                get => setCommonTextVariables(new TextObject("{=IFasMslv}I will assign a companion with {TROOP_COUNT} good men for {RETURN_DAYS} days."));
             }
 
             public override TextObject IssueDiscussAlternativeSolution
@@ -169,28 +138,19 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
             public override TextObject IssueAlternativeSolutionResponseByIssueGiver
             {
-                get
-                {
-                    TextObject textObject = new TextObject("{=aXOgAKfj}Thank you, {?PLAYER.GENDER}madam{?}sir{\\?}. I hope your people will be successful.[ib:hip][if:convo_excited]");
-                    textObject.SetCharacterProperties("PLAYER", Hero.MainHero.CharacterObject);
-                    return textObject;
-                }
+                get => setCommonTextVariables(
+                    new TextObject("{=aXOgAKfj}Thank you, {?PLAYER.GENDER}madam{?}sir{\\?}. I hope your people will be successful.[ib:hip][if:convo_excited]"));
             }
 
             public override TextObject IssueAlternativeSolutionExplanationByIssueGiver
             {
-                get => new TextObject("{=VNXgZ8mt}Alternatively, if you can assign a companion with {TROOP_COUNT} or so men to this task, they can do the job.[ib:closed][if:convo_undecided_open]")
-                        .SetTextVariable("TROOP_COUNT", (int)(base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f));
+                get => setCommonTextVariables(new TextObject("{=VNXgZ8mt}Alternatively, if you can assign a companion with {TROOP_COUNT} or so men to this task," +
+                    " they can do the job.[ib:closed][if:convo_undecided_open]"));
             }
 
             public override TextObject IssueAsRumorInSettlement
             {
-                get
-                {
-                    TextObject textObject = new TextObject("{=ctgihUte}I hope {QUEST_GIVER.NAME} has a plan to get rid of those bandits.");
-                    textObject.SetCharacterProperties("QUEST_GIVER", base.IssueOwner.CharacterObject);
-                    return textObject;
-                }
+                get => setCommonTextVariables(new TextObject("{=ctgihUte}I hope {ISSUE_GIVER.NAME} has a plan to get rid of those bandits."));
             }
 
             public override bool IsThereAlternativeSolution
@@ -202,61 +162,35 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{=G4kpabSf}{ISSUE_GIVER.LINK}, a headman from {ISSUE_SETTLEMENT}, has told you about {MINOR_FACTION} attacks on local villagers and asked you to clear out the outlaws' hideout. You asked {COMPANION.LINK} to take {TROOP_COUNT} of your best men to go and take care of it. They should report back to you in {RETURN_DAYS} days.")
-                        .SetTextVariable("ISSUE_SETTLEMENT", this._issueSettlement.EncyclopediaLinkWithName)
-                        .SetTextVariable("TROOP_COUNT", this.AlternativeSolutionSentTroops.TotalManCount - 1)
-                        .SetTextVariable("RETURN_DAYS", base.GetTotalAlternativeSolutionDurationInDays())
-                        .SetTextVariable("MINOR_FACTION", MFClan.Name);
-                    textObject.SetCharacterProperties("PLAYER", Hero.MainHero.CharacterObject);
-                    textObject.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject);
-                    textObject.SetCharacterProperties("COMPANION", base.AlternativeSolutionHero.CharacterObject);
-                    return textObject;
-                }
-            }
-
-            public override bool IsThereLordSolution
-            {
-                get => false;
-            }
-
-            public override TextObject Title
-            {
-                get => new TextObject("{MINOR_FACTION} Base Near {SETTLEMENT}")
-                        .SetTextVariable("SETTLEMENT", this._issueSettlement.Name)
-                        .SetTextVariable("MINOR_FACTION", MFClan.Name);
-            }
-
-            public override TextObject Description
-            {
-                get
-                {
-                    TextObject textObject = new TextObject("{QUEST_GIVER.LINK} wants you to clear the {MINOR_FACTION} hideout that causes trouble in {?QUEST_GIVER.GENDER}her{?}his{\\?} region.")
-                        .SetTextVariable("MINOR_FACTION", MFClan.Name);
-                    textObject.SetCharacterProperties("QUEST_GIVER", base.IssueOwner.CharacterObject);
-                    return textObject;
+                    TextObject text = new TextObject("{=G4kpabSf}{ISSUE_GIVER.LINK}, a headman from {ISSUE_SETTLEMENT}, has told you " +
+                    "about {MINOR_FACTION} attacks on local villagers and asked you to clear out the outlaws' hideout. You asked " +
+                    "{COMPANION.LINK} to take {TROOP_COUNT} of your best men to go and take care of it. They should report back to you in {RETURN_DAYS} days.");
+                    text.SetCharacterProperties("COMPANION", base.AlternativeSolutionHero.CharacterObject);
+                    return setCommonTextVariables(text);
                 }
             }
 
             public override TextObject IssueAlternativeSolutionSuccessLog
             {
-                get
-                {
-                    TextObject textObject = new TextObject("You received a message from {QUEST_GIVER.LINK}.\n\"Thank you for clearing out that outlaws' nest. Please accept these {REWARD}{GOLD_ICON} denars with our gratitude.\"")
-                        .SetTextVariable("REWARD", this.RewardGold)
-                        .SetTextVariable("GOLD_ICON", "{=!}<img src=\"General\\Icons\\Coin@2x\" extend=\"8\">");
-                    textObject.SetCharacterProperties("QUEST_GIVER", base.IssueOwner.CharacterObject);
-                    return textObject;
-                }
+                get => setCommonTextVariables(new TextObject("You received a message from {ISSUE_GIVER.LINK}.\n\"Thank you for clearing out that outlaws' nest. Please accept these " +
+                    "{REWARD}{GOLD_ICON} denars with our gratitude.\""));
             }
 
             public override TextObject IssueAlternativeSolutionFailLog
             {
-                get
-                {
-                    TextObject textObject = new TextObject("{=qsMnnfQ3}You failed to clear the hideout in time to prevent further attacks. {QUEST_GIVER.LINK} is disappointed.");
-                    textObject.SetCharacterProperties("QUEST_GIVER", base.IssueOwner.CharacterObject);
-                    return textObject;
-                }
+                get => setCommonTextVariables(new TextObject("{=qsMnnfQ3}You failed to clear the hideout in time to prevent further attacks. {ISSUE_GIVER.LINK} is disappointed."));
+            }
+
+            private TextObject setCommonTextVariables(TextObject text)
+            {
+                text.SetCharacterProperties("PLAYER", Hero.MainHero.CharacterObject);
+                text.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject);
+                return text.SetTextVariable("MINOR_FACTION", MFClan.Name)
+                    .SetTextVariable("TROOP_COUNT", (int)(base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f))
+                    .SetTextVariable("RETURN_DAYS", base.GetTotalAlternativeSolutionDurationInDays())
+                    .SetTextVariable("ISSUE_SETTLEMENT", this._issueSettlement.EncyclopediaLinkWithName)
+                    .SetTextVariable("REWARD", this.RewardGold)
+                    .SetTextVariable("GOLD_ICON", "{=!}<img src=\"General\\Icons\\Coin@2x\" extend=\"8\">");
             }
 
             protected override bool IssueQuestCanBeDuplicated
@@ -385,6 +319,47 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             {
             }
 
+            public override AlternativeSolutionScaleFlag AlternativeSolutionScaleFlags
+            {
+                get => AlternativeSolutionScaleFlag.Casualties | AlternativeSolutionScaleFlag.FailureRisk;
+            }
+
+            public override int AlternativeSolutionBaseNeededMenCount
+            {
+                get => AltSolFinalMenCount;
+            }
+
+            protected override int AlternativeSolutionBaseDurationInDaysInternal
+            {
+                get => 4 + MathF.Ceiling(6f * base.IssueDifficultyMultiplier);
+            }
+
+            protected override int RewardGold
+            {
+                get => 3000;
+            }
+
+            protected override int CompanionSkillRewardXP
+            {
+                get => (int)(1000f + 1250f * base.IssueDifficultyMultiplier);
+            }
+
+            public override bool CanBeCompletedByAI()
+            {
+                return false;
+            }
+
+            public override bool IsThereLordSolution
+            {
+                get => false;
+            }
+
+
+            internal Settlement TargetHideout
+            {
+                get => this._targetHideout;
+            }
+
             private const int AltSolFinalMenCount = 10;
 
             private const int AltSolMinimumTroopTier = 2;
@@ -421,60 +396,62 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 return base.QuestGiver.CurrentSettlement.OwnerClan;
             }
 
-            public override TextObject Title
-            {
-                get => new TextObject("{MINOR_FACTION} Base Near {SETTLEMENT}")
-                        .SetTextVariable("SETTLEMENT", this._questSettlement.Name)
-                        .SetTextVariable("MINOR_FACTION", this._targetHideout.OwnerClan.Name);
-            }
-
             public override bool IsRemainingTimeHidden
             {
                 get => false;
             }
 
+            public override TextObject Title
+            {
+                get => setCommonTextVariables(new TextObject("{MINOR_FACTION} Base Near {QUEST_SETTLEMENT.NAME}"));
+            }
             private TextObject _onQuestStartedLogText
             {
-                get
-                {
-                    TextObject textObject = new TextObject("{=ogsh3V6G}{QUEST_GIVER.LINK}, a headman from {QUEST_SETTLEMENT}, has told you about the hideout of some {MINOR_FACTION} members who have recently been attacking local villagers. You told {?QUEST_GIVER.GENDER}her{?}him{\\?} that you will take care of the situation yourself. {QUEST_GIVER.LINK} also marked the location of the hideout on your map.")
-                        .SetTextVariable("QUEST_SETTLEMENT", this._questSettlement.EncyclopediaLinkWithName)
-                        .SetTextVariable("MINOR_FACTION", this._targetHideout.OwnerClan.Name);
-                    textObject.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
-                    return textObject;
-                }
+                get => setCommonTextVariables(
+                    new TextObject("{=ogsh3V6G}{QUEST_GIVER.LINK}, a headman from {QUEST_SETTLEMENT}, has told you about the hideout of some" +
+                        " {MINOR_FACTION} members who have recently been attacking local villagers. You told {?QUEST_GIVER.GENDER}her{?}him{\\?} " +
+                        "that you will take care of the situation yourself. {QUEST_GIVER.LINK} also marked the location of the hideout on your map."));
             }
-
             private TextObject _onQuestSucceededLogText
             {
-                get
-                {
-                    TextObject textObject = new TextObject("{=SN3pjZiK}You received a message from {QUEST_GIVER.LINK}.\n\"Thank you for clearing out that bandits' nest. Please accept these {REWARD}{GOLD_ICON} denars with our gratitude.\"")
-                        .SetTextVariable("REWARD", this.RewardGold)
-                        .SetTextVariable("GOLD_ICON", "{=!}<img src=\"General\\Icons\\Coin@2x\" extend=\"8\">");
-                    textObject.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
-                    return textObject;
-                }
+                get => setCommonTextVariables(
+                    new TextObject("{=SN3pjZiK}You received a message from {QUEST_GIVER.LINK}.\n\"Thank you for clearing out that bandits' nest. " +
+                        "Please accept these {REWARD}{GOLD_ICON} denars with our gratitude.\""));
             }
-
             private TextObject _onQuestFailedLogText
             {
-                get
-                {
-                    TextObject textObject = new TextObject("{=qsMnnfQ3}You failed to clear the hideout in time to prevent further attacks. {QUEST_GIVER.LINK} is disappointed.");
-                    textObject.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
-                    return textObject;
-                }
+                get => setCommonTextVariables(
+                    new TextObject("{=qsMnnfQ3}You failed to clear the hideout in time to prevent further attacks. {QUEST_GIVER.LINK} is disappointed."));
+            }
+            private TextObject _onHideoutClearedLogText
+            {
+                get => setCommonTextVariables(
+                    new TextObject("{=4Bub0GY6}{MINOR_FACTION} Hideout was cleared by someone else. Your agreement with {QUEST_GIVER.LINK} is canceled."));
+            }
+            private TextObject _onNoLongerAtWarLogText
+            {
+                get => setCommonTextVariables(
+                    new TextObject("{=4Bub0GY6}{SETTLEMENT_FACTION} is no longer at war with {MINOR_FACTION}. Your agreement with {QUEST_GIVER.LINK} is canceled.")
+                        .SetTextVariable("SETTLEMENT_FACTION", this._questSettlement.MapFaction.Name));
+            }
+            private TextObject _onClanDestroyedLogText
+            {
+                get => setCommonTextVariables(
+                    new TextObject("{=4Bub0GY6}The {MINOR_FACTION} are no more. Your agreement with {QUEST_GIVER.LINK} is canceled."));
             }
 
-            private TextObject _onQuestCanceledLogText
+            private TextObject setCommonTextVariables(TextObject text)
             {
-                get
-                {
-                    TextObject textObject = new TextObject("{=4Bub0GY6}Hideout was cleared by someone else. Your agreement with {QUEST_GIVER.LINK} is canceled.");
-                    textObject.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
-                    return textObject;
-                }
+                text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
+                return text.SetTextVariable("MINOR_FACTION", MFClan.Name)
+                    .SetTextVariable("REWARD", this.RewardGold)
+                    .SetTextVariable("QUEST_SETTLEMENT", this._questSettlement.EncyclopediaLinkWithName)
+                    .SetTextVariable("GOLD_ICON", "{=!}<img src=\"General\\Icons\\Coin@2x\" extend=\"8\">");
+            }
+
+            protected Clan MFClan
+            {
+                get => _targetHideout.OwnerClan;
             }
 
             public NearbyMFHideoutIssueQuest(string questId, Hero questGiver, Settlement targetHideout, Settlement questSettlement, int rewardGold, CampaignTime duration) : base(questId, questGiver, duration, rewardGold)
@@ -525,9 +502,8 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 this._targetHideout.IsVisible = true;
                 base.AddTrackedObject(this._targetHideout);
                 QuestHelper.AddMapArrowFromPointToTarget(new TextObject("Direction to Hideout"), this._questSettlement.Position2D, this._targetHideout.Position2D, 5f, 0.1f);
-                TextObject textObject = new TextObject("{=XGa8MkbJ}{QUEST_GIVER.NAME} has marked the hideout on your map");
-                textObject.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
-                MBInformationManager.AddQuickInformation(textObject);
+                MBInformationManager.AddQuickInformation(setCommonTextVariables(
+                    new TextObject("{=XGa8MkbJ}{QUEST_GIVER.NAME} has marked the hideout on your map")));
                 base.AddLog(this._onQuestStartedLogText);
             }
 
@@ -559,12 +535,6 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 }
             }
 
-            private void OnQuestCanceled()
-            {
-                base.AddLog(this._onQuestCanceledLogText);
-                base.CompleteQuestWithFail();
-            }
-
             protected override void OnTimedOut()
             {
                 this.OnQuestFailed(true);
@@ -577,6 +547,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 CampaignEvents.MapEventStarted.AddNonSerializedListener(this, new Action<MapEvent, PartyBase, PartyBase>(this.OnMapEventStarted));
                 CampaignEvents.WarDeclared.AddNonSerializedListener(this, new Action<IFaction, IFaction, DeclareWarAction.DeclareWarDetail>(this.OnWarDeclared));
                 CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, new Action<Clan, Kingdom, Kingdom, ChangeKingdomAction.ChangeKingdomActionDetail, bool>(this.OnClanChangedKingdom));
+                CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, new Action<Clan>(this.OnClanDestroyed));
             }
 
             private void OnMapEventStarted(MapEvent mapEvent, PartyBase attackerParty, PartyBase defenderParty)
@@ -615,7 +586,8 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                     }
                     else if (mapEvent.BattleState == BattleState.AttackerVictory)
                     {
-                        this.OnQuestCanceled();
+                        base.AddLog(this._onHideoutClearedLogText);
+                        base.CompleteQuestWithCancel();
                     }
                 }
             }
@@ -623,13 +595,28 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification = true)
             {
                 if (!FactionManager.IsAtWarAgainstFaction(QuestGiver.MapFaction, _targetHideout.OwnerClan))
-                    this.OnQuestCanceled();
+                {
+                    base.AddLog(this._onNoLongerAtWarLogText);
+                    base.CompleteQuestWithCancel();
+                }
+            }
+
+            private void OnClanDestroyed(Clan clan)
+            {
+                if (MFClan == clan)
+                {
+                    base.AddLog(this._onClanDestroyedLogText);
+                    base.CompleteQuestWithCancel();
+                }
             }
 
             private void OnWarDeclared(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail)
             {
                 if (!FactionManager.IsAtWarAgainstFaction(QuestGiver.MapFaction, _targetHideout.OwnerClan))
-                    this.OnQuestCanceled();
+                {
+                    base.AddLog(this._onNoLongerAtWarLogText);
+                    base.CompleteQuestWithCancel();
+                }
             }
 
             private const int QuestGiverRelationBonus = 5;

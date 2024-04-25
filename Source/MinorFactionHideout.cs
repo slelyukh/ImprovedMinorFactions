@@ -166,12 +166,13 @@ namespace ImprovedMinorFactions
         {
             var militiaParty = this.Settlement.MilitiaPartyComponent.Party;
             var militiaRoster = militiaParty.MemberRoster;
-            var troopList = militiaRoster.GetTroopRoster();
-            CharacterObject troopToUpgrade = null;
             count = MathF.Min(count, (int) this.Settlement.Militia);
-            while (count > 0)
+            int loopCounter = 0;
+            while (count > 0 && loopCounter < 20)
             {
-                foreach (var troop in troopList)
+                CharacterObject troopToUpgrade = null;
+                loopCounter++;
+                foreach (var troop in militiaRoster.GetTroopRoster())
                 {
                     if (troop.Character.UpgradeTargets.Length != 0)
                         troopToUpgrade = troop.Character;
@@ -189,6 +190,8 @@ namespace ImprovedMinorFactions
                     break;
                 }
             }
+            if (loopCounter >= 20)
+                InformationManager.DisplayMessage(new InformationMessage("UPGRADE MILITIA INFINITE LOOP"));
             
         }
 
