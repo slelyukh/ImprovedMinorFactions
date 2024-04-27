@@ -25,7 +25,7 @@ namespace ImprovedMinorFactions.Source
             // Location events
             CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, new Action<IMission>(this.OnMissionEnded));
 
-            // debug listeners
+            // Debug listeners
             CampaignEvents.OnTroopRecruitedEvent.AddNonSerializedListener(this, new Action<Hero, Settlement, Hero, CharacterObject, int>(this.OnTroopRecruited));
             CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, new Action<Hero, Hero, KillCharacterAction.KillCharacterActionDetail, bool>(this.OnHeroKilled));
         }
@@ -34,7 +34,7 @@ namespace ImprovedMinorFactions.Source
         {
             if (!Helpers.isMFHideout(settlement))
                 return;
-            InformationManager.DisplayMessage(new InformationMessage($"{amount} troops recruited by {recruiterHero}"));
+            //InformationManager.DisplayMessage(new InformationMessage($"{amount} troops recruited by {recruiterHero}"));
         }
 
         private void AddMFHLocationCharacters(Settlement settlement)
@@ -127,7 +127,6 @@ namespace ImprovedMinorFactions.Source
         {
             if (victim.IsNotable && Helpers.isMFHideout(victim.CurrentSettlement))
             {
-                // TODO: debug remove
                 InformationManager.DisplayMessage(new InformationMessage($"{victim} died in {victim.CurrentSettlement}"));
                 if (victim.CurrentSettlement != null && victim.CurrentSettlement.OwnerClan.Heroes.Count > 0)
                 {
@@ -144,7 +143,6 @@ namespace ImprovedMinorFactions.Source
 
             if (party != null && party.IsMainParty)
             {
-                InformationManager.DisplayMessage(new InformationMessage($"I have {settlement.OwnerClan.GetRelationWithClan(Clan.PlayerClan)} relation with the {settlement.OwnerClan}"));
                 foreach (Hero notable in settlement.Notables)
                 {
                     notable.SetHasMet();
@@ -157,7 +155,6 @@ namespace ImprovedMinorFactions.Source
                         this.AddMFHLocationCharacters(settlement);
                     else if (MobileParty.MainParty.CurrentSettlement == settlement)
                         AddPartyHero(party, settlement);
-                    // add more if you want non party having notables to be able to be visible while you are here
                 }
             }
         }

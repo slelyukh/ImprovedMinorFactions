@@ -106,7 +106,6 @@ namespace ImprovedMinorFactions
             {
                 if (this.OwnerClan == null)
                 { 
-                    InformationManager.DisplayMessage(new InformationMessage("HIDEOUT HAS NO CLAN CANT ACTIVATE"));
                     return;
                 }
                 Helpers.DetermineBasicTroopsForMinorFactionsCopypasta();
@@ -190,8 +189,8 @@ namespace ImprovedMinorFactions
                     break;
                 }
             }
-            if (loopCounter >= 20)
-                InformationManager.DisplayMessage(new InformationMessage("UPGRADE MILITIA INFINITE LOOP"));
+            // if (loopCounter >= 20)
+                // InformationManager.DisplayMessage(new InformationMessage("UPGRADE MILITIA INFINITE LOOP"));
             
         }
 

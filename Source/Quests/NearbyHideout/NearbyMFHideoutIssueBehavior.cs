@@ -64,8 +64,6 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
         private IssueBase OnIssueSelected(in PotentialIssueData pid, Hero issueOwner)
         {
-            float distance = (pid.RelatedObject as Settlement).GatePosition.Distance(issueOwner.GetMapPoint().Position2D);
-            InformationManager.DisplayMessage(new InformationMessage($"{issueOwner} is {distance} from {(pid.RelatedObject as Settlement).Name}"));
             return new NearbyMFHideoutIssue(issueOwner, pid.RelatedObject as Settlement);
         }
 
