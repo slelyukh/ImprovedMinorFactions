@@ -55,7 +55,7 @@ namespace ImprovedMinorFactions
             {
                 num += DefaultPerks.Tactics.SmallUnitTactics.PrimaryBonus;
             }
-            return TaleWorlds.Library.MathF.Round(num);
+            return MathF.Round(num);
         }
 
         // Not doing anything with notable power atm

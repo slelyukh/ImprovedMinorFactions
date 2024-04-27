@@ -37,7 +37,7 @@ namespace ImprovedMinorFactions
             } else {
                 MinorFactionHideout? mfHideout = GetMFHideout(s);
                 if (mfHideout == null)
-                    throw new Exception("There should not be a non Minor Faction Hideout here. (getprosperityTooltip)");
+                    throw new Exception("There should not be a non Minor Faction Hideout here. (getProsperityTooltip)");
                 return CampaignUIHelper.GetSettlementPropertyTooltip(
                     s, "Hearth", mfHideout.Hearth, mfHideout.HearthChange);
             }
@@ -45,12 +45,15 @@ namespace ImprovedMinorFactions
 
         internal static bool IsEnemyOfMinorFaction(IFaction kingdom, Clan minorFaction)
         {
-            return minorFaction.IsOutlaw && kingdom.IsAtWarWith(minorFaction);
+            return kingdom.IsAtWarWith(minorFaction);
         }
 
+        // a minor faction is a rival of a Kingdom if it is an Outlaw faction and shares a culture with the Kingdom
+        // these factions are always at war unless the Minor Faction is someone's mercenary
         internal static bool IsRivalOfMinorFaction(IFaction faction, Clan minorFaction)
         {
-            return faction != null && minorFaction.IsOutlaw 
+            return faction != null 
+                && minorFaction.IsOutlaw 
                 && (faction.Culture == minorFaction.Culture 
                 || (minorFaction.Culture.GetCultureCode() == CultureCode.Vakken && faction.Culture.GetCultureCode() == CultureCode.Sturgia));
         }
@@ -64,6 +67,7 @@ namespace ImprovedMinorFactions
             return c.Culture != null && c.BasicTroop != c.Culture.BasicTroop;
         }
 
+        // Removes any normal militia units from MFHideout militia party
         internal static int removeMilitiaImposters(Settlement s)
         {
             if (!isMFHideout(s))
@@ -125,7 +129,7 @@ namespace ImprovedMinorFactions
             fieldInfo.SetValue(instance, value);
         }
 
-        // if method is static use null for instance and provide a type
+        // If method is static use null for instance and provide a type
         internal static object callPrivateMethod(object instance, string methodName, object[] args, Type type = null)
         {
             MethodInfo method;

@@ -4,11 +4,9 @@ using System.Linq;
 using Helpers;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
-using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
-using TaleWorlds.CampaignSystem.Issues;
 using TaleWorlds.CampaignSystem.Overlay;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
@@ -61,9 +59,7 @@ namespace ImprovedMinorFactions
         {
             MinorFactionHideout? mfHideout = Helpers.GetMFHideout(mfHideoutParty.Settlement);
             if (mfHideout != null)
-            {
                 mfHideout.IsSpotted = true;
-            }
         }
 
 
@@ -82,7 +78,6 @@ namespace ImprovedMinorFactions
                 {
                     mfHideout.IsSpotted = true;
                     settlement.IsVisible = true;
-
                     CampaignEventDispatcher.Instance.OnHideoutSpotted(MobileParty.MainParty.Party, settlement.Party);
                 }
             }
@@ -144,7 +139,6 @@ namespace ImprovedMinorFactions
                 args.IsEnabled = true;
                 args.Tooltip = new TextObject($"Attacking this hideout will significantly decrease your relation with this Clan");
             }
-            var curSettlement = Settlement.CurrentSettlement;
         }
 
         public bool menu_attack_on_condition(MenuCallbackArgs args)
@@ -155,7 +149,6 @@ namespace ImprovedMinorFactions
 
         public void menu_attack_on_consequence(MenuCallbackArgs args)
         {
-
             int maxPlayerTroops = MFHideoutModels.GetPlayerMaximumTroopCountForRaidMission(MobileParty.MainParty);
             TroopRoster troopRoster = TroopRoster.CreateDummyTroopRoster();
             troopRoster.Add(MobilePartyHelper.GetStrongestAndPriorTroops(MobileParty.MainParty, maxPlayerTroops, true));
@@ -168,14 +161,11 @@ namespace ImprovedMinorFactions
                 maxPlayerTroops, 
                 1
             );
-
-            Settlement curSettlement = Settlement.CurrentSettlement;
         }
 
         public bool menu_hostile_action_on_condition(MenuCallbackArgs args)
         {
             args.optionLeaveType = Options.LeaveType.Submenu;
-            Settlement curSettlement = Settlement.CurrentSettlement;
             args.Tooltip = new TextObject($"Taking hostile action will start a war between you and this Clan or whoever hired them.");
             return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
         }
@@ -230,20 +220,15 @@ namespace ImprovedMinorFactions
 
         private void menu_leave_on_consequence(MenuCallbackArgs args)
         {
-            Settlement currentSettlement = Settlement.CurrentSettlement;
             if (MobileParty.MainParty.CurrentSettlement != null)
-            {
                 PlayerEncounter.LeaveSettlement();
-            }
             PlayerEncounter.Finish(true);
         }
 
         private void wait_menu_on_init(MenuCallbackArgs args)
         {
             if (PlayerEncounter.Current != null)
-            {
                 PlayerEncounter.Current.IsPlayerWaiting = true;
-            }
         }
         public bool wait_menu_start_on_condition(MenuCallbackArgs args)
         {
@@ -255,9 +240,7 @@ namespace ImprovedMinorFactions
         {
             this._hideoutWaitProgressHours += (float)dt.ToHours;
             if (this._hideoutWaitTargetHours.ApproximatelyEqualsTo(0f, 1E-05f))
-            {
                 this.CalculateHideoutAttackTime();
-            }
             //args.MenuContext.GameMenu.SetProgressOfWaitingInMenu(this._hideoutWaitProgressHours / this._hideoutWaitTargetHours); NIGHT MODE
 
             SwitchToMenuIfThereIsAnInterrupt(args.MenuContext.GameMenu.StringId);
@@ -269,6 +252,7 @@ namespace ImprovedMinorFactions
             SwitchToMenuIfThereIsAnInterrupt(args.MenuContext.GameMenu.StringId);
         }
 
+        // Moves player out of wait menu if anything of note occurs
         private void SwitchToMenuIfThereIsAnInterrupt(string currentMenuId)
         {
             string genericStateMenu = Campaign.Current.Models.EncounterGameMenuModel.GetGenericStateMenu();
@@ -282,8 +266,6 @@ namespace ImprovedMinorFactions
                 GameMenu.ExitToLast();
             }
         }
-
-
 
         private bool IsHideoutAttackableNow()
         {
@@ -314,16 +296,9 @@ namespace ImprovedMinorFactions
             Campaign.Current.GameMenuManager.MenuLocations.Clear();
             Settlement settlement = ((Settlement.CurrentSettlement == null) ? MobileParty.MainParty.CurrentSettlement : Settlement.CurrentSettlement);
             if (menuID == "mf_hideout_place")
-            {
                 Campaign.Current.GameMenuManager.MenuLocations.Add(settlement.LocationComplex.GetLocationWithId("mf_hideout_center"));
-            }
-            else if (menuID == "mf_hideout_wait")
-            {
-                // nothing for now
-            }
         }
         
-
         private void game_menu_hideout_place_on_init(MenuCallbackArgs args)
         {
             Settlement curSettlement = Settlement.CurrentSettlement;
@@ -335,46 +310,31 @@ namespace ImprovedMinorFactions
             UpdateMenuLocations(args.MenuContext.GameMenu.StringId);
             this._hideoutWaitProgressHours = 0f;
             if (!this.IsHideoutAttackableNow())
-            {
                 this.CalculateHideoutAttackTime();
-            }
             else
-            {
                 this._hideoutWaitTargetHours = 0f;
-            }
 
-            // TODO: clean ur mess
             int num = 1;
             if (!mfHideout.NextPossibleAttackTime.IsPast)
-            {
                 GameTexts.SetVariable("MF_HIDEOUT_TEXT", "The remains of a fire suggest that it's been recently occupied, but its residents - whoever they are - are well-hidden for now.");
-            }
             else if (num > 0)
-            {
-                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "You see armed men moving about. As you listen quietly, you hear scraps of conversation about raids, ransoms, and the best places to waylay travellers.");
-            }
+                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "You see armed men moving about. As you listen quietly, " +
+                    "you hear scraps of conversation about raids, ransoms, and the best places to waylay travellers.");
             else
-            {
                 GameTexts.SetVariable("MF_HIDEOUT_TEXT", "There seems to be no one inside.");
-            }
+            
             if (mfHideout.NextPossibleAttackTime.IsPast && num > 0 && Hero.MainHero.IsWounded)
-            {
                 GameTexts.SetVariable("MF_HIDEOUT_TEXT", "You can not attack since your wounds do not allow you.");
-            }
+
             if (MobileParty.MainParty.CurrentSettlement == null)
-            {
                 PlayerEncounter.EnterSettlement();
-            }
-            bool isActive = mfHideout.IsActive;
 
             if (PlayerEncounter.Battle != null)
             {
                 bool playerWon = PlayerEncounter.Battle.WinningSide == PlayerEncounter.Current.PlayerSide;
                 PlayerEncounter.Update();
                 if (curSettlement != null && playerWon)
-                {
                     this.SetCleanHideoutRelations(mfHideout);
-                }
             }
         }
 
@@ -405,30 +365,22 @@ namespace ImprovedMinorFactions
             List<Settlement> nearbyVillages = new List<Settlement>();
             foreach (Village village in Village.All)
             {
-                if (village.Settlement.Position2D.DistanceSquared(settlement.Position2D) <= 1600f)
-                {
+                if (village.Settlement.Position2D.DistanceSquared(settlement.Position2D) <= MaxDistanceSquaredBetweenHideoutAndBoundVillage)
                     nearbyVillages.Add(village.Settlement);
-                }
             }
             foreach (Settlement village in nearbyVillages)
             {
                 if (settlement.Notables.Count > 0)
-                {
                     ChangeRelationAction.ApplyPlayerRelation(village.Notables.GetRandomElement<Hero>(), 2, true, false);
-                }
             }
             if (Hero.MainHero.GetPerkValue(DefaultPerks.Charm.EffortForThePeople))
             {
                 Town town = SettlementHelper.FindNearestTown(null, settlement).Town;
                 Hero leader = town.OwnerClan.Leader;
                 if (leader == Hero.MainHero)
-                {
                     town.Loyalty += 1f;
-                }
                 else
-                {
                     ChangeRelationAction.ApplyPlayerRelation(leader, (int)DefaultPerks.Charm.EffortForThePeople.PrimaryBonus, true, true);
-                }
             }
             MBTextManager.SetTextVariable("RELATION_VALUE", (int)DefaultPerks.Charm.EffortForThePeople.PrimaryBonus);
             MBInformationManager.AddQuickInformation(new TextObject("{=o0qwDa0q}Your relation increased by {RELATION_VALUE} with nearby notables.", null), 0, null, "");
@@ -496,7 +448,7 @@ namespace ImprovedMinorFactions
         {
             return !character.IsPlayerCharacter && !character.IsNotTransferableInHideouts;
         }
-        // TODO: use this???
+
         private const int MaxDistanceSquaredBetweenHideoutAndBoundVillage = 1600;
 
         private readonly int CanAttackHideoutStart = 23;
