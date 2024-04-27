@@ -12,7 +12,7 @@ using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
-    // Assumes 1 active hideout per Minor Faction
+    // gives MF Clans income from their hideouts
     [HarmonyPatch(typeof(DefaultClanFinanceModel), "AddSettlementIncome")]
     public class AddSettlementIncomePatch
     {

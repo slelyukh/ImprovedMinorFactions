@@ -10,26 +10,25 @@ using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions.Patches
 {
+    // Tooltip crash preventer
     [HarmonyPatch(typeof(CampaignUIHelper), "GetVillageMilitiaTooltip")]
     class CampaignUIHelperVillageMilitiaTooltipPatch
     {
         static bool Prefix(ref List<TooltipProperty> __result, Village village)
         {
-
             if (village != null)
                 return true;
             Settlement curSettlement = Settlement.CurrentSettlement;
             MinorFactionHideout? mfHideout = Helpers.GetMFHideout(curSettlement);
             if (mfHideout == null)
-            {
                 return true;
-            }
             __result = CampaignUIHelper.GetSettlementPropertyTooltip(
                 curSettlement, new TextObject("Militia").ToString(), curSettlement.Militia, mfHideout.MilitiaChange);
             return false;
         }
     }
 
+    // Tooltip crash preventer
     [HarmonyPatch(typeof(CampaignUIHelper), "GetVillageProsperityTooltip")]
     class CampaignUIHelperVillageProsperityTooltipPatch
     {
@@ -48,6 +47,7 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
+    // another crash preventer copypasta
     [HarmonyPatch(typeof(SettlementMenuOverlayVM), "UpdateProperties")]
     public class SettlementMenuOverlayVMPatch
     {

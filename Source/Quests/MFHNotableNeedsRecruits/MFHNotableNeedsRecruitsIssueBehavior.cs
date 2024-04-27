@@ -276,7 +276,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     relationHero = issueGiver;
                 }
                 if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction as Kingdom, issueGiver.Clan))
+                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
                 {
                     flag |= PreconditionFlags.AtWar;
                 }

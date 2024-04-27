@@ -6,6 +6,7 @@ using TaleWorlds.CampaignSystem.Encounters;
 
 namespace ImprovedMinorFactions.Patches
 {
+    // makes sure MFHideout boss fights have correct dialog
     [HarmonyPatch(typeof(HideoutConversationsCampaignBehavior), "bandit_hideout_start_defender_on_condition")]
     public class BanditHideoutStartDefenderOnConditionPatch
     {
@@ -21,12 +22,11 @@ namespace ImprovedMinorFactions.Patches
             {
                 return;
             }
-            var test = PlayerEncounter.Current;
-            // TODO: if I make this not a hideout battle I need a new if statement
             __result = encounteredParty.Settlement.OwnerClan.IsMinorFaction && PlayerEncounter.Battle?.IsHideoutBattle == true;
         }
     }
 
+    // prevents MFHideout boss fight from using castle guard dialog
     [HarmonyPatch(typeof(GuardsCampaignBehavior), "conversation_guard_start_on_condition")]
     public class GuardStartOnConditionPatch
     {

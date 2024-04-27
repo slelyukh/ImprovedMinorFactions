@@ -9,6 +9,7 @@ using TaleWorlds.Core;
 
 namespace ImprovedMinorFactions.Patches
 {
+    // taken from Bannerlord Co-op mod to prevent gametext crashes with some patches
     [HarmonyPatchCategory("HarmonyStaticFixes")]
     [HarmonyPatch(typeof(GameTexts))]
     internal class GameTextsPatches

@@ -11,7 +11,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
-    // this should allow mfHideout notables to have quests
+    // allows MFHideout notables to have quests by adding MFHideouts to list of settlements with notables
     [HarmonyPatch(typeof(IssuesCampaignBehavior), "OnSessionLaunched")]
     public class NeedsSpecialWeaponsPatch
     {
@@ -26,6 +26,8 @@ namespace ImprovedMinorFactions.Source.Patches
         }
     }
 
+    // mostly copypasta that allows MF lords to have quests by raising the maximum amount of quests in a clan to 25% instead of 20%
+    // because MF Clans only have 4 members
     [HarmonyPatch(typeof(IssuesCampaignBehavior), "DailyTickClan")]
     public class DailyTickClanPatch
     {
@@ -41,11 +43,13 @@ namespace ImprovedMinorFactions.Source.Patches
             int numLords = Enumerable.Count<Hero>(
                 clan.Heroes, (Hero x) => x.IsAlive && !x.IsChild && x.IsLord);
             int maxIssues = MathF.Ceiling((float)numLords * 0.1f);
+
+            // the constant is 0.2f in the original method
             int minIssues = MathF.Floor((float)numLords * 0.25f);
             float issueGenerationChance = MathF.Pow((1f - ((float)numOccupiedLords / (float)minIssues)), 2f) * 0.3f;
-            if (minIssues > 0 && 
-                numOccupiedLords < minIssues && 
-                (numOccupiedLords < maxIssues || MBRandom.RandomFloat < issueGenerationChance))
+            if (minIssues > 0 
+                && numOccupiedLords < minIssues 
+                && (numOccupiedLords < maxIssues || MBRandom.RandomFloat < issueGenerationChance))
             {
                 Helpers.callPrivateMethod(__instance, "CreateAnIssueForClanNobles", new object[] { clan, numFreeIssues + 1 });
             }

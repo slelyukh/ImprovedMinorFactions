@@ -11,7 +11,7 @@ using TaleWorlds.CampaignSystem.Party;
 
 namespace ImprovedMinorFactions.Patches
 {
-    // Nasty Nasty recursive Harmony patch
+    // Nasty Nasty recursive Harmony patch that moves the HomeSettlement of MF lords after their hideout gets raided
     [HarmonyPatch(typeof(Clan), "set_HomeSettlement")]
     public class ClanSetHomeSettlementPatch
     {

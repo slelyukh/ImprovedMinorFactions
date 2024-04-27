@@ -5,21 +5,17 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Patches
 {
-
+    // make ShowHideouts cheat also show MFHideouts
     [HarmonyPatch(typeof(CampaignCheats), "ShowHideouts")]
     public class ShowHideoutsPatch
     {
         static void Postfix(List<string> strings)
         {
             if (!CampaignCheats.CheckCheatUsage(ref CampaignCheats.ErrorType))
-            {
                 return;
-            }
             int num;
             if (!CampaignCheats.CheckParameters(strings, 1) || CampaignCheats.CheckHelp(strings) || !int.TryParse(strings[0], out num) || (num != 1 && num != 2))
-            {
                 return;
-            }
 
             foreach (Settlement settlement in Settlement.All)
             {

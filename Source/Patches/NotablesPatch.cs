@@ -7,13 +7,10 @@ using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
-using TaleWorlds.CampaignSystem.GameComponents;
-using TaleWorlds.CampaignSystem.MapEvents;
-using TaleWorlds.CampaignSystem.Party;
-using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
+    // prevents MFNotables from disappearing for having too little Power
     [HarmonyPatch(typeof(NotablesCampaignBehavior), "CheckAndMakeNotableDisappear")]
     public class CheckAndMakeNotableDisappearPatch
     {
@@ -21,15 +18,14 @@ namespace ImprovedMinorFactions.Source.Patches
         {
             if(!Helpers.isMFHideout(notable.CurrentSettlement))
                 return true;
-            // not making MFH lords disappear rn
             return false;
         }
     }
 
+    // method prevents default OnHeroKilled from running with a similar version running in MFHNotablesCampaignBehavior instead
     [HarmonyPatch(typeof(NotablesCampaignBehavior), "OnHeroKilled")]
     public class OnHeroKilledPatch
     {
-        // method is copypastad in MFHNotablesCampaignBehavior so the default should not run.
         static bool Prefix(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
         {
             if (!Helpers.isMFHideout(victim.CurrentSettlement))
@@ -38,6 +34,7 @@ namespace ImprovedMinorFactions.Source.Patches
         }
     }
 
+    // prevent usual Power degradation for MFHideout Notables
     [HarmonyPatch(typeof(NotablePowerManagementBehavior), "DailyTickHero")]
     public class DailyTickHeroPatch
     {

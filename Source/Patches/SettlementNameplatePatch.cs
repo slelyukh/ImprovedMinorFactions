@@ -12,12 +12,12 @@ using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions.Patches
 {
+    // adds nameplates for MFHideouts
     [HarmonyPatch(typeof(SettlementNameplatesVM), "Initialize")]
     public class SettlementNameplatesVMInitializePatch
     {
         static void Postfix(SettlementNameplatesVM __instance, IEnumerable<Tuple<Settlement, GameEntity>> settlements)
         {
-            // TODO: check if manager is initialized
             MFHideoutManager.initManagerIfNone();
 
             MFHideoutManager.Current._allMFHideouts =
@@ -28,25 +28,19 @@ namespace ImprovedMinorFactions.Patches
             List<SettlementNameplateVM> mfhNameplates = new List<SettlementNameplateVM>();
             foreach (var nameplate in __instance.Nameplates)
             {
-                
                 if (Helpers.isMFHideout(nameplate.Settlement))
-                {
                     mfhNameplates.Add(nameplate);
-                }
-                    
             }
 
             foreach (var nameplate in mfhNameplates)
             {
                 if (!Helpers.GetMFHideout(nameplate.Settlement).IsSpotted)
-                {
-                    var removed = __instance.Nameplates.Remove(nameplate);
-                }
+                    __instance.Nameplates.Remove(nameplate);
             }
         }
     }
 
-    // nameplate or nameplates??
+    // Crash preventer for MFHideout Settlement Nameplates
     [HarmonyPatch(typeof(SettlementNameplatesVM), "OnPartyBaseVisibilityChange")]
     public class SettlementNameplateVMOnPartyVisibilityPatch
     {
@@ -71,9 +65,7 @@ namespace ImprovedMinorFactions.Patches
                     newNameplate.RefreshRelationStatus();
                 }
                 if (!party.IsVisible && nameplate != null)
-                {
                     __instance.Nameplates.Remove(nameplate);
-                }
             }
         }
     }

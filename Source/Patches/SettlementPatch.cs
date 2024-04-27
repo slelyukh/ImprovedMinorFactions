@@ -19,9 +19,7 @@ namespace ImprovedMinorFactions.Patches
             {
                 MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
                 if (mfHideout != null)
-                {
                     __result = mfHideout.MapFaction;
-                }
             }
         }
     }
@@ -36,13 +34,12 @@ namespace ImprovedMinorFactions.Patches
             {
                 MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
                 if (mfHideout != null)
-                {
                     __result = mfHideout.OwnerClan;
-                }
             }
         }
     }
 
+    // Prevents MFHideouts from having militia troops added and instead adds MF Basic Troops
     [HarmonyPatch(typeof(Settlement), "AddMilitiasToParty")]
     public class SettlementMilitiasPatch
     {
@@ -52,49 +49,25 @@ namespace ImprovedMinorFactions.Patches
             if (mfHideout == null)
                 return true;
 
-            // TODO: remove other lines and only have this
-            //if (!Helpers.IsMFClanInitialized(mfHideout.OwnerClan))
-            //    return false;
-
-            // Reflection to call private method
-            var methodInfo = __instance.GetType().GetMethod("AddTroopToMilitiaParty", BindingFlags.NonPublic | BindingFlags.Instance);
             int removedImposters = Helpers.removeMilitiaImposters(__instance);
-            methodInfo.Invoke(__instance, new object[] { militaParty, Helpers.GetBasicTroop(mfHideout.OwnerClan), Helpers.GetBasicTroop(mfHideout.OwnerClan), 1f, militiaToAdd + removedImposters });
+            Helpers.callPrivateMethod(__instance, "AddTroopToMilitiaParty", 
+                new object[] { militaParty, Helpers.GetBasicTroop(mfHideout.OwnerClan), Helpers.GetBasicTroop(mfHideout.OwnerClan), 1f, militiaToAdd + removedImposters });
 
             return false;
         }
     }
 
-
-    //TODO: move this to campaign patches
-    [HarmonyPatch(typeof(Campaign), "DailyTickSettlement")]
-    public class CampaignSettlementTickPatch
-    {
-        static void Postfix(Campaign __instance, Settlement settlement)
-        {
-            MinorFactionHideout? mfHideout = Helpers.GetMFHideout(settlement);
-            if (mfHideout == null || !mfHideout.IsActive)
-                return;
-            mfHideout.DailyTick();
-        }
-    }
-
+    // XML deserialization for MFHideouts
     [HarmonyPatch(typeof(Settlement), "Deserialize")]
     public class SettlementDeserializePatch
     {
         static void Postfix(Settlement __instance, MBObjectManager objectManager, XmlNode node)
         {
-
-            if (__instance.IsHideout)
-            {
-                // bla
-            }
-            // SettlementComponent assumed to be initialized at this point
             MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
             if (mfHideout == null)
                 return;
 
-            // broken saves manager...
+            // manual fix of MFHideouts not saving properly bug
             if (MFHideoutManager.Current != null && MFHideoutManager.Current.GetLoadedMFHideout(mfHideout.StringId) != null)
             {
                 var loadedMfh = MFHideoutManager.Current.GetLoadedMFHideout(mfHideout.StringId);
@@ -104,22 +77,17 @@ namespace ImprovedMinorFactions.Patches
                     if (child.Name != "Components")
                         continue;
                     XmlNode mfhNode = child.FirstChild;
-                    // UPDATES BUG: this code copies MBObjectManager.CreateObjectFromXmlNode
                     loadedMfh.Deserialize(MBObjectManager.Instance, mfhNode);
                     loadedMfh.AfterInitialized();
                 }
             }
 
-            // New game code
-            MBObjectBase objBase = __instance;
-            // normally this line is if objBase !isInitialized but it claims to be initialized even when there is no Owner
+            // Settlement deserialization does not set clan owner properly so we need to do it manually
             if (__instance.OwnerClan == null)
             {
                 Clan clan = objectManager.ReadObjectReferenceFromXml<Clan>("owner", node);
                 if (clan != null)
-                {
                     mfHideout.OwnerClan = clan;
-                }
             }
         }
     }

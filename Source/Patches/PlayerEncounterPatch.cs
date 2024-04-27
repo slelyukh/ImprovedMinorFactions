@@ -24,20 +24,20 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
+    // allows MFHideouts to have a HideoutBattle
     [HarmonyPatch(typeof(PlayerEncounter), "StartBattleInternal")]
     public class StartBattleInternalPatch
     {
         static bool Prefix(ref MapEvent __result, PlayerEncounter __instance,
             ref PartyBase ____defenderParty, ref PartyBase ____attackerParty, ref MapEvent ____mapEvent)
         {
-
-            if (____mapEvent == null && ____defenderParty != null &&
-                ____defenderParty.IsSettlement && Helpers.isMFHideout(____defenderParty.Settlement))
+            if (____mapEvent == null 
+                && ____defenderParty != null 
+                && ____defenderParty.IsSettlement 
+                && Helpers.isMFHideout(____defenderParty.Settlement))
             {
                 Helpers.setPrivateField(__instance, "_mapEvent", HideoutEventComponent.CreateHideoutEvent(____attackerParty, ____defenderParty).MapEvent);
-                //____mapEvent = HideoutEventComponent.CreateHideoutEvent(____attackerParty, ____defenderParty).MapEvent;
-                var method = __instance.GetType().GetMethod("CheckNearbyPartiesToJoinPlayerMapEvent", BindingFlags.NonPublic | BindingFlags.Instance);
-                method.Invoke(__instance, new object[] { });
+                Helpers.callPrivateMethod(__instance, "CheckNearbyPartiesToJoinPlayerMapEvent", new object[] { });
                 __result = ____mapEvent;
                 return false;
             }
@@ -47,6 +47,7 @@ namespace ImprovedMinorFactions.Patches
             }
         }
     }
+
     [HarmonyPatch(typeof(DefaultEncounterModel), "GetDefenderPartiesOfSettlement")]
     public class GetDefenderPartiesOfSettlementPatch
     {
@@ -54,14 +55,12 @@ namespace ImprovedMinorFactions.Patches
         {
             var mfHideout = Helpers.GetMFHideout(settlement);
             if (__result == null || mfHideout != null)
-            {
                 __result = mfHideout.GetDefenderParties(mapEventType);
-            }
         }
     }
 
 
-    // copypasta
+    // copypasta with crash causing parts removed
     [HarmonyPatch(typeof(PlayerEncounter), "DoEnd")]
     public class DoEndPatch
     {
@@ -112,7 +111,7 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
-    // copypasta
+    // copypasta with crash causing parts removed
     [HarmonyPatch(typeof(PlayerEncounter), "DoWait")]
     public class DoWaitPatch
     {

@@ -3,10 +3,10 @@ using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
-using TaleWorlds.CampaignSystem.GameComponents;
 
 namespace ImprovedMinorFactions.Patches
 {
+    // allows MFHideouts to have recruits
     [HarmonyPatch(typeof(RecruitmentCampaignBehavior), "UpdateVolunteersOfNotablesInSettlement")]
     class RecruitmentUpdateNotableVolunteersPatch
     {
@@ -75,20 +75,6 @@ namespace ImprovedMinorFactions.Patches
                     }
                 }
             }
-        }
-    }
-
-    // DEBUG
-    [HarmonyPatch(typeof(DefaultVolunteerModel), "MaximumIndexHeroCanRecruitFromHero")]
-    class DefaultVolunteerModelPatch
-    {
-        static void Postfix(int __result, Hero buyerHero, Hero sellerHero, int useValueAsRelation = -101)
-        {
-            var mfHideout = Helpers.GetMFHideout(sellerHero.CurrentSettlement);
-            if (mfHideout == null)
-                return;
-            //InformationManager.DisplayMessage(new InformationMessage($"{buyerHero} can recruit max index {__result}"));
-            
         }
     }
 }

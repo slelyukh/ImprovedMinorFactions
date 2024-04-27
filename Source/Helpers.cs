@@ -5,6 +5,7 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem.ViewModelCollection;
+using TaleWorlds.Core;
 using TaleWorlds.Core.ViewModelCollection.Information;
 
 namespace ImprovedMinorFactions
@@ -47,9 +48,11 @@ namespace ImprovedMinorFactions
             return minorFaction.IsOutlaw && kingdom.IsAtWarWith(minorFaction);
         }
 
-        internal static bool IsRivalOfMinorFaction(Kingdom kingdom, Clan minorFaction)
+        internal static bool IsRivalOfMinorFaction(IFaction faction, Clan minorFaction)
         {
-            return kingdom != null && minorFaction.IsOutlaw && kingdom.Culture == minorFaction.Culture;
+            return faction != null && minorFaction.IsOutlaw 
+                && (faction.Culture == minorFaction.Culture 
+                || (minorFaction.Culture.GetCultureCode() == CultureCode.Vakken && faction.Culture.GetCultureCode() == CultureCode.Sturgia));
         }
 
         internal static MinorFactionHideout GetMFHideout(Settlement s)
