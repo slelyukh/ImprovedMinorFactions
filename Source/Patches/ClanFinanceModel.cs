@@ -83,16 +83,4 @@ namespace ImprovedMinorFactions.Source.Patches
             return _previousModel.RevenueSmoothenFraction();
         }
     }
-
-    //[HarmonyPatch(typeof(DefaultClanFinanceModel), "AddSettlementIncome")]
-    //public class AddSettlementIncomePatch
-    //{
-    //    static void Postfix(Clan clan, ref ExplainedNumber goldChange, bool applyWithdrawals, bool includeDetails)
-    //    {
-    //        var mfHideout = MFHideoutManager.Current.GetHideoutOfClan(clan);
-    //        if (mfHideout == null)
-    //            return;
-    //        goldChange.Add(MFHideoutModels.CalculateHideoutIncome(mfHideout), new TextObject("Hideout Income"), mfHideout.Name);
-    //    }
-    //}
 }

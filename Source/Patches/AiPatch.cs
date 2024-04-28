@@ -60,16 +60,4 @@ namespace ImprovedMinorFactions.Patches
             return _previousModel.GetTargetScoreForFaction(targetSettlement, missionType, mobileParty, ourStrength, numberOfEnemyFactionSettlements, totalEnemyMobilePartyStrength);
         }
     }
-
-    //[HarmonyPatch(typeof(DefaultTargetScoreCalculatingModel), "CalculatePatrollingScoreForSettlement")]
-    //public class CalculatePatrollingScoreForSettlementPatch
-    //{
-    //    static void Postfix(ref float __result, Settlement settlement, MobileParty mobileParty)
-    //    {
-    //        if (!Helpers.isMFHideout(settlement) || !mobileParty.ActualClan.IsMinorFaction)
-    //            return;
-    //        __result *= 3;
-    //    }
-    //}
-
 }

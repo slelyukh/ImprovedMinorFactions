@@ -47,16 +47,4 @@ namespace ImprovedMinorFactions.Source.Patches
             return _previousModel.GetPlayerMaximumTroopCountForHideoutMission(party);
         }
     }
-
-    // No limit for Minor Faction Hideouts :)
-    //[HarmonyPatch(typeof(DefaultBanditDensityModel), "get_NumberOfMaximumTroopCountForFirstFightInHideout")]
-    //public class DefaultMaxTroopsFirstHideoutBattlePatch
-    //{
-    //    static void Postfix(ref int __result)
-    //    {
-    //        if (Settlement.CurrentSettlement == null || !Helpers.isMFHideout(Settlement.CurrentSettlement))
-    //            return;
-    //        __result = 150;
-    //    }
-    //}
 }

@@ -73,15 +73,4 @@ namespace ImprovedMinorFactions.Source.Patches
             return _previousModel.IsEncounterExemptFromHostileActions(side1, side2);
         }
     }
-
-    //[HarmonyPatch(typeof(DefaultEncounterModel), "GetDefenderPartiesOfSettlement")]
-    //public class GetDefenderPartiesOfSettlementPatch
-    //{
-    //    static void Postfix(ref IEnumerable<PartyBase> __result, Settlement settlement, MapEvent.BattleTypes mapEventType)
-    //    {
-    //        var mfHideout = Helpers.GetMFHideout(settlement);
-    //        if (__result == null || mfHideout != null)
-    //            __result = mfHideout.GetDefenderParties(mapEventType);
-    //    }
-    //}
 }

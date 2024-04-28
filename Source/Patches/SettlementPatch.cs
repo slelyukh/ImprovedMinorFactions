@@ -5,7 +5,6 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
 using TaleWorlds.CampaignSystem.Party;
-using System.Reflection;
 
 namespace ImprovedMinorFactions.Patches
 {
@@ -15,12 +14,9 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(ref IFaction __result, Settlement __instance)
         {
-            if (__result == null)
-            {
-                MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
-                if (mfHideout != null)
-                    __result = mfHideout.MapFaction;
-            }
+            MinorFactionHideout mfHideout = Helpers.GetMFHideout(__instance);
+            if (mfHideout != null)
+                __result = mfHideout.MapFaction;
         }
     }
 
@@ -30,12 +26,9 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(ref IFaction __result, Settlement __instance)
         {
-            if (__result == null)
-            {
-                MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
-                if (mfHideout != null)
-                    __result = mfHideout.OwnerClan;
-            }
+            MinorFactionHideout mfHideout = Helpers.GetMFHideout(__instance);
+            if (mfHideout != null)
+                __result = mfHideout.OwnerClan;
         }
     }
 
