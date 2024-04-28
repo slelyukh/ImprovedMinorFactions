@@ -1,5 +1,7 @@
 ﻿using HarmonyLib;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CampaignBehaviors.AiBehaviors;
+using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -21,16 +23,53 @@ namespace ImprovedMinorFactions.Patches
     }
 
     // make minor faction lords more likely to patrol their hideouts
-    [HarmonyPatch(typeof(DefaultTargetScoreCalculatingModel), "CalculatePatrollingScoreForSettlement")]
-    public class CalculatePatrollingScoreForSettlementPatch
+    internal class IMFTargetScoreCalculatingModel : TargetScoreCalculatingModel
     {
-        static void Postfix(ref float __result, Settlement settlement, MobileParty mobileParty)
+        TargetScoreCalculatingModel _previousModel;
+
+        public IMFTargetScoreCalculatingModel(TargetScoreCalculatingModel previousModel)
         {
-            if (!Helpers.isMFHideout(settlement) || !mobileParty.ActualClan.IsMinorFaction)
-                return;
-            __result *= 3;
+            _previousModel = previousModel;
+        }
+
+        public override float TravelingToAssignmentFactor => _previousModel.TravelingToAssignmentFactor;
+
+        public override float BesiegingFactor => _previousModel.BesiegingFactor;
+
+        public override float AssaultingTownFactor => _previousModel.AssaultingTownFactor;
+
+        public override float RaidingFactor => _previousModel.RaidingFactor;
+
+        public override float DefendingFactor => _previousModel.DefendingFactor;
+
+        public override float CalculatePatrollingScoreForSettlement(Settlement targetSettlement, MobileParty mobileParty)
+        {
+            float result = _previousModel.CalculatePatrollingScoreForSettlement(targetSettlement, mobileParty);
+            if (!Helpers.isMFHideout(targetSettlement) || !mobileParty.ActualClan.IsMinorFaction)
+                return result;
+            return result * 3;
+        }
+
+        public override float CurrentObjectiveValue(MobileParty mobileParty)
+        {
+            return _previousModel.CurrentObjectiveValue(mobileParty);
+        }
+
+        public override float GetTargetScoreForFaction(Settlement targetSettlement, Army.ArmyTypes missionType, MobileParty mobileParty, float ourStrength, int numberOfEnemyFactionSettlements = -1, float totalEnemyMobilePartyStrength = -1)
+        {
+            return _previousModel.GetTargetScoreForFaction(targetSettlement, missionType, mobileParty, ourStrength, numberOfEnemyFactionSettlements, totalEnemyMobilePartyStrength);
         }
     }
 
-    
+    //[HarmonyPatch(typeof(DefaultTargetScoreCalculatingModel), "CalculatePatrollingScoreForSettlement")]
+    //public class CalculatePatrollingScoreForSettlementPatch
+    //{
+    //    static void Postfix(ref float __result, Settlement settlement, MobileParty mobileParty)
+    //    {
+    //        if (!Helpers.isMFHideout(settlement) || !mobileParty.ActualClan.IsMinorFaction)
+    //            return;
+    //        __result *= 3;
+    //    }
+    //}
+
 }

@@ -48,18 +48,6 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
-    [HarmonyPatch(typeof(DefaultEncounterModel), "GetDefenderPartiesOfSettlement")]
-    public class GetDefenderPartiesOfSettlementPatch
-    {
-        static void Postfix(ref IEnumerable<PartyBase> __result, Settlement settlement, MapEvent.BattleTypes mapEventType)
-        {
-            var mfHideout = Helpers.GetMFHideout(settlement);
-            if (__result == null || mfHideout != null)
-                __result = mfHideout.GetDefenderParties(mapEventType);
-        }
-    }
-
-
     // copypasta with crash causing parts removed
     [HarmonyPatch(typeof(PlayerEncounter), "DoEnd")]
     public class DoEndPatch
