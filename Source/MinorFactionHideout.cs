@@ -16,7 +16,7 @@ namespace ImprovedMinorFactions
 
     public class MFHideoutTypeDefiner : SaveableTypeDefiner
     {
-        public MFHideoutTypeDefiner() : base(231_346_751)
+        public MFHideoutTypeDefiner() : base(792_346_751)
         {
         }
 
@@ -30,7 +30,6 @@ namespace ImprovedMinorFactions
             base.ConstructContainerDefinition(typeof(List<MinorFactionHideout>));
             base.ConstructContainerDefinition(typeof(Dictionary<MBGUID, MinorFactionHideout>));
             base.ConstructContainerDefinition(typeof(Dictionary<string, MinorFactionHideout>));
-
         }
     }
     public class MinorFactionHideout : SettlementComponent, ISpottable
@@ -45,7 +44,7 @@ namespace ImprovedMinorFactions
         [LoadInitializationCallback]
         private void OnLoad()
         {
-            MFHideoutManager.initManagerIfNone();
+            MFHideoutManager.InitManagerIfNone();
             MFHideoutManager.Current.AddLoadedMFHideout(this);
         }
 
@@ -78,6 +77,12 @@ namespace ImprovedMinorFactions
 
         public void ActivateHideoutFirstTime()
         {
+            if (MFHideoutManager.Current.GetHideoutOfClan(this.OwnerClan) != null)
+            {
+                InformationManager.DisplayMessage(new InformationMessage($"{this.Name} Double Activated!!!!", Color.Black));
+                throw new System.Exception("double clan activation");
+            }
+
             var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.Preacher, this.Settlement);
             RenameHeroToNewOccupation(notable1, Occupation.GangLeader, 1);
             notable1.IsMinorFactionHero = true;
@@ -110,7 +115,7 @@ namespace ImprovedMinorFactions
                 }
                 Helpers.DetermineBasicTroopsForMinorFactionsCopypasta();
             }
-            
+
             this._isActive = true;
             this._isSpotted = false;
 
@@ -137,7 +142,7 @@ namespace ImprovedMinorFactions
         public void MoveHideouts(MinorFactionHideout newHideout)
         {
             // TODO: move hideout inventory
-            List<Hero> notables = this.Settlement.Notables.ToList<Hero>();
+            List<Hero> notables = this.Settlement.Notables.ToList();
             newHideout.ActivateHideout(notables);
             this.DeactivateHideout();
         }
@@ -206,7 +211,6 @@ namespace ImprovedMinorFactions
                 } else {
                     base.Settlement.Militia += this.MilitiaChange.ResultNumber;
                 }
-                    
             }
                 
             this.Hearth += this.HearthChange.ResultNumber;
@@ -354,21 +358,32 @@ namespace ImprovedMinorFactions
             }
         }
 
+        public bool Equals(MinorFactionHideout mfh)
+        {
+            return (
+                this.Hearth == mfh.Hearth 
+                && this.Settlement == mfh.Settlement
+                && this.Gold == mfh.Gold
+                && this.OwnerClan == mfh.OwnerClan
+                && this.IsActive == mfh.IsActive
+                );
+        }
 
-        [SaveableField(420)]
+
+        [SaveableField(101)]
         private bool _isSpotted;
 
 
-        [SaveableField(422)]
+        [SaveableField(102)]
         private CampaignTime _nextPossibleAttackTime;
 
-        [SaveableField(423)]
+        [SaveableField(103)]
         private Clan _ownerclan;
 
-        [SaveableField(424)]
+        [SaveableField(104)]
         public float Hearth;
 
-        [SaveableField(425)]
+        [SaveableField(105)]
         private bool _isActive;
         
     }

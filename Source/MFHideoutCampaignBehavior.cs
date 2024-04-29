@@ -31,9 +31,15 @@ namespace ImprovedMinorFactions
             CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, new Action<Clan, Kingdom, Kingdom, ChangeKingdomAction.ChangeKingdomActionDetail, bool>(this.OnClanChangedKingdom));
 
             // debug listeners
+            CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, new Action(OnDailyTick));
             CampaignEvents.OnQuarterDailyPartyTick.AddNonSerializedListener(this, new Action<MobileParty>(this.DEBUGMFPartyTick));
         }
 
+        public void OnDailyTick()
+        {
+            // one active hideout per clan assertion
+            MFHideoutManager.Current.ValidateOneActiveHideoutPerClan();
+        }
 
         private void DEBUGMFPartyTick(MobileParty party)
         {
@@ -468,7 +474,7 @@ namespace ImprovedMinorFactions
         public void OnNewGameCreated(CampaignGameStarter campaignGameStarter)
         {
             this.AddGameMenus(campaignGameStarter);
-            MFHideoutManager.initManagerIfNone();
+            MFHideoutManager.InitManagerIfNone();
             MFHideoutManager.Current.ActivateAllFactionHideouts();
         }
 

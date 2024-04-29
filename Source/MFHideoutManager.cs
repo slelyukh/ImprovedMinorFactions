@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
@@ -19,25 +20,28 @@ namespace ImprovedMinorFactions
             _factionsWaitingForWar = new HashSet<Clan>();
         }
 
-        public static void initManager()
+        private static void InitManager()
         {
             MFHideoutManager.Current = new MFHideoutManager();
             Current._factionHideoutsInitialized = Current.TryInitMFHideoutsLists();
         }
 
-        public static void initManagerIfNone()
+        public static void InitManagerIfNone()
         {
             if (MFHideoutManager.Current == null)
-                initManager();
+                InitManager();
 
         }
-        public static void clearManager()
+        public static void ClearManager()
         {
             MFHideoutManager.Current = null;
         }
 
         public void AddLoadedMFHideout(MinorFactionHideout mfh)
         {
+            if (_LoadedMFHideouts.ContainsKey(mfh.StringId))
+                throw new Exception($"{mfh.StringId} duplicate hideout saves, likely a save definer collision!");
+                
             _LoadedMFHideouts.Add(mfh.StringId, mfh);
         }
 
@@ -119,6 +123,21 @@ namespace ImprovedMinorFactions
                     return mfHideout;
             }
             return null;
+        }
+
+        public void ValidateMaxOneActiveHideoutPerClan()
+        {
+            foreach (var hideoutList in this._factionHideouts)
+            {
+                int count = 0;
+                foreach (var mfHideout in hideoutList.Value)
+                {
+                    if (mfHideout.IsActive)
+                        count++;
+                }
+                if (count > 1)
+                    throw new Exception($"{hideoutList.Key} has multiple active hideouts");
+            }
         }
 
         public bool HasFaction(Clan minorFaction)

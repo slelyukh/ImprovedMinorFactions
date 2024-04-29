@@ -44,7 +44,7 @@ namespace ImprovedMinorFactions.Patches
 
             int removedImposters = Helpers.removeMilitiaImposters(__instance);
             Helpers.callPrivateMethod(__instance, "AddTroopToMilitiaParty", 
-                new object[] { militaParty, Helpers.GetBasicTroop(mfHideout.OwnerClan), Helpers.GetBasicTroop(mfHideout.OwnerClan), 1f, militiaToAdd + removedImposters });
+                new object[] { militaParty, Helpers.GetBasicTroop(mfHideout.OwnerClan), Helpers.GetBasicTroop(mfHideout.OwnerClan), 1f, militiaToAdd });
 
             return false;
         }

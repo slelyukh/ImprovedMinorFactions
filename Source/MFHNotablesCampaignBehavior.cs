@@ -169,7 +169,7 @@ namespace ImprovedMinorFactions.Source
 
         public void OnGameLoadFinished()
         {
-            MFHideoutManager.initManagerIfNone();
+            MFHideoutManager.InitManagerIfNone();
             if (Settlement.CurrentSettlement != null && !Hero.MainHero.IsPrisoner
                 && LocationComplex.Current != null && PlayerEncounter.LocationEncounter != null)
             {

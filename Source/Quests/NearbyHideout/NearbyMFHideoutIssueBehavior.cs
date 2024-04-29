@@ -25,6 +25,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
         {
             Settlement result = null;
             float minDistance = float.MaxValue;
+            MFHideoutManager.InitManagerIfNone();
             foreach (var mfHideout in (from mfh in MFHideoutManager.Current.AllMFHideouts where mfh.IsActive && Helpers.IsEnemyOfMinorFaction(issueOwner.MapFaction, mfh.OwnerClan) select mfh))
             {
                 float distance = mfHideout.Settlement.GatePosition.Distance(issueOwner.GetMapPoint().Position2D);
@@ -290,13 +291,13 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 flags = PreconditionFlags.None;
                 relationHero = null;
                 skill = null;
-                if (issueGiver.GetRelationWithPlayer() < MFHideoutModels.MinRelationToGetMFQuest)
+                if (issueGiver.GetRelationWithPlayer() < MFHideoutModels.MinRelationToGetMFQuest
+                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction as Kingdom, issueGiver.Clan))
                 {
                     flags |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
                 }
-                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction as Kingdom, issueGiver.Clan))
+                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction))
                 {
                     flags |= PreconditionFlags.AtWar;
                 }

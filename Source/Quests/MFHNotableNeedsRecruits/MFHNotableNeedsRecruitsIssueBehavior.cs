@@ -364,7 +364,6 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                 }
             }
 
-
             public override TextObject Title
             {
                 get

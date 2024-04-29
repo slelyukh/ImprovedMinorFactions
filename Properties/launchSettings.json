@@ -2,11 +2,9 @@
   "profiles": {
     "Bannerlord": {
       "commandName": "Executable",
-      "executablePath": "$(GameFolder)\\bin\\$(GameBinariesFolder)\\Bannerlord.exe",
-      "commandLineArgs": "/singleplayer _MODULES_*Bannerlord.Harmony*Native*SandBoxCore*CustomBattle*Sandbox*StoryMode*$(ModuleName)*_MODULES_",
+      "executablePath": "C:\\Program Files (x86)\\Steam\\steamapps\\common\\Mount & Blade II Bannerlord\\bin\\Win64_Shipping_Client\\TaleWorlds.MountAndBlade.Launcher.exe",
       "workingDirectory": "$(GameFolder)\\bin\\$(GameBinariesFolder)"
     },
-    
     "BLSE Bannerlord": {
       "commandName": "Executable",
       "executablePath": "$(GameFolder)\\bin\\$(GameBinariesFolder)\\Bannerlord.BLSE.Standalone.exe",

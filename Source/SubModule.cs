@@ -97,7 +97,7 @@ namespace ImprovedMinorFactions
 
         public override void OnGameEnd(Game game)
         {
-            MFHideoutManager.clearManager();
+            MFHideoutManager.ClearManager();
         }
 
         public override void BeginGameStart(Game game)
@@ -124,7 +124,7 @@ namespace ImprovedMinorFactions
             if (model.GetType().Assembly == GetType().Assembly) { return; }
             if (!model.GetType().BaseType.IsAbstract)
             {
-                TextObject error = new("Game Model Error: Please move " + GetType().Assembly.GetName().Name + " below " + model.GetType().Assembly.GetName().Name + " in your load order to ensure mod compatibility");
+                TextObject error = new($"Game Model Error: {model.ToString()}, Please move " + GetType().Assembly.GetName().Name + " below " + model.GetType().Assembly.GetName().Name + " in your load order to ensure mod compatibility");
                 InformationManager.DisplayMessage(new InformationMessage(error.ToString(), Colors.Red));
             }
         }

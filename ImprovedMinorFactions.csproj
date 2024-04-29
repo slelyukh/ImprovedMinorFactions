@@ -61,7 +61,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bannerlord.Lib.Harmony" Version="2.2.2" />
+    <PackageReference Include="Bannerlord.Lib.Harmony" Version="2.3.0" />
     <PackageReference Include="Harmony.Extensions" Version="3.2.0.77">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

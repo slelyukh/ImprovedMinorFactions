@@ -36,7 +36,7 @@ namespace ImprovedMinorFactions
         public static ExplainedNumber GetMilitiaChange(Settlement settlement, bool includeDescriptions = false)
         {
             var eNum = new ExplainedNumber(0f, includeDescriptions);
-            eNum.Add(0.2f, BaseText);
+            eNum.Add(0.05f, BaseText);
             eNum.Add((Helpers.GetMFHideout(settlement)).Hearth * 0.0005f, FromHearthsText);
             return eNum;
         }
