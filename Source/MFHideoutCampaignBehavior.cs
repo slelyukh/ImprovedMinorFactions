@@ -38,7 +38,7 @@ namespace ImprovedMinorFactions
         public void OnDailyTick()
         {
             // one active hideout per clan assertion
-            MFHideoutManager.Current.ValidateOneActiveHideoutPerClan();
+            MFHideoutManager.Current.ValidateMaxOneActiveHideoutPerClan();
         }
 
         private void DEBUGMFPartyTick(MobileParty party)

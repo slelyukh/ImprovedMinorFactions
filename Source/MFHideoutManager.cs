@@ -40,7 +40,7 @@ namespace ImprovedMinorFactions
         public void AddLoadedMFHideout(MinorFactionHideout mfh)
         {
             if (_LoadedMFHideouts.ContainsKey(mfh.StringId))
-                throw new Exception($"{mfh.StringId} duplicate hideout saves, likely a save definer collision!");
+                throw new Exception($"{mfh.StringId} duplicate hideout saves, likely a save definer issue!");
                 
             _LoadedMFHideouts.Add(mfh.StringId, mfh);
         }
@@ -127,16 +127,47 @@ namespace ImprovedMinorFactions
 
         public void ValidateMaxOneActiveHideoutPerClan()
         {
-            foreach (var hideoutList in this._factionHideouts)
+            foreach (var kvp in this._factionHideouts)
             {
                 int count = 0;
-                foreach (var mfHideout in hideoutList.Value)
+                foreach (var mfHideout in kvp.Value)
                 {
                     if (mfHideout.IsActive)
                         count++;
                 }
                 if (count > 1)
-                    throw new Exception($"{hideoutList.Key} has multiple active hideouts");
+                {
+                    if (Helpers.IsDebugMode)
+                        throw new Exception($"{kvp.Key} has multiple active hideouts");
+                    else
+                        FixHideoutInconsistencies(kvp.Value);
+                }
+                    
+
+            }
+        }
+
+        private void FixHideoutInconsistencies(List<MinorFactionHideout> mfhList)
+        {
+            MinorFactionHideout mostRationalHideout = null;
+            foreach (var mfHideout in mfhList) { 
+                if (mfHideout.IsActive && mfHideout.Settlement.Notables.Count == 2)
+                {
+                    mostRationalHideout = mfHideout;
+                    break;
+                }
+            }
+            // if most rational is null then they're all getting destroyed
+            foreach (var mfHideout in mfhList)
+            {
+                if (mfHideout != mostRationalHideout)
+                {
+                    mfHideout.DeactivateHideout(false);
+                }
+            }
+            if (mostRationalHideout == null)
+            {
+                MFHideoutManager.Current.RemoveClan(mfhList[0].OwnerClan);
             }
         }
 
@@ -162,7 +193,7 @@ namespace ImprovedMinorFactions
                     {
                         KillCharacterAction.ApplyByRemove(notable, true, true);
                     }
-                    mfHideout.DeactivateHideout();
+                    mfHideout.DeactivateHideout(false);
                 }
             }
                 

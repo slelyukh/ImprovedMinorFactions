@@ -17,6 +17,8 @@ namespace ImprovedMinorFactions
             return s != null && GetMFHideout(s) != null;
         }
 
+        internal static bool IsDebugMode = false;
+
         internal static List<TooltipProperty> GetVillageOrMFHideoutMilitiaTooltip(Settlement s)
         {
             if (s.IsVillage) {

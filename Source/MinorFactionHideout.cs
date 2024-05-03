@@ -144,7 +144,7 @@ namespace ImprovedMinorFactions
             // TODO: move hideout inventory
             List<Hero> notables = this.Settlement.Notables.ToList();
             newHideout.ActivateHideout(notables);
-            this.DeactivateHideout();
+            this.DeactivateHideout(true);
         }
 
         // updates notable info and removes notable from old settlement and adds to new settlement
@@ -155,7 +155,7 @@ namespace ImprovedMinorFactions
             notable.UpdateHomeSettlement();
         }
 
-        internal void DeactivateHideout()
+        internal void DeactivateHideout(bool createEvent)
         {
             // TODO: might not need this
             CampaignEventDispatcher.Instance.OnHideoutDeactivated(this.Settlement);
