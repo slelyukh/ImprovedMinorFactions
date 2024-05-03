@@ -9,4 +9,5 @@ This mod focuses on adding more flavor to Minor Factions in Mount and Blade II: 
 - 4 New Quests are added.
 
 [Nexus Mods Link](https://www.nexusmods.com/mountandblade2bannerlord/mods/6771)
+
 [Discord Link](https://discord.gg/vxwbdgwUw2)
