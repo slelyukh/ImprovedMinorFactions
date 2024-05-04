@@ -77,12 +77,15 @@ namespace ImprovedMinorFactions
             return true;
         }
 
+        // activates 1 hideout for every Minor Faction if they have no currently active hideouts
         public void ActivateAllFactionHideouts()
         {
-            if (!_factionHideoutsInitialized)
+            if (!TryInitMFHideoutsLists())
                 throw new Exception("Trying to activate faction hideouts early :(");
-            foreach(var (faction, hideouts) in _factionHideouts.Select(x => (x.Key, x.Value)))
+            foreach(var (mfClan, hideouts) in _factionHideouts.Select(x => (x.Key, x.Value)))
             {
+                if (GetHideoutOfClan(mfClan) != null)
+                    continue;
                 int activateIndex = MBRandom.RandomInt(hideouts.Count);
                 hideouts[activateIndex].ActivateHideoutFirstTime();
             }
@@ -107,7 +110,7 @@ namespace ImprovedMinorFactions
 
             var hideouts = _factionHideouts[oldHideout.OwnerClan];
             int activateIndex = MBRandom.RandomInt(hideouts.Count);
-            while (hideouts[activateIndex].Settlement.Equals(oldHideout.Settlement))
+            while (hideouts[activateIndex].Settlement.Equals(oldHideout.Settlement) && hideouts.Count > 1)
                 activateIndex = MBRandom.RandomInt(hideouts.Count);
             var newHideout = hideouts[activateIndex];
             oldHideout.MoveHideouts(newHideout);

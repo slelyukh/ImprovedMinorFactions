@@ -66,8 +66,15 @@ namespace ImprovedMinorFactions
                 }
                 i++;
             }
+            // TODO: return null instead of throwing an exception
             if (template == null)
-                throw new System.Exception("random number failure");
+                if (Helpers.IsDebugMode)
+                    throw new System.Exception($"ERROR: {this.Settlement.Culture} does not have template for {occupation}");
+                else
+                {
+                    InformationManager.DisplayMessage(new InformationMessage($"ERROR: {this.Settlement.Culture} does not have template for {occupation}", Colors.Red));
+                    return;
+                }
             Hero hero = (Hero) Helpers.callPrivateMethod(null, "CreateNewHero", new object[] { template, 25 }, typeof(HeroCreator));
             TextObject firstName;
             TextObject fullName;

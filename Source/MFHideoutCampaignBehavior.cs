@@ -29,7 +29,6 @@ namespace ImprovedMinorFactions
             CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(this.OnGameLoaded));
             CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, new Action<Clan>(this.OnClanDestroyed));
             CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, new Action<Clan, Kingdom, Kingdom, ChangeKingdomAction.ChangeKingdomActionDetail, bool>(this.OnClanChangedKingdom));
-
             // debug listeners
             CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, new Action(OnDailyTick));
             CampaignEvents.OnQuarterDailyPartyTick.AddNonSerializedListener(this, new Action<MobileParty>(this.DEBUGMFPartyTick));
@@ -71,6 +70,12 @@ namespace ImprovedMinorFactions
 
         public void HourlyTickSettlement(Settlement settlement)
         {
+            // DEBUG: remove pls
+            foreach (var set in Settlement.All)
+            {
+                // bla
+            }
+
             MinorFactionHideout? mfHideout = Helpers.GetMFHideout(settlement);
             if (mfHideout == null || !mfHideout.IsActive)
                 return;
@@ -481,6 +486,8 @@ namespace ImprovedMinorFactions
         public void OnGameLoaded(CampaignGameStarter campaignGameStarter)
         {
             this.AddGameMenus(campaignGameStarter);
+            MFHideoutManager.InitManagerIfNone();
+            MFHideoutManager.Current.ActivateAllFactionHideouts();
         }
     }
 

@@ -17,7 +17,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(Clan __instance)
         {
-            if (!__instance.IsMinorFaction || Helpers.isMFHideout(__instance.HomeSettlement) || !MFHideoutManager.Current.HasFaction(__instance))
+            if (!__instance.IsMinorFaction || Helpers.isMFHideout(__instance.HomeSettlement) || MFHideoutManager.Current.GetHideoutOfClan(__instance) == null)
                 return;
 
             Helpers.callPrivateMethod(__instance, "set_HomeSettlement", new object[] { MFHideoutManager.Current.GetHideoutOfClan(__instance).Settlement });

@@ -5,6 +5,8 @@ using TaleWorlds.CampaignSystem;
 using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.Library;
+using System;
 
 namespace ImprovedMinorFactions.Patches
 {
@@ -74,13 +76,22 @@ namespace ImprovedMinorFactions.Patches
                     loadedMfh.AfterInitialized();
                 }
             }
-
-            // Settlement deserialization does not set clan owner properly so we need to do it manually
-            if (__instance.OwnerClan == null)
+            // if "Faction.factionID" doesn't get us the clan we want we must manually find it
+            if (__instance.OwnerClan == null || !Clan.All.Contains(__instance.OwnerClan))
             {
-                Clan clan = objectManager.ReadObjectReferenceFromXml<Clan>("owner", node);
-                if (clan != null)
-                    mfHideout.OwnerClan = clan;
+                string mfClanId = node.Attributes.GetNamedItem("owner").Value.Replace("Faction.", "");
+                Clan mfClan = Clan.All.Find((x) => x.StringId == mfClanId);
+                if (mfClan == null)
+                {
+                    mfClan = objectManager.ReadObjectReferenceFromXml<Clan>("owner", node);
+                    if (mfClan == null)
+                    {
+                        InformationManager.DisplayMessage(new InformationMessage($"{__instance.StringId} has owner set to {mfClanId} but {mfClanId} does not exist!"));
+                        throw new Exception($"{__instance.StringId} has owner set to {mfClanId} but {mfClanId} does not exist!");
+                    }
+                        
+                }
+                mfHideout.OwnerClan = mfClan;
             }
         }
     }
