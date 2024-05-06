@@ -32,14 +32,14 @@ namespace ImprovedMinorFactions.Source
 
         private void OnTroopRecruited(Hero recruiterHero, Settlement settlement, Hero troopSource, CharacterObject troop, int amount)
         {
-            if (!Helpers.isMFHideout(settlement))
+            if (!Helpers.IsMFHideout(settlement))
                 return;
             //InformationManager.DisplayMessage(new InformationMessage($"{amount} troops recruited by {recruiterHero}"));
         }
 
         private void AddMFHLocationCharacters(Settlement settlement)
         {
-            if (Helpers.isMFHideout(settlement))
+            if (Helpers.IsMFHideout(settlement))
             {
                 List<MobileParty> list = Enumerable.ToList<MobileParty>(Settlement.CurrentSettlement.Parties);
                 this.AddNotableLocationCharacters(settlement);
@@ -86,8 +86,8 @@ namespace ImprovedMinorFactions.Source
 
         private void AddNotableLocationCharacter(Hero notable, Settlement settlement)
         {
-            string suffix = notable.IsArtisan ? "_villager_artisan" : (notable.IsMerchant ? "_villager_merchant" : (notable.IsPreacher ? "_villager_preacher" : (notable.IsGangLeader ? "_villager_gangleader" : (notable.IsRuralNotable ? "_villager_ruralnotable" : (notable.IsFemale ? "_lord" : "_villager_merchant")))));
-            string text = notable.IsArtisan ? "sp_notable_artisan" : (notable.IsMerchant ? "sp_notable_merchant" : (notable.IsPreacher ? "sp_notable_preacher" : (notable.IsGangLeader ? "sp_notable_gangleader" : (notable.IsRuralNotable ? "sp_notable_rural_notable" : ((notable.GovernorOf == notable.CurrentSettlement.Town) ? "sp_governor" : "sp_notable")))));
+            string suffix = notable.IsArtisan ? "_villager_artisan" : (notable.IsMerchant ? "_villager_merchant" : (notable.IsPreacher ? "_villager_preacher" : (Helpers.IsMFGangLeader(notable) ? "_villager_gangleader" : (notable.IsRuralNotable ? "_villager_ruralnotable" : (notable.IsFemale ? "_lord" : "_villager_merchant")))));
+            string text = notable.IsArtisan ? "sp_notable_artisan" : (notable.IsMerchant ? "sp_notable_merchant" : (notable.IsPreacher ? "sp_notable_preacher" : (Helpers.IsMFGangLeader(notable) ? "sp_notable_gangleader" : (notable.IsRuralNotable ? "sp_notable_rural_notable" : ((notable.GovernorOf == notable.CurrentSettlement.Town) ? "sp_governor" : "sp_notable")))));
             Monster monsterWithSuffix = FaceGen.GetMonsterWithSuffix(notable.CharacterObject.Race, "_settlement");
             AgentData agentData = new AgentData(
                 new PartyAgentOrigin(null, notable.CharacterObject)).Monster(monsterWithSuffix).NoHorses(true);
@@ -125,7 +125,7 @@ namespace ImprovedMinorFactions.Source
         // copypasta from NotablesCampaignBehavior.OnHeroKilled()
         private void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
         {
-            if (victim.IsNotable && Helpers.isMFHideout(victim.CurrentSettlement))
+            if (victim.IsNotable && Helpers.IsMFHideout(victim.CurrentSettlement))
             {
                 InformationManager.DisplayMessage(new InformationMessage($"{victim} died in {victim.CurrentSettlement}"));
                 if (victim.CurrentSettlement != null && victim.CurrentSettlement.OwnerClan.Heroes.Count > 0)
@@ -138,7 +138,7 @@ namespace ImprovedMinorFactions.Source
 
         private void OnSettlementEntered(MobileParty party, Settlement settlement, Hero hero)
         {
-            if (!Helpers.isMFHideout(settlement))
+            if (!Helpers.IsMFHideout(settlement))
                 return;
 
             if (party != null && party.IsMainParty)

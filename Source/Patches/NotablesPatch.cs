@@ -16,7 +16,7 @@ namespace ImprovedMinorFactions.Source.Patches
     {
         static bool Prefix(Hero notable)
         {
-            if(!Helpers.isMFHideout(notable.CurrentSettlement))
+            if(!Helpers.IsMFHideout(notable.CurrentSettlement))
                 return true;
             return false;
         }
@@ -28,7 +28,7 @@ namespace ImprovedMinorFactions.Source.Patches
     {
         static bool Prefix(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
         {
-            if (!Helpers.isMFHideout(victim.CurrentSettlement))
+            if (!Helpers.IsMFHideout(victim.CurrentSettlement))
                 return true;
             return false;
         }
@@ -40,7 +40,7 @@ namespace ImprovedMinorFactions.Source.Patches
     {
         static bool Prefix(Hero hero)
         {
-            if (!hero.IsNotable || !Helpers.isMFHideout(hero.CurrentSettlement))
+            if (!hero.IsNotable || !Helpers.IsMFHideout(hero.CurrentSettlement))
                 return true;
             hero.AddPower(MFHideoutModels.CalculateDailyNotablePowerChange(hero).ResultNumber);
             return false;

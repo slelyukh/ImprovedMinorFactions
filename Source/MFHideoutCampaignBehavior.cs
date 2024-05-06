@@ -70,11 +70,6 @@ namespace ImprovedMinorFactions
 
         public void HourlyTickSettlement(Settlement settlement)
         {
-            // DEBUG: remove pls
-            foreach (var set in Settlement.All)
-            {
-                // bla
-            }
 
             MinorFactionHideout? mfHideout = Helpers.GetMFHideout(settlement);
             if (mfHideout == null || !mfHideout.IsActive)
@@ -435,7 +430,7 @@ namespace ImprovedMinorFactions
             this.ArrangeHideoutTroopCountsForMission();
             GameMenu.SwitchToMenu("mf_hideout_place");
             var mfHideout = Helpers.GetMFHideout(Settlement.CurrentSettlement); 
-            if (!Helpers.isMFHideout(Settlement.CurrentSettlement))
+            if (!Helpers.IsMFHideout(Settlement.CurrentSettlement))
                 return;
             mfHideout.UpdateNextPossibleAttackTime();
             if (PlayerEncounter.IsActive)

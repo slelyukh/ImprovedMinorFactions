@@ -12,7 +12,7 @@ namespace ImprovedMinorFactions
 {
     public static class Helpers
     {
-        internal static bool isMFHideout(Settlement s)
+        internal static bool IsMFHideout(Settlement s)
         {
             return s != null && GetMFHideout(s) != null;
         }
@@ -30,6 +30,11 @@ namespace ImprovedMinorFactions
                 return CampaignUIHelper.GetSettlementPropertyTooltip(
                     s, "Militia", s.Militia, mfHideout.MilitiaChange);
             }
+        }
+
+        internal static bool IsMFGangLeader(Hero h)
+        {
+            return h.Occupation == Occupation.GangLeader && IsMFHideout(h.CurrentSettlement);
         }
 
         internal static List<TooltipProperty> GetVillageOrMFHideoutProsperityTooltip(Settlement s)
@@ -72,7 +77,7 @@ namespace ImprovedMinorFactions
         // Removes any normal militia units from MFHideout militia party
         internal static int removeMilitiaImposters(Settlement s)
         {
-            if (!isMFHideout(s))
+            if (!IsMFHideout(s))
                 return 0;
             MobileParty militiaParty = s.MilitiaPartyComponent.MobileParty;
             var militiaRoster = militiaParty.MemberRoster;

@@ -101,7 +101,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(Settlement __instance, ref TextObject ____name)
         {
-            if (!Helpers.isMFHideout(__instance))
+            if (!Helpers.IsMFHideout(__instance))
                 return;
             ____name.SetTextVariable("IS_MINORFACTIONHIDEOUT", 1);
         }

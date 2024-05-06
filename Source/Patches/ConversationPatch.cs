@@ -17,7 +17,7 @@ namespace ImprovedMinorFactions.Patches
             if (!(encounteredParty?.IsSettlement ?? false)
                 || encounteredParty.Settlement == null
                 || __result == true
-                || !Helpers.isMFHideout(encounteredParty.Settlement)
+                || !Helpers.IsMFHideout(encounteredParty.Settlement)
                 || (encounteredHero?.IsNotable ?? false))
             {
                 return;
@@ -37,7 +37,7 @@ namespace ImprovedMinorFactions.Patches
             PartyBase encounteredParty = PlayerEncounter.EncounteredParty;
             if (!(encounteredParty?.IsSettlement ?? false)
                 || encounteredParty.Settlement == null
-                || !Helpers.isMFHideout(encounteredParty.Settlement))
+                || !Helpers.IsMFHideout(encounteredParty.Settlement))
             {
                 return;
             }

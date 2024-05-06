@@ -35,7 +35,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 
         private static bool ConditionsHold(Hero issueGiver)
         {
-            return Helpers.isMFHideout(issueGiver.CurrentSettlement) 
+            return Helpers.IsMFHideout(issueGiver.CurrentSettlement) 
                 && issueGiver.IsNotable 
                 && Helpers.GetMFHideout(issueGiver.CurrentSettlement).Hearth > 300;
         }

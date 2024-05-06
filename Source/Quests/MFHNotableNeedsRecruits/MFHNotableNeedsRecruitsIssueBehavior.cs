@@ -34,7 +34,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 
         private static bool ConditionsHold(Hero issueGiver)
         {
-            return Helpers.isMFHideout(issueGiver.CurrentSettlement) && issueGiver.IsNotable;
+            return Helpers.IsMFHideout(issueGiver.CurrentSettlement) && issueGiver.IsNotable;
         }
 
         public void OnCheckForIssue(Hero hero)
@@ -209,7 +209,6 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
             }
 
-            // Token: 0x06004B07 RID: 19207 RVA: 0x00159D3E File Offset: 0x00157F3E
             // TODO: make issue affect hideout somehow
             protected override float GetIssueEffectAmountInternal(IssueEffect issueEffect)
             {

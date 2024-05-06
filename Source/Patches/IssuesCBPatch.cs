@@ -21,7 +21,7 @@ namespace ImprovedMinorFactions.Source.Patches
             newSettlementsList.AppendList(
                 Enumerable.ToList(Enumerable.Where<Settlement>(
                     Settlement.All,
-                    (Settlement x) => Helpers.isMFHideout(x))));
+                    (Settlement x) => Helpers.IsMFHideout(x))));
             Helpers.setPrivateField(__instance, "_settlements", newSettlementsList.ToArray());
         }
     }

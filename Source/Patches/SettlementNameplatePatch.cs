@@ -22,13 +22,13 @@ namespace ImprovedMinorFactions.Patches
 
             MFHideoutManager.Current._allMFHideouts =
                 from x in settlements
-                where Helpers.isMFHideout(x.Item1)
+                where Helpers.IsMFHideout(x.Item1)
                 select x;
 
             List<SettlementNameplateVM> mfhNameplates = new List<SettlementNameplateVM>();
             foreach (var nameplate in __instance.Nameplates)
             {
-                if (Helpers.isMFHideout(nameplate.Settlement))
+                if (Helpers.IsMFHideout(nameplate.Settlement))
                     mfhNameplates.Add(nameplate);
             }
 

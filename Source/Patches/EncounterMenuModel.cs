@@ -24,7 +24,7 @@ namespace ImprovedMinorFactions.Patches
                     "GetEncounteredPartyBase", 
                     new object[] { attackerParty, defenderParty }, 
                     typeof(DefaultEncounterGameMenuModel)) as PartyBase;
-                if (encounteredParty.IsSettlement && Helpers.isMFHideout(encounteredParty.Settlement))
+                if (encounteredParty.IsSettlement && Helpers.IsMFHideout(encounteredParty.Settlement))
                     result = "mf_hideout_place";
             }
 
@@ -41,7 +41,7 @@ namespace ImprovedMinorFactions.Patches
                 Settlement curSettlement = mainParty.CurrentSettlement;
                 if (PlayerEncounter.Current?.IsPlayerWaiting == true)
                     result = "mf_hideout_wait";
-                else if (mainParty.AttachedTo == null && mainParty.CurrentSettlement != null && Helpers.isMFHideout(curSettlement))
+                else if (mainParty.AttachedTo == null && mainParty.CurrentSettlement != null && Helpers.IsMFHideout(curSettlement))
                     result = "mf_hideout_place";
             }
 

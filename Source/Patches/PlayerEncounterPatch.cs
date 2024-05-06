@@ -19,7 +19,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(Settlement settlement)
         {
-            if (Helpers.isMFHideout(settlement))
+            if (Helpers.IsMFHideout(settlement))
                 PlayerEncounter.LocationEncounter = new MFHEncounter(settlement);
         }
     }
@@ -34,7 +34,7 @@ namespace ImprovedMinorFactions.Patches
             if (____mapEvent == null 
                 && ____defenderParty != null 
                 && ____defenderParty.IsSettlement 
-                && Helpers.isMFHideout(____defenderParty.Settlement))
+                && Helpers.IsMFHideout(____defenderParty.Settlement))
             {
                 Helpers.setPrivateField(__instance, "_mapEvent", HideoutEventComponent.CreateHideoutEvent(____attackerParty, ____defenderParty).MapEvent);
                 Helpers.callPrivateMethod(__instance, "CheckNearbyPartiesToJoinPlayerMapEvent", new object[] { });
@@ -107,7 +107,7 @@ namespace ImprovedMinorFactions.Patches
         {
             var mapEvent = PlayerEncounter.Battle;
             var settlement = mapEvent?.MapEventSettlement;
-            if (mapEvent == null || settlement == null || !Helpers.isMFHideout(settlement) || !mapEvent.IsHideoutBattle)
+            if (mapEvent == null || settlement == null || !Helpers.IsMFHideout(settlement) || !mapEvent.IsHideoutBattle)
                 return true;
             var mfHideout = Helpers.GetMFHideout(settlement);
             

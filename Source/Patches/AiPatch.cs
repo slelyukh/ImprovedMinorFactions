@@ -14,7 +14,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(ref bool __result, MobileParty mobileParty, Settlement settlement)
         {
-            if (__result == true || !Helpers.isMFHideout(settlement))
+            if (__result == true || !Helpers.IsMFHideout(settlement))
                 return;
             var mfHideout = Helpers.GetMFHideout(settlement);
             bool hideoutIsMercenaryOfParty = settlement.OwnerClan.IsUnderMercenaryService && settlement.OwnerClan.Kingdom == mobileParty.ActualClan.Kingdom;
@@ -45,7 +45,7 @@ namespace ImprovedMinorFactions.Patches
         public override float CalculatePatrollingScoreForSettlement(Settlement targetSettlement, MobileParty mobileParty)
         {
             float result = _previousModel.CalculatePatrollingScoreForSettlement(targetSettlement, mobileParty);
-            if (!Helpers.isMFHideout(targetSettlement) || !mobileParty.ActualClan.IsMinorFaction)
+            if (!Helpers.IsMFHideout(targetSettlement) || !mobileParty.ActualClan.IsMinorFaction)
                 return result;
             return result * 3;
         }

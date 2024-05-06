@@ -32,7 +32,7 @@ namespace ImprovedMinorFactions.Source.Patches
         {
             get
             {
-                if (Helpers.isMFHideout(Settlement.CurrentSettlement))
+                if (Helpers.IsMFHideout(Settlement.CurrentSettlement))
                     return 150;
                 return _previousModel.NumberOfMaximumTroopCountForFirstFightInHideout;
             }

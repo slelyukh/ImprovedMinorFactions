@@ -90,11 +90,9 @@ namespace ImprovedMinorFactions
                 throw new System.Exception("double clan activation");
             }
 
-            var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.Preacher, this.Settlement);
-            RenameHeroToNewOccupation(notable1, Occupation.GangLeader, 1);
+            var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
             notable1.IsMinorFactionHero = true;
-            var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.Preacher, this.Settlement);
-            RenameHeroToNewOccupation(notable2, Occupation.GangLeader, 2);
+            var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
             notable2.IsMinorFactionHero = true;
 
             ActivateHideout();
