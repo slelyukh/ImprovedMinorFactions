@@ -63,7 +63,6 @@ namespace ImprovedMinorFactions
                 if (settlement.OwnerClan?.IsMinorFaction ?? Helpers.IsMFHideout(settlement))
                 {
                     var key = settlement.OwnerClan;
-                    List<MinorFactionHideout> list = null;
                     if (!_factionHideouts.ContainsKey(key))
                         _factionHideouts[key] = new List<MinorFactionHideout>();
                     _factionHideouts[key].Add(Helpers.GetMFHideout(settlement));
@@ -84,7 +83,7 @@ namespace ImprovedMinorFactions
                 throw new Exception("Trying to activate faction hideouts early :(");
             foreach(var (mfClan, hideouts) in _factionHideouts.Select(x => (x.Key, x.Value)))
             {
-                if (GetHideoutOfClan(mfClan) != null)
+                if (GetHideoutOfClan(mfClan) != null || hideouts == null)
                     continue;
                 int activateIndex = MBRandom.RandomInt(hideouts.Count);
                 hideouts[activateIndex].ActivateHideoutFirstTime();
@@ -118,8 +117,12 @@ namespace ImprovedMinorFactions
 
         public MinorFactionHideout GetHideoutOfClan(Clan minorFaction)
         {
-            if (!minorFaction.IsMinorFaction || !this.HasFaction(minorFaction))
+            if (minorFaction == null || !minorFaction.IsMinorFaction || !this.HasFaction(minorFaction))
                 return null;
+
+            if (_factionHideouts[minorFaction] == null)
+                return null;
+
             foreach(var mfHideout in _factionHideouts[minorFaction])
             {
                 if (mfHideout.IsActive)

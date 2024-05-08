@@ -344,22 +344,31 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification = true)
             {
                 if (FactionManager.IsAtWarAgainstFaction(QuestClan().MapFaction, Hero.MainHero.MapFaction))
-                    base.CompleteQuestWithCancel();
+                {
+                    base.CompleteQuestWithCancel(QuestCancelledDueToWarLog);
+                }
             }
 
             private void OnWarDeclared(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail)
             {
                 if (FactionManager.IsAtWarAgainstFaction(QuestClan().MapFaction, Hero.MainHero.MapFaction))
-                    if (detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility && !QuestClan().IsUnderMercenaryService)
+                {
+                    if (detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility)
+                    {
                         CompleteQuestWithFail();
-                    base.CompleteQuestWithCancel();
+                        base.CompleteQuestWithCancel(QuestCancelledDueToPlayerHostilityLog);
+                    } else
+                    {
+                        base.CompleteQuestWithCancel(QuestCancelledDueToWarLog);
+                    }
+                }
             }
 
             private void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
             {
                 if (victim == this.QuestGiver)
                 {
-                    base.CompleteQuestWithCancel();
+                    base.CompleteQuestWithCancel(QuestCancelledQuestGiverDiedLog);
                 }
             }
 
@@ -415,6 +424,40 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     TextObject textObject = new TextObject("{=3ApJ6LaX}You have transferred the recruits to {QUEST_GIVER.LINK} as promised.");
                     textObject.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
                     return textObject;
+                }
+            }
+
+            private TextObject QuestCancelledQuestGiverDiedLog
+            {
+                get
+                {
+                    TextObject text = new TextObject("{QUEST_GIVER.LINK} has died. {?QUEST_GIVER.GENDER}She{?}He{\\?} has no more desires.")
+                        .SetTextVariable("IS_MAP_FACTION", Clan.PlayerClan.IsMapFaction ? 1 : 0); ;
+                    text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
+                    return text;
+                }
+            }
+
+            private TextObject QuestCancelledDueToWarLog
+            {
+                get
+                {
+                    TextObject text = new TextObject("{=TrewB5c7}Now your {?IS_MAP_FACTION}clan{?}kingdom{\\?} is at war with the {QUEST_GIVER.LINK}'s lord. " +
+                        "Your agreement with {QUEST_GIVER.LINK} becomes invalid.")
+                        .SetTextVariable("IS_MAP_FACTION", Clan.PlayerClan.IsMapFaction ? 1 : 0); ;
+                    text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
+                    return text;
+                }
+            }
+
+            private TextObject QuestCancelledDueToPlayerHostilityLog
+            {
+                get
+                {
+                    TextObject text = new TextObject("{=bqeWVVEE}Your actions have started a war with {QUEST_GIVER.LINK}'s faction. " +
+                        "{?QUEST_GIVER.GENDER}She{?}He{\\?} cancels your agreement and the quest is a failure.");
+                    text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
+                    return text;
                 }
             }
 

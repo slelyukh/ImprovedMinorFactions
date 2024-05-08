@@ -371,19 +371,25 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 
             private void OnWarDeclared(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail)
             {
-                // better??
-                // QuestHelper.CheckWarDeclarationAndFailOrCancelTheQuest(this, faction1, faction2, detail, this._playerDeclaredWarQuestLogText, this._cancelLogOnWarDeclared, false);
                 if (FactionManager.IsAtWarAgainstFaction(QuestClan().MapFaction, Hero.MainHero.MapFaction))
-                    if (detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility && !QuestClan().IsUnderMercenaryService)
+                {
+                    if (detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility)
+                    {
                         CompleteQuestWithFail();
-                base.CompleteQuestWithCancel();
+                        base.CompleteQuestWithCancel(_onPlayerDeclaredWarQuestLogText);
+                    } else
+                    {
+                        base.CompleteQuestWithCancel(_onQuestGiverAtWarWithPlayerdLogText);
+                    }
+                }
+                    
             }
 
             private void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
             {
                 if (victim == this.QuestGiver)
                 {
-                    base.CompleteQuestWithCancel();
+                    base.CompleteQuestWithCancel(_cancelQuestGiverDied);
                 }
             }
 
@@ -406,7 +412,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification = true)
             {
                 if (QuestClan().MapFaction.IsAtWarWith(Hero.MainHero.MapFaction))
-                    base.CompleteQuestWithCancel(this._cancelLogOnWarDeclared);
+                    base.CompleteQuestWithCancel(this._onQuestGiverAtWarWithPlayerdLogText);
             }
 
             private bool CheckFail()
@@ -663,7 +669,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 }
             }
 
-            private TextObject _cancelLogOnWarDeclared
+            private TextObject _onQuestGiverAtWarWithPlayerdLogText
             {
                 get
                 {
@@ -675,7 +681,18 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 }
             }
 
-            private TextObject _playerDeclaredWarQuestLogText
+            private TextObject _cancelQuestGiverDied
+            {
+                get
+                {
+                    TextObject text = new TextObject("{QUEST_GIVER.LINK} has died. {?QUEST_GIVER.GENDER}She{?}He{\\?} has no more desires.")
+                        .SetTextVariable("IS_MAP_FACTION", Clan.PlayerClan.IsMapFaction ? 1 : 0); ;
+                    text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
+                    return text;
+                }
+            }
+
+            private TextObject _onPlayerDeclaredWarQuestLogText
             {
                 get
                 {

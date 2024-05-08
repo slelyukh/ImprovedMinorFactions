@@ -96,7 +96,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
             public override TextObject Title
             {
-                get => setCommonTextVariables(new TextObject("{MINOR_FACTION} Base Near {ISSUE_SETTLEMENT.NAME}"));
+                get => setCommonTextVariables(new TextObject("{MINOR_FACTION} Base Near {ISSUE_SETTLEMENT}"));
             }
 
             public override TextObject Description
