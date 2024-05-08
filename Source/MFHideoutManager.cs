@@ -60,7 +60,7 @@ namespace ImprovedMinorFactions
             _factionHideouts = new Dictionary<Clan, List<MinorFactionHideout>>();
             foreach (Settlement settlement in Campaign.Current.Settlements)
             {
-                if (settlement.OwnerClan?.IsMinorFaction ?? Helpers.IsMFHideout(settlement))
+                if ((settlement.OwnerClan?.IsMinorFaction ?? false) && Helpers.IsMFHideout(settlement))
                 {
                     var key = settlement.OwnerClan;
                     if (!_factionHideouts.ContainsKey(key))
