@@ -94,19 +94,19 @@ namespace ImprovedMinorFactions
             campaignGameStarter.AddGameMenu("mf_hideout_place", "{=!}{MF_HIDEOUT_TEXT}", 
                 new OnInitDelegate(game_menu_hideout_place_on_init),
                 GameOverlays.MenuOverlayType.SettlementWithBoth);
-            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "attack", "Attack Hideout",
+            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "attack", "{=zxMOqlhs}Attack Hideout",
                 new Options.OnConditionDelegate(menu_attack_on_condition),
                 new Options.OnConsequenceDelegate(menu_attack_on_consequence));
-            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "hostile_action", "Take Hostile Action",
+            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "hostile_action", "{=GM3tAYMr}Take Hostile Action",
                 new Options.OnConditionDelegate(menu_hostile_action_on_condition),
                 new Options.OnConsequenceDelegate(menu_hostile_action_on_consequence));
-            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "recruit_volunteers", "Recruit troops", 
+            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "recruit_volunteers", "{=nRm78XAk}Recruit troops", 
                 new Options.OnConditionDelegate(recruit_troops_on_condition), 
                 new Options.OnConsequenceDelegate(recruit_troops_on_consequence));
-            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "wait", "Wait here for some time",
+            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "wait", "{=zEoHYEUS}Wait here for some time",
                 new Options.OnConditionDelegate(menu_wait_on_condition),
                 new Options.OnConsequenceDelegate(menu_wait_on_consequence));
-            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "leave", "Leave",
+            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "leave", "{=3sRdGQou}Leave",
                 new Options.OnConditionDelegate(menu_leave_on_condition),
                 new Options.OnConsequenceDelegate(menu_leave_on_consequence));
 
@@ -124,7 +124,7 @@ namespace ImprovedMinorFactions
             campaignGameStarter.AddGameMenu("mf_hideout_hostile_action", "{=YVNZaVCA}What action do you have in mind?", 
                 new OnInitDelegate(hostile_menu_on_init), 
                 GameOverlays.MenuOverlayType.SettlementWithBoth);
-            campaignGameStarter.AddGameMenuOption("mf_hideout_hostile_action", "attack", "Attack Hideout",
+            campaignGameStarter.AddGameMenuOption("mf_hideout_hostile_action", "attack", "{=zxMOqlhs}Attack Hideout",
                 new Options.OnConditionDelegate(hostile_action_menu_attack_on_condition), 
                 new Options.OnConsequenceDelegate(menu_attack_on_consequence));
             campaignGameStarter.AddGameMenuOption("mf_hideout_hostile_action", "forget_it", "{=sP9ohQTs}Forget it", 
@@ -138,12 +138,12 @@ namespace ImprovedMinorFactions
             if (Hero.MainHero.IsWounded)
             {
                 args.IsEnabled = false;
-                args.Tooltip = new TextObject("You cannot attack while wounded");
+                args.Tooltip = new TextObject("{=Fv1F13jxM}You cannot attack while wounded");
             }
             else
             {
                 args.IsEnabled = true;
-                args.Tooltip = new TextObject($"Attacking this hideout will significantly decrease your relation with this Clan");
+                args.Tooltip = new TextObject("{=cl7GYHwgi}Attacking this hideout will significantly decrease your relation with this Clan");
             }
         }
 
@@ -172,7 +172,7 @@ namespace ImprovedMinorFactions
         public bool menu_hostile_action_on_condition(MenuCallbackArgs args)
         {
             args.optionLeaveType = Options.LeaveType.Submenu;
-            args.Tooltip = new TextObject($"Taking hostile action will start a war between you and this Clan or whoever hired them.");
+            args.Tooltip = new TextObject("{=1PM860Jco}Taking hostile action will start a war between you and this Clan or whoever hired them.");
             return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
         }
 
@@ -188,7 +188,8 @@ namespace ImprovedMinorFactions
             if (Clan.PlayerClan.GetRelationWithClan(curSettlement.OwnerClan) < MFHideoutModels.MinRelationToBeMFHFriend)
             {
                 args.IsEnabled = false;
-                args.Tooltip = new TextObject($"Your relation with this clan must be at least {MFHideoutModels.MinRelationToBeMFHFriend} to recruit troops.");
+                args.Tooltip = new TextObject("{=pzEj8yvXS}Your relation with this clan must be at least {MIN_RELATION} to recruit troops.")
+                    .SetTextVariable("MIN_RELATION", MFHideoutModels.MinRelationToBeMFHFriend);
             } else
             {
                 args.IsEnabled = true;
@@ -208,7 +209,7 @@ namespace ImprovedMinorFactions
             if (Clan.PlayerClan.GetRelationWithClan(curSettlement.OwnerClan) < MFHideoutModels.MinRelationToBeMFHFriend)
             {
                 args.IsEnabled = false;
-                args.Tooltip = new TextObject("You don't have enough relation to stay in this hideout.");
+                args.Tooltip = new TextObject("{=92PPJNVSa}You don't have enough relation to stay in this hideout.");
             }
             return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
         }
@@ -319,18 +320,22 @@ namespace ImprovedMinorFactions
                 this.CalculateHideoutAttackTime();
             else
                 this._hideoutWaitTargetHours = 0f;
+            
+            GameTexts.SetVariable("HIDEOUT_DESCRIPTION", "");
 
             int num = 1;
             if (!mfHideout.NextPossibleAttackTime.IsPast)
-                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "The remains of a fire suggest that it's been recently occupied, but its residents - whoever they are - are well-hidden for now.");
+                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{=KLWn6yZQ}{HIDEOUT_DESCRIPTION} The remains of a fire suggest that it's been recently occupied," +
+                    " but its residents - whoever they are - are well-hidden for now.");
             else if (num > 0)
-                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "You see armed men moving about. As you listen quietly, " +
-                    "you hear scraps of conversation about raids, ransoms, and the best places to waylay travellers.");
+                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{=prcBBqMR}{HIDEOUT_DESCRIPTION} You see armed men moving about. As you listen quietly, you hear scraps" +
+                    " of conversation about raids, ransoms, and the best places to waylay travellers.");
             else
-                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "There seems to be no one inside.");
+                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{=gywyEgZa}{HIDEOUT_DESCRIPTION} There seems to be no one inside.");
             
             if (mfHideout.NextPossibleAttackTime.IsPast && num > 0 && Hero.MainHero.IsWounded)
-                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "You can not attack since your wounds do not allow you.");
+                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{=fMekM2UH}{HIDEOUT_DESCRIPTION} You can not attack since your wounds do not allow you.");
+
 
             if (MobileParty.MainParty.CurrentSettlement == null)
                 PlayerEncounter.EnterSettlement();

@@ -17,8 +17,10 @@ namespace ImprovedMinorFactions.Patches
             if (__result == true || !Helpers.IsMFHideout(settlement))
                 return;
             var mfHideout = Helpers.GetMFHideout(settlement);
-            bool hideoutIsMercenaryOfParty = settlement.OwnerClan.IsUnderMercenaryService && settlement.OwnerClan.Kingdom == mobileParty.ActualClan.Kingdom;
-            __result = settlement.Party.MapEvent == null && mfHideout.IsActive && (mobileParty.Party.Owner.MapFaction == settlement.MapFaction || hideoutIsMercenaryOfParty);
+            if (mfHideout == null)
+                throw new System.Exception("mfHideout is somehow null even though IsMFHideout is true");
+            bool hideoutIsMercenaryOfParty = (settlement.OwnerClan?.IsUnderMercenaryService ?? false) && settlement.OwnerClan?.Kingdom == mobileParty.ActualClan?.Kingdom;
+            __result = settlement.Party?.MapEvent == null && mfHideout.IsActive && (mobileParty.Party?.Owner?.MapFaction == settlement.MapFaction || hideoutIsMercenaryOfParty);
         }
     }
 

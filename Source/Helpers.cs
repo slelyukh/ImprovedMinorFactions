@@ -59,7 +59,7 @@ namespace ImprovedMinorFactions
         // these factions are always at war unless the Minor Faction is someone's mercenary
         internal static bool IsRivalOfMinorFaction(IFaction faction, Clan minorFaction)
         {
-            return faction != null 
+            return faction != null && minorFaction != null
                 && minorFaction.IsOutlaw 
                 && (faction.Culture == minorFaction.Culture 
                 || (minorFaction.Culture.GetCultureCode() == CultureCode.Vakken && faction.Culture.GetCultureCode() == CultureCode.Sturgia));

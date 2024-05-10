@@ -89,7 +89,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    var text = new TextObject("Yes... As you no doubt know, this is rough work, and I've lost a lot of good lads recently. I haven't had much luck replacing them. " +
+                    var text = new TextObject("{=3mADItXNb}Yes... As you no doubt know, this is rough work, and I've lost a lot of good lads recently. I haven't had much luck replacing them. " +
                     "I need men who understand how things work in our business, and that's not always easy to find. I need capable {MOUNTED}{TROOP_TYPE}...[ib:hip][if:convo_undecided_closed]");
                     setTextTroopDescriptions(text);
                     return text;
@@ -105,10 +105,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    var text = new TextObject("Look, I know that warriors like you can sometimes recruit {MOUNTED}{TROOP_TYPE} to your party. Some of those men might want to take their chances working " +
-                            "for me. More comfortable with us, where there's always drink and women on hand, than {ACTION}, eh?" +
+                    var text = new TextObject("{=kolxPW10J}Look, I know that warriors like you can sometimes recruit {MOUNTED}{TROOP_TYPE} to your party. Some of those men might want to take their chances working " +
+                            "for me. More comfortable with us, where there's always drink and women on hand, than {?IS_OUTLAW}roaming endlessly about the countryside{?}working for a lord{\\?}, eh?" +
                             " For each one that signs up with me I'll give you a bounty, more if they have some experience.[if:convo_innocent_smile][ib:hip]")
-                        .SetTextVariable("ACTION", IssueClan().IsOutlaw ? "roaming endlessly about the countryside" : "working for a lord");
+                        .SetTextVariable("IS_OUTLAW", IssueClan().IsOutlaw ? 1 : 0);
                     setTextTroopDescriptions(text);
                     return text;
                 }
@@ -126,7 +126,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     if (IssueClan().IsOutlaw)
                         return new TextObject("{=bKfaMFVK}You can also send me a recruiter: a trustworthy companion who is good at leading men, and also enough of a rogue to win the trust of other rogues...[if:convo_undecided_open][ib:confident]");
                     else
-                        return new TextObject("You can also send me a recruiter: a trustworthy companion who is good at leading men, and also enough of a leader to recruit soldiers...[if:convo_undecided_open][ib:confident]");
+                        return new TextObject("{=FtHAENedg}You can also send me a recruiter: a trustworthy companion who is good at leading men, and also enough of a leader to recruit soldiers...[if:convo_undecided_open][ib:confident]");
                 }
             }
 
@@ -142,7 +142,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 
             public override TextObject IssueDiscussAlternativeSolution
             {
-                get => new TextObject("{=TkvsBd4H}Your companion seems to have a knack with the local never-do-wells. I hear a lot of fine lads have already signed up.[if:convo_relaxed_happy][ib:hip2]");
+                get => new TextObject("{=5oIRMI8cL}Your companion seems to have a knack with the local youths. I hear a lot of fine lads have already signed up.[if:convo_relaxed_happy][ib:hip2]");
             }
 
             public override bool IsThereAlternativeSolution
@@ -159,7 +159,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{=wX14wxqF}You asked {COMPANION.LINK} to deliver at least {WANTED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} to {ISSUE_GIVER.LINK} in {SETTLEMENT}. They should rejoin your party in {RETURN_DAYS} days.");
+                    TextObject textObject = new TextObject("{=R3fkc5wSH}You asked {COMPANION.LINK} to deliver at least {WANTED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} to {ISSUE_GIVER.LINK} in {SETTLEMENT}. They should rejoin your party in {RETURN_DAYS} days.");
                     setTextTroopDescriptions(textObject);
                     textObject.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject);
                     textObject.SetCharacterProperties("COMPANION", base.AlternativeSolutionHero.CharacterObject);
@@ -173,13 +173,14 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             private void setTextTroopDescriptions(TextObject t)
             {
                 var questSettlement = base.IssueOwner.CurrentSettlement;
+
                 if (questSettlement.OwnerClan.IsOutlaw)
-                    t.SetTextVariable("TROOP_TYPE", "bandits");
+                    t.SetTextVariable("TROOP_TYPE", new TextObject("{=dtwUqRyju}bandits"));
                 else
-                    t.SetTextVariable("TROOP_TYPE", "soldiers");
+                    t.SetTextVariable("TROOP_TYPE", new TextObject("{=Mcp21ip8V}soldiers"));
 
                 if (Helpers.mfIsMounted(questSettlement.OwnerClan))
-                    t.SetTextVariable("MOUNTED", "mounted ");
+                    t.SetTextVariable("MOUNTED", new TextObject("{=kDeZI8FIZ}mounted "));
                 else
                     t.SetTextVariable("MOUNTED", "");
             }
@@ -188,7 +189,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{MINOR_FACTION} Hideout Needs Recruits");
+                    TextObject textObject = new TextObject("{=Exa8gzGlC}{MINOR_FACTION} Hideout Needs Recruits");
                     textObject.SetTextVariable("MINOR_FACTION", IssueClan().Name);
                     return textObject;
                 }
@@ -198,7 +199,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\\?} Clan");
+                    TextObject textObject = new TextObject("{=awjQeYiRo}A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\\?} Clan.");
                     textObject.SetTextVariable("MINOR_FACTION", IssueClan().Name);
                     textObject.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject, false);
                     return textObject;
@@ -355,8 +356,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                 {
                     if (detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility)
                     {
-                        CompleteQuestWithFail();
-                        base.CompleteQuestWithCancel(QuestCancelledDueToPlayerHostilityLog);
+                        CompleteQuestWithFail(QuestCancelledDueToPlayerHostilityLog);
                     } else
                     {
                         base.CompleteQuestWithCancel(QuestCancelledDueToWarLog);
@@ -376,7 +376,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\\?} Clan");
+                    TextObject textObject = new TextObject("{=lpc6tS3bs}A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\\?} Clan.");
                     textObject.SetTextVariable("MINOR_FACTION", QuestClan().Name);
                     textObject.SetCharacterProperties("ISSUE_GIVER", base.QuestGiver.CharacterObject, false);
                     return textObject;
@@ -392,12 +392,12 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 var questSettlement = base.QuestGiver.CurrentSettlement;
                 if (questSettlement.OwnerClan.IsOutlaw)
-                    t.SetTextVariable("TROOP_TYPE", "bandits");
+                    t.SetTextVariable("TROOP_TYPE", new TextObject("{=dtwUqRyju}bandits"));
                 else
-                    t.SetTextVariable("TROOP_TYPE", "soldiers");
+                    t.SetTextVariable("TROOP_TYPE", new TextObject("{=Mcp21ip8V}soldiers"));
 
                 if (Helpers.mfIsMounted(questSettlement.OwnerClan))
-                    t.SetTextVariable("MOUNTED", "mounted ");
+                    t.SetTextVariable("MOUNTED", new TextObject("{=kDeZI8FIZ}mounted "));
                 else
                     t.SetTextVariable("MOUNTED", "");
             }
@@ -406,14 +406,14 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{QUEST_GIVER.LINK}, a Notable in {SETTLEMENT}, told you that {?QUEST_GIVER.GENDER}she{?}he{\\?} needs recruits for {?QUEST_GIVER.GENDER}her{?}his{\\?} Clan. " +
+                    TextObject text = new TextObject("{=kYU0MOSP1}{QUEST_GIVER.LINK}, a Notable of the {MINOR_FACTION}, told you that {?QUEST_GIVER.GENDER}she{?}he{\\?} needs recruits for {?QUEST_GIVER.GENDER}her{?}his{\\?} Clan. " +
                         "{?QUEST_GIVER.GENDER}She{?}He{\\?} asked you to recruit {NEEDED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} into your party, then transfer them to {?QUEST_GIVER.GENDER}her{?}him{\\?}. You will be paid for the recruits depending on their experience.");
-                    setTextTroopDescriptions(textObject);
+                    setTextTroopDescriptions(text);
 
-                    textObject.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
-                    textObject.SetTextVariable("SETTLEMENT", base.QuestGiver.CurrentSettlement.Name);
-                    textObject.SetTextVariable("NEEDED_RECRUIT_AMOUNT", this._requestedRecruitCount);
-                    return textObject;
+                    text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
+                    text.SetTextVariable("MINOR_FACTION", base.QuestGiver.CurrentSettlement.OwnerClan.EncyclopediaLinkWithName);
+                    text.SetTextVariable("NEEDED_RECRUIT_AMOUNT", this._requestedRecruitCount);
+                    return text;
                 }
             }
 
@@ -431,7 +431,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject text = new TextObject("{QUEST_GIVER.LINK} has died. {?QUEST_GIVER.GENDER}She{?}He{\\?} has no more desires.")
+                    TextObject text = new TextObject("{=gOEIZ30vl}{QUEST_GIVER.LINK} has died. {?QUEST_GIVER.GENDER}She{?}He{\\?} has no more desires.")
                         .SetTextVariable("IS_MAP_FACTION", Clan.PlayerClan.IsMapFaction ? 1 : 0); ;
                     text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
                     return text;

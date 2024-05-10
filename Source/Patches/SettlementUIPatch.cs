@@ -23,7 +23,7 @@ namespace ImprovedMinorFactions.Patches
             if (mfHideout == null)
                 return true;
             __result = CampaignUIHelper.GetSettlementPropertyTooltip(
-                curSettlement, new TextObject("Militia").ToString(), curSettlement.Militia, mfHideout.MilitiaChange);
+                curSettlement, new TextObject("{=gsVtO9A7}Militia").ToString(), curSettlement.Militia, mfHideout.MilitiaChange);
             return false;
         }
     }
@@ -41,7 +41,7 @@ namespace ImprovedMinorFactions.Patches
             if (mfHideout == null)
                 return true;
             __result = CampaignUIHelper.GetSettlementPropertyTooltip(
-                curSettlement, new TextObject("Hearth").ToString(), mfHideout.Hearth, mfHideout.HearthChange);
+                curSettlement, new TextObject("{=2GWR9Cba}Hearth").ToString(), mfHideout.Hearth, mfHideout.HearthChange);
 
             return false;
         }

@@ -334,7 +334,6 @@ namespace ImprovedMinorFactions
             }
         }
 
-        // TODO: make reasonable militia calcs
         public ExplainedNumber MilitiaChange
         { 
             get
@@ -354,7 +353,6 @@ namespace ImprovedMinorFactions
             get => this._isActive;
         }
 
-        // TODO: make reasonable hearth calcs
         public ExplainedNumber HearthChange
         {
             get

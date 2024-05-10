@@ -99,7 +99,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 
             public override TextObject Title
             {
-                get => new TextObject("Train recruits for {MINOR_FACTION} Hideout")
+                get => new TextObject("{=npV743inQ}Train recruits for {MINOR_FACTION} Hideout")
                         .SetTextVariable("MINOR_FACTION", IssueClan().Name);
             }
 
@@ -107,7 +107,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{ISSUE_GIVER.NAME} needs some of his {MINOR_FACTION} recruits to gain some real war experience " +
+                    TextObject textObject = new TextObject("{=5ORyuslE2}{ISSUE_GIVER.NAME} needs some of his {MINOR_FACTION} recruits to gain some real war experience " +
                         "{?ISSUE_GIVER.GENDER}She{?}He{\\?} wants you to take them with you on some fairly safe expeditions, such as hunting some bandits.")
                         .SetTextVariable("MINOR_FACTION", IssueClan().Name);
                     textObject.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject, false);
@@ -117,7 +117,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             
             public override TextObject IssueBriefByIssueGiver
             {
-                get => new TextObject("We have recently acquired some new recruits for the {MINOR_FACTION}. They are young and eager " +
+                get => new TextObject("{=oCbu6eG6F}We have recently acquired some new recruits for the {MINOR_FACTION}. They are young and eager " +
                         "to get into some combat but I'm afraid they won't last very long against real warriors. Maybe you could take some of them " +
                         "in your party and show them how to carry themselves in battle. In exchange they will share with you the values of the {MINOR_FACTION} " +
                         "and maybe we could form a partnership in the future.[if:convo_focused_happy][ib:hip]")
@@ -175,11 +175,11 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{=Ci8NCwgW}{ISSUE_GIVER.LINK} a member of the {MINOR_FACTION}, asked you" +
+                    TextObject textObject = new TextObject("{=NNIqnPU40}{ISSUE_GIVER.LINK} a member of the {MINOR_FACTION}, asked you" +
                         " to train recruits for {?QUEST_GIVER.GENDER}her{?}him{\\?}. {?QUEST_GIVER.GENDER}She{?}He{\\?} gave you " +
                         "{NUMBER_OF_MEN} men, hoping to take them back when once they are veterans.{newline}You sent them with one " +
                         "of your companions {COMPANION.LINK} to hunt down some easy targets. You arranged to meet them in {RETURN_DAYS} days.")
-                        .SetTextVariable("MINOR_FACTION", IssueClan().Name)
+                        .SetTextVariable("MINOR_FACTION", IssueClan().EncyclopediaLinkWithName)
                         .SetTextVariable("RETURN_DAYS", base.GetTotalAlternativeSolutionDurationInDays())
                         .SetTextVariable("NUMBER_OF_MEN", base.GetTotalAlternativeSolutionNeededMenCount());
                     textObject.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject);
@@ -288,7 +288,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                     relationHero = issueGiver;
                 }
                 if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction as Kingdom, issueGiver.Clan))
+                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
                 {
                     flag |= PreconditionFlags.AtWar;
                 }
@@ -331,8 +331,6 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 CampaignEvents.OnPlayerBattleEndEvent.AddNonSerializedListener(this, new Action<MapEvent>(this.OnPlayerBattleEnd));
                 CampaignEvents.PlayerUpgradedTroopsEvent.AddNonSerializedListener(this, new Action<CharacterObject, CharacterObject, int>(this.OnPlayerUpgradedTroops));
                 CampaignEvents.OnSettlementLeftEvent.AddNonSerializedListener(this, new Action<MobileParty, Settlement>(this.OnSettlementLeft));
-                CampaignEvents.WarDeclared.AddNonSerializedListener(this, new Action<IFaction, IFaction, DeclareWarAction.DeclareWarDetail>(this.OnWarDeclared));
-                CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, new Action<Clan, Kingdom, Kingdom, ChangeKingdomAction.ChangeKingdomActionDetail, bool>(this.OnClanChangedKingdom));
                 CampaignEvents.OnTroopGivenToSettlementEvent.AddNonSerializedListener(this, new Action<Hero, Settlement, TroopRoster>(this.OnTroopGivenToSettlement));
             }
 
@@ -375,11 +373,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 {
                     if (detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility)
                     {
-                        CompleteQuestWithFail();
-                        base.CompleteQuestWithCancel(_onPlayerDeclaredWarQuestLogText);
+                        CompleteQuestWithFail(_onPlayerDeclaredWarQuestLogText);
                     } else
                     {
-                        base.CompleteQuestWithCancel(_onQuestGiverAtWarWithPlayerdLogText);
+                        base.CompleteQuestWithCancel(_onQuestGiverAtWarWithPlayerLogText);
                     }
                 }
                     
@@ -412,7 +409,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification = true)
             {
                 if (QuestClan().MapFaction.IsAtWarWith(Hero.MainHero.MapFaction))
-                    base.CompleteQuestWithCancel(this._onQuestGiverAtWarWithPlayerdLogText);
+                    base.CompleteQuestWithCancel(this._onQuestGiverAtWarWithPlayerLogText);
             }
 
             private bool CheckFail()
@@ -594,11 +591,11 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             {
                 get
                 {
-                    TextObject text = new TextObject("{QUEST_GIVER.LINK}, a member of the {MINOR_FACTION}, asked you to train some recruits" +
+                    TextObject text = new TextObject("{=1QEr8eYap}{QUEST_GIVER.LINK}, a member of the {MINOR_FACTION}, asked you to train some recruits" +
                         " for {?QUEST_GIVER.GENDER}her{?}him{\\?}. {?QUEST_GIVER.GENDER}She{?}He{\\?} gave you {NUMBER_OF_MEN} men, hoping to take them back " +
                         "when once they have some experience.\nThe easiest way to train them without putting them in too much danger is to attack weak parties.")
                         .SetTextVariable("NUMBER_OF_MEN", this._borrowedTroopCount)
-                        .SetTextVariable("MINOR_FACTION", QuestClan().Name);
+                        .SetTextVariable("MINOR_FACTION", QuestClan().EncyclopediaLinkWithName);
                     text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
                     return text;
                 }
@@ -669,7 +666,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 }
             }
 
-            private TextObject _onQuestGiverAtWarWithPlayerdLogText
+            private TextObject _onQuestGiverAtWarWithPlayerLogText
             {
                 get
                 {
@@ -685,8 +682,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             {
                 get
                 {
-                    TextObject text = new TextObject("{QUEST_GIVER.LINK} has died. {?QUEST_GIVER.GENDER}She{?}He{\\?} has no more desires.")
-                        .SetTextVariable("IS_MAP_FACTION", Clan.PlayerClan.IsMapFaction ? 1 : 0); ;
+                    TextObject text = new TextObject("{=gOEIZ30vl}{QUEST_GIVER.LINK} has died. {?QUEST_GIVER.GENDER}She{?}He{\\?} has no more desires.");
                     text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
                     return text;
                 }

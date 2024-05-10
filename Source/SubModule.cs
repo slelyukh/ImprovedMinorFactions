@@ -49,6 +49,10 @@ namespace ImprovedMinorFactions
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
             CampaignGameStarter? starter = gameStarterObject as CampaignGameStarter;
+            if (starter == null)
+            {
+                return;
+            }
             starter.AddBehavior(new MFHideoutCampaignBehavior());
             starter.AddBehavior(new MFHNotablesCampaignBehavior());
             starter.AddBehavior(new MFHNotableNeedsRecruitsIssueBehavior());
@@ -111,6 +115,8 @@ namespace ImprovedMinorFactions
         public override void OnGameInitializationFinished(Game game)
         {
             base.OnGameInitializationFinished(game);
+            if (Campaign.Current == null)
+                return;
 
             ValidateGameModel(Campaign.Current.Models.ClanFinanceModel);
             ValidateGameModel(Campaign.Current.Models.TargetScoreCalculatingModel);
