@@ -8,6 +8,7 @@ using SandBox.CampaignBehaviors;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Party;
+using TaleWorlds.Core;
 
 namespace ImprovedMinorFactions.Patches
 {
@@ -17,10 +18,11 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(Clan __instance)
         {
-            if (!__instance.IsMinorFaction || Helpers.IsMFHideout(__instance.HomeSettlement) || MFHideoutManager.Current.GetHideoutOfClan(__instance) == null)
+            if (!__instance.IsMinorFaction || Helpers.IsMFHideout(__instance.HomeSettlement) || !MFHideoutManager.Current.HasActiveHideouts(__instance))
                 return;
 
-            Helpers.callPrivateMethod(__instance, "set_HomeSettlement", new object[] { MFHideoutManager.Current.GetHideoutOfClan(__instance).Settlement });
+            var activeHideouts = MFHideoutManager.Current.GetActiveHideoutsOfClan(__instance);
+            Helpers.callPrivateMethod(__instance, "set_HomeSettlement", new object[] { activeHideouts[MBRandom.RandomInt(activeHideouts.Count)].Settlement });
             foreach (Hero hero in __instance.Heroes)
             {
                 hero.UpdateHomeSettlement();

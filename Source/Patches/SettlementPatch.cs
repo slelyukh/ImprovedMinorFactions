@@ -64,17 +64,17 @@ namespace ImprovedMinorFactions.Patches
                 return;
 
             // manual fix of MFHideouts not saving properly bug
-            if (MFHideoutManager.Current != null && MFHideoutManager.Current.GetLoadedMFHideout(mfHideout.StringId) != null)
+            if (MFHideoutManager.Current != null)
             {
-                var loadedMfh = MFHideoutManager.Current.GetLoadedMFHideout(mfHideout.StringId);
-                __instance.SetSettlementComponent(loadedMfh);
+                var settlementMfh = MFHideoutManager.Current.GetLoadedMFHideout(mfHideout.StringId) ?? mfHideout;
+                __instance.SetSettlementComponent(settlementMfh);
                 foreach (XmlNode child in node.ChildNodes)
                 {
                     if (child.Name != "Components")
                         continue;
                     XmlNode mfhNode = child.FirstChild;
-                    loadedMfh.Deserialize(MBObjectManager.Instance, mfhNode);
-                    loadedMfh.AfterInitialized();
+                    settlementMfh.Deserialize(MBObjectManager.Instance, mfhNode);
+                    settlementMfh.AfterInitialized();
                 }
             }
             // if "Faction.factionID" doesn't get us the clan we want we must manually find it

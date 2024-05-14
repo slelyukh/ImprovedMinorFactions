@@ -33,18 +33,22 @@ namespace ImprovedMinorFactions.Source.Patches
         public override ExplainedNumber CalculateClanGoldChange(Clan clan, bool includeDescriptions = false, bool applyWithdrawals = false, bool includeDetails = false)
         {
             var eNum = _previousModel.CalculateClanGoldChange(clan, includeDescriptions, applyWithdrawals, includeDetails);
-            var mfHideout = MFHideoutManager.Current.GetHideoutOfClan(clan);
-            if (mfHideout != null)
-                eNum.Add(MFHideoutModels.CalculateHideoutIncome(mfHideout), new TextObject("Hideout Income"), mfHideout.Name);
+            var mfHideouts = MFHideoutManager.Current.GetActiveHideoutsOfClan(clan);
+            foreach (var mfh in mfHideouts)
+            {
+                eNum.Add(MFHideoutModels.CalculateHideoutIncome(mfh), new TextObject("Hideout Income"), mfh.Name);
+            }
             return eNum;
         }
 
         public override ExplainedNumber CalculateClanIncome(Clan clan, bool includeDescriptions = false, bool applyWithdrawals = false, bool includeDetails = false)
         {
             var eNum = _previousModel.CalculateClanIncome(clan, includeDescriptions, applyWithdrawals, includeDetails);
-            var mfHideout = MFHideoutManager.Current.GetHideoutOfClan(clan);
-            if (mfHideout != null)
-                eNum.Add(MFHideoutModels.CalculateHideoutIncome(mfHideout), new TextObject("Hideout Income"), mfHideout.Name);
+            var mfHideouts = MFHideoutManager.Current.GetActiveHideoutsOfClan(clan);
+            foreach (var mfh in mfHideouts)
+            {
+                eNum.Add(MFHideoutModels.CalculateHideoutIncome(mfh), new TextObject("Hideout Income"), mfh.Name);
+            }
             return eNum;
         }
 

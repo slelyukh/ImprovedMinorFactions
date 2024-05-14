@@ -10,7 +10,7 @@ namespace ImprovedMinorFactions.Source.Patches
         static void Postfix(Campaign __instance, Settlement settlement)
         {
             MinorFactionHideout? mfHideout = Helpers.GetMFHideout(settlement);
-            if (mfHideout == null || !mfHideout.IsActive)
+            if (mfHideout == null)
                 return;
             mfHideout.DailyTick();
         }

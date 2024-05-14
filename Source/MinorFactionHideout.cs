@@ -41,6 +41,11 @@ namespace ImprovedMinorFactions
             get => _nextPossibleAttackTime;
         }
 
+        public CampaignTime NextPossibleActivationTime
+        {
+            get => _nextPossibleActivationTime;
+        }
+
         [LoadInitializationCallback]
         private void OnLoad()
         {
@@ -84,7 +89,7 @@ namespace ImprovedMinorFactions
 
         public void ActivateHideoutFirstTime()
         {
-            if (MFHideoutManager.Current.GetHideoutOfClan(this.OwnerClan) != null)
+            if (MFHideoutManager.Current.GetActiveHideoutsOfClan(this.OwnerClan).Contains(this))
             {
                 InformationManager.DisplayMessage(new InformationMessage($"{this.Name} Double Activated!!!!", Color.Black));
                 throw new System.Exception("double clan activation");
@@ -107,7 +112,13 @@ namespace ImprovedMinorFactions
                 MoveNotableIn(notable);
             }
 
-            ActivateHideout();
+            ScheduleHideoutActivation(MFHideoutModels.HideoutActivationDelay(this.OwnerClan));
+        }
+
+        private void ScheduleHideoutActivation(CampaignTime waitTime)
+        {
+            _nextPossibleActivationTime = CampaignTime.Now + waitTime;
+            _activationScheduled = true;
         }
 
         private void ActivateHideout()
@@ -146,7 +157,6 @@ namespace ImprovedMinorFactions
 
         public void MoveHideouts(MinorFactionHideout newHideout)
         {
-            // TODO: move hideout inventory
             List<Hero> notables = this.Settlement.Notables.ToList();
             newHideout.ActivateHideout(notables);
             this.DeactivateHideout(true);
@@ -162,8 +172,11 @@ namespace ImprovedMinorFactions
 
         internal void DeactivateHideout(bool createEvent)
         {
-            // TODO: might not need this
-            CampaignEventDispatcher.Instance.OnHideoutDeactivated(this.Settlement);
+            if (createEvent)
+            {
+                CampaignEventDispatcher.Instance.OnHideoutDeactivated(this.Settlement);
+            }
+            
             this._isActive = false;
             this._isSpotted = false;
             this.Settlement.IsVisible = false;
@@ -206,18 +219,28 @@ namespace ImprovedMinorFactions
 
         public void DailyTick()
         {
-            if (Helpers.IsMFClanInitialized(_ownerclan))
+            if (!Helpers.IsMFClanInitialized(_ownerclan))
+                return;
+
+            if (_activationScheduled && _nextPossibleActivationTime.IsPast)
             {
-                float curMil = base.Settlement.Militia;
-                float milChange = this.MilitiaChange.ResultNumber;
-                if (curMil + milChange > MFHideoutModels.GetMaxMilitiaInHideout() + 1) {
-                    base.Settlement.Militia = (curMil + milChange) - 1;
-                    this.UpgradeMilitia(1);
-                } else {
-                    base.Settlement.Militia += this.MilitiaChange.ResultNumber;
-                }
+                ActivateHideout();
+                _activationScheduled = false;
             }
-                
+
+            if (!this.IsActive)
+                return;
+            float curMil = base.Settlement.Militia;
+            float milChange = this.MilitiaChange.ResultNumber;
+            if (curMil + milChange > MFHideoutModels.GetMaxMilitiaInHideout() + 1)
+            {
+                base.Settlement.Militia = (curMil + milChange) - 1;
+                this.UpgradeMilitia(1);
+            }
+            else
+            {
+                base.Settlement.Militia += this.MilitiaChange.ResultNumber;
+            }
             this.Hearth += this.HearthChange.ResultNumber;
         }
 
@@ -353,6 +376,11 @@ namespace ImprovedMinorFactions
             get => this._isActive;
         }
 
+        public bool IsScheduledToBeActive
+        {
+            get => this._activationScheduled;
+        }
+
         public ExplainedNumber HearthChange
         {
             get
@@ -388,6 +416,11 @@ namespace ImprovedMinorFactions
 
         [SaveableField(105)]
         private bool _isActive;
-        
+
+        [SaveableField(106)]
+        private CampaignTime _nextPossibleActivationTime;
+
+        [SaveableField(107)]
+        private bool _activationScheduled;
     }
 }

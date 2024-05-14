@@ -65,6 +65,17 @@ namespace ImprovedMinorFactions
             return eNum;
         }
 
+        internal static CampaignTime HideoutActivationDelay(Clan ownerClan)
+        {
+            if (Helpers.IsSingleHideoutMF(ownerClan))
+            {
+                return CampaignTime.Days(12);
+            } else
+            {
+                return CampaignTime.Days(5);
+            }
+        }
+
         internal static int MinRelationToBeMFHFriend = 15;
         internal static float MinRelationToGetMFQuest = -30;
 

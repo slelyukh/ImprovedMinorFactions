@@ -19,6 +19,12 @@ namespace ImprovedMinorFactions
 
         internal static bool IsDebugMode = false;
 
+        internal static bool IsSingleHideoutMF(Clan c)
+        {
+            MFHideoutManager.InitManagerIfNone();
+            return MFHideoutManager.Current.IsFullHideoutOccupationMF(c);
+        }
+
         internal static List<TooltipProperty> GetVillageOrMFHideoutMilitiaTooltip(Settlement s)
         {
             if (s.IsVillage) {
