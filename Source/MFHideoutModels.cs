@@ -77,7 +77,7 @@ namespace ImprovedMinorFactions
             }
         }
 
-        internal static CampaignTime NomadHideoutLifetime = CampaignTime.Days(2);
+        internal static CampaignTime NomadHideoutLifetime = CampaignTime.Days(45);
 
         internal static int MinRelationToBeMFHFriend = 15;
         internal static float MinRelationToGetMFQuest = -30;
