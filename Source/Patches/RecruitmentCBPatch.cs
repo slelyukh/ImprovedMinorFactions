@@ -13,7 +13,7 @@ namespace ImprovedMinorFactions.Patches
         static void Postfix(Settlement settlement)
         {
             var mfHideout = Helpers.GetMFHideout(settlement);
-            if (mfHideout == null || !Helpers.IsMFClanInitialized(mfHideout.OwnerClan))
+            if (mfHideout == null)
                 return;
 
             foreach (Hero notable in settlement.Notables)
@@ -22,7 +22,7 @@ namespace ImprovedMinorFactions.Patches
                     continue;
 
                 var volunteerTypes = notable.VolunteerTypes;
-                var basicVolunteer = mfHideout.OwnerClan.BasicTroop;
+                var basicVolunteer = Helpers.GetBasicTroop(mfHideout.OwnerClan);
 
                 for (int i = 0; i < notable.VolunteerTypes.Length; i++)
                 {

@@ -75,10 +75,6 @@ namespace ImprovedMinorFactions
         {
             return s.SettlementComponent as MinorFactionHideout;
         }
-        internal static bool IsMFClanInitialized(Clan c)
-        {
-            return c.Culture != null && c.BasicTroop != c.Culture.BasicTroop;
-        }
 
         // Removes any normal militia units from MFHideout militia party
         internal static int removeMilitiaImposters(Settlement s)
@@ -107,18 +103,20 @@ namespace ImprovedMinorFactions
 
         internal static CharacterObject GetBasicTroop(Clan minorFaction)
         {
-            if (minorFaction.BasicTroop == minorFaction.Culture.BasicTroop)
-                DetermineBasicTroopsForMinorFactionsCopypasta();
+            DetermineBasicTroopsForMinorFactionsCopypasta();
             return minorFaction.BasicTroop;
         }
 
         // copypasta from ClanVariablesCampaignBehavior
         internal static void DetermineBasicTroopsForMinorFactionsCopypasta()
         {
+            
             foreach (Clan clan in Clan.All)
             {
                 if (clan.IsMinorFaction)
                 {
+                    if (clan.BasicTroop != clan.Culture.BasicTroop)
+                        continue;
                     CharacterObject basicTroop = null;
                     PartyTemplateObject defaultPartyTemplate = clan.DefaultPartyTemplate;
                     int minLevel = 50;

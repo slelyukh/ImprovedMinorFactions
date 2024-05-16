@@ -147,7 +147,7 @@ namespace ImprovedMinorFactions
             return mfData;
         }
 
-        public void ClearHideout(MinorFactionHideout oldHideout)
+        public void ClearHideout(MinorFactionHideout oldHideout, DeactivationReason reason)
         {
             if (!TryInitMFHideoutsLists())
                 throw new Exception("can't switch Hideout due to uninitialized Hideout Manager");
@@ -172,7 +172,10 @@ namespace ImprovedMinorFactions
                     && !IsFullHideoutOccupationMF(mfClan))
                     activateIndex = MBRandom.RandomInt(hideouts.Count);
                 var newHideout = hideouts[activateIndex];
-                oldHideout.MoveHideouts(newHideout);
+                if (reason == DeactivationReason.Raid)
+                    oldHideout.MoveHideoutsPostRaid(newHideout);
+                else if (reason == DeactivationReason.NomadMovement)
+                    oldHideout.MoveHideoutsNomad(newHideout);
             } catch (KeyNotFoundException ex)
             {
                 InformationManager.DisplayMessage(new InformationMessage("IMF ERROR: Somehow we tried to clear a hideout not in MFHManager._mfData.", Colors.Red));

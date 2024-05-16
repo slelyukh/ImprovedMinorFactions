@@ -99,7 +99,7 @@ namespace ImprovedMinorFactions
             campaignGameStarter.AddGameMenuOption("mf_hideout_place", "hostile_action", "{=GM3tAYMr}Take Hostile Action",
                 new Options.OnConditionDelegate(menu_hostile_action_on_condition),
                 new Options.OnConsequenceDelegate(menu_hostile_action_on_consequence));
-            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "recruit_volunteers", "{=nRm78XAk}Recruit troops", 
+            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "recruit_volunteers", "{=E31IJyqs}Recruit troops", 
                 new Options.OnConditionDelegate(recruit_troops_on_condition), 
                 new Options.OnConsequenceDelegate(recruit_troops_on_consequence));
             campaignGameStarter.AddGameMenuOption("mf_hideout_place", "wait", "{=zEoHYEUS}Wait here for some time",
@@ -129,6 +129,15 @@ namespace ImprovedMinorFactions
             campaignGameStarter.AddGameMenuOption("mf_hideout_hostile_action", "forget_it", "{=sP9ohQTs}Forget it", 
                 new Options.OnConditionDelegate(menu_leave_on_condition), 
                 new Options.OnConsequenceDelegate(menu_hostile_action_forget_on_consequence));
+
+            campaignGameStarter.AddGameMenu("mf_hideout_nomads_left", 
+                new TextObject("{=WAkOJrsBf}The {MINOR_FACTION} camp is being dismantled because the land here has been used up.")
+                    .SetTextVariable("MINOR_FACTION", Settlement.CurrentSettlement.OwnerClan.Name).ToString(),
+                new OnInitDelegate(game_menu_hideout_place_on_init), 
+                GameOverlays.MenuOverlayType.SettlementWithParties);
+            campaignGameStarter.AddGameMenuOption("mf_hideout_nomads_left", "leave", "{=3sRdGQou}Leave",
+                new Options.OnConditionDelegate(menu_leave_on_condition),
+                new Options.OnConsequenceDelegate(menu_nomad_leave_on_consequence));
         }
 
         private void ProcessMenusForAttack(MenuCallbackArgs args)
@@ -149,7 +158,7 @@ namespace ImprovedMinorFactions
         public bool menu_attack_on_condition(MenuCallbackArgs args)
         {
             ProcessMenusForAttack(args);
-            return Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
+            return Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction) && Settlement.CurrentSettlement.IsActive;
         }
 
         public void menu_attack_on_consequence(MenuCallbackArgs args)
@@ -172,7 +181,7 @@ namespace ImprovedMinorFactions
         {
             args.optionLeaveType = Options.LeaveType.Submenu;
             args.Tooltip = new TextObject("{=1PM860Jco}Taking hostile action will start a war between you and this Clan or whoever hired them.");
-            return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
+            return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction) && Settlement.CurrentSettlement.IsActive;
         }
 
         public void menu_hostile_action_on_consequence(MenuCallbackArgs args)
@@ -193,7 +202,7 @@ namespace ImprovedMinorFactions
             {
                 args.IsEnabled = true;
             }
-            return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
+            return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction) && Settlement.CurrentSettlement.IsActive;
         }
 
         public void recruit_troops_on_consequence(MenuCallbackArgs args)
@@ -210,7 +219,7 @@ namespace ImprovedMinorFactions
                 args.IsEnabled = false;
                 args.Tooltip = new TextObject("{=92PPJNVSa}You don't have enough relation to stay in this hideout.");
             }
-            return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
+            return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction) && Settlement.CurrentSettlement.IsActive;
         }
 
         private void menu_wait_on_consequence(MenuCallbackArgs args)
@@ -226,6 +235,14 @@ namespace ImprovedMinorFactions
 
         private void menu_leave_on_consequence(MenuCallbackArgs args)
         {
+            if (MobileParty.MainParty.CurrentSettlement != null)
+                PlayerEncounter.LeaveSettlement();
+            PlayerEncounter.Finish(true);
+        }
+
+        private void menu_nomad_leave_on_consequence(MenuCallbackArgs args)
+        {
+            Settlement.CurrentSettlement.IsVisible = false;
             if (MobileParty.MainParty.CurrentSettlement != null)
                 PlayerEncounter.LeaveSettlement();
             PlayerEncounter.Finish(true);
@@ -334,7 +351,6 @@ namespace ImprovedMinorFactions
             
             if (mfHideout.NextPossibleAttackTime.IsPast && num > 0 && Hero.MainHero.IsWounded)
                 GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{=fMekM2UH}{HIDEOUT_DESCRIPTION} You can not attack since your wounds do not allow you.");
-
 
             if (MobileParty.MainParty.CurrentSettlement == null)
                 PlayerEncounter.EnterSettlement();

@@ -257,7 +257,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 });
                 GainRenownAction.Apply(Hero.MainHero, 1f);
                 MFHideoutCampaignBehavior.ApplyHideoutRaidConsequences(_targetHideout);
-                MFHideoutManager.Current.ClearHideout(Helpers.GetMFHideout(_targetHideout));
+                MFHideoutManager.Current.ClearHideout(Helpers.GetMFHideout(_targetHideout), DeactivationReason.Raid);
             }
 
             protected override void AlternativeSolutionEndWithFailureConsequence()

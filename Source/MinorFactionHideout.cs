@@ -10,6 +10,10 @@ using TaleWorlds.SaveSystem;
 using TaleWorlds.Library;
 using System.Linq;
 using TaleWorlds.Localization;
+using static TaleWorlds.CampaignSystem.CampaignTime;
+using TaleWorlds.CampaignSystem.Roster;
+using TaleWorlds.CampaignSystem.Encounters;
+using TaleWorlds.CampaignSystem.GameMenus;
 
 namespace ImprovedMinorFactions
 {
@@ -54,6 +58,7 @@ namespace ImprovedMinorFactions
         }
 
         // CreateHeroAtOccupation copypasta
+        // TODO: rename hero to Vakken or Darshi
         private void RenameHeroToNewOccupation(Hero heroToRename, Occupation occupation, uint seed)
         {
             IEnumerable<CharacterObject> enumerable = Enumerable.Where<CharacterObject>(
@@ -105,14 +110,20 @@ namespace ImprovedMinorFactions
             this.Hearth = 350;
         }
 
-        private void ActivateHideout(List<Hero> newNotables)
+        private void ActivateHideout(List<Hero> newNotables, DeactivationReason reason)
         {
+            // move notables to this hideout
             foreach (Hero notable in newNotables)
             {
-                MoveNotableIn(notable);
+                if (reason == DeactivationReason.Raid)
+                    notable.VolunteerTypes = new CharacterObject[6];
+                notable.StayingInSettlement = this.Settlement;
+                notable.UpdateHomeSettlement();
             }
-
-            ScheduleHideoutActivation(MFHideoutModels.HideoutActivationDelay(this.OwnerClan));
+            if (reason == DeactivationReason.Raid)
+                ScheduleHideoutActivation(MFHideoutModels.HideoutActivationDelay(this.OwnerClan));
+            else
+                ActivateHideout();
         }
 
         private void ScheduleHideoutActivation(CampaignTime waitTime)
@@ -123,17 +134,9 @@ namespace ImprovedMinorFactions
 
         private void ActivateHideout()
         {
-            if (!Helpers.IsMFClanInitialized(this.OwnerClan))
-            {
-                if (this.OwnerClan == null)
-                { 
-                    return;
-                }
-                Helpers.DetermineBasicTroopsForMinorFactionsCopypasta();
-            }
-
             this._isActive = true;
             this._isSpotted = false;
+            this._activationTime = CampaignTime.Now;
 
             // add 3 high tier militias
             base.Settlement.Militia = 3;
@@ -155,19 +158,55 @@ namespace ImprovedMinorFactions
             }
         }
 
-        public void MoveHideouts(MinorFactionHideout newHideout)
+        public void MoveHideoutsPostRaid(MinorFactionHideout newHideout)
         {
             List<Hero> notables = this.Settlement.Notables.ToList();
-            newHideout.ActivateHideout(notables);
+            newHideout.ActivateHideout(notables, DeactivationReason.Raid);
             this.DeactivateHideout(true);
         }
 
-        // updates notable info and removes notable from old settlement and adds to new settlement
-        private void MoveNotableIn(Hero notable)
+        public void MoveHideoutsNomad(MinorFactionHideout newHideout)
         {
-            notable.VolunteerTypes = new CharacterObject[6];
-            notable.StayingInSettlement = this.Settlement;
-            notable.UpdateHomeSettlement();
+            List<Hero> notables = this.Settlement.Notables.ToList();
+            newHideout.ActivateHideout(notables, DeactivationReason.NomadMovement);
+            newHideout.Hearth = this.Hearth;
+            // We will handle the militia party ourselves
+            CopyMilitiaToHideout(newHideout);
+            
+            
+            this.DeactivateHideout(true);
+            if (PlayerEncounter.Current != null
+                && PlayerEncounter.Current.IsPlayerWaiting
+                && PlayerEncounter.Current.EncounterSettlementAux == this.Settlement)
+            {
+                GameMenu.SwitchToMenu("mf_hideout_nomads_left");
+                // When we leave it should stop being visible
+                this.Settlement.IsVisible = true;
+            }
+            InformationManager.DisplayMessage(new InformationMessage(
+                    new TextObject("{=bTIQXD4cq}The {MINOR_FACTION} have moved their camp to a new location.")
+                        .SetTextVariable("MINOR_FACTION", this.OwnerClan.Name).ToString()));
+        }
+
+        // Method counts how many militia of each tier there are and gives otherHideout that number of militia of that tier
+        internal void CopyMilitiaToHideout(MinorFactionHideout otherHideout)
+        {
+            otherHideout.Settlement.Militia = 0;
+            int[] tierCounts = new int[15];
+            foreach (TroopRosterElement troopInfo in this.Settlement.MilitiaPartyComponent.Party.MemberRoster.GetTroopRoster())
+            {
+                int tier = troopInfo.Character.Tier;
+                int numTroop = troopInfo.Number;
+                tierCounts[tier] += numTroop;
+            }
+            for (int i = tierCounts.Length - 1; i >= 0; i--)
+            {
+                otherHideout.Settlement.Militia += tierCounts[i];
+                for (int j = otherHideout.OwnerClan.BasicTroop.Tier; j < i; j++)
+                {
+                    otherHideout.UpgradeMilitia(tierCounts[i]);
+                }
+            }
         }
 
         internal void DeactivateHideout(bool createEvent)
@@ -219,9 +258,6 @@ namespace ImprovedMinorFactions
 
         public void DailyTick()
         {
-            if (!Helpers.IsMFClanInitialized(_ownerclan))
-                return;
-
             if (_activationScheduled && _nextPossibleActivationTime.IsPast)
             {
                 ActivateHideout();
@@ -243,15 +279,6 @@ namespace ImprovedMinorFactions
             }
             this.Hearth += this.HearthChange.ResultNumber;
         }
-
-        //TODO: add AllMinorFactionHideouts if needed
-        //public static MBReadOnlyList<Hideout> All
-        //{
-        //    get
-        //    {
-        //        return Campaign.Current.AllHideouts;
-        //    }
-        //}
 
         protected override void OnInventoryUpdated(ItemRosterElement item, int count)
         {
@@ -276,7 +303,6 @@ namespace ImprovedMinorFactions
                     yield return mobileParty.Party;
                 }
             }
-            // List<MobileParty>.Enumerator enumerator = default(List<MobileParty>.Enumerator);
             yield break;
         }
 
@@ -376,6 +402,12 @@ namespace ImprovedMinorFactions
             get => this._isActive;
         }
 
+        public CampaignTime ActivationTime
+        {
+            get => this._activationTime;
+            set => this._activationTime = value;
+        }
+
         public bool IsScheduledToBeActive
         {
             get => this._activationScheduled;
@@ -400,7 +432,6 @@ namespace ImprovedMinorFactions
                 );
         }
 
-
         [SaveableField(101)]
         private bool _isSpotted;
 
@@ -422,5 +453,14 @@ namespace ImprovedMinorFactions
 
         [SaveableField(107)]
         private bool _activationScheduled;
+
+        [SaveableField(108)]
+        private CampaignTime _activationTime;
+    }
+
+    public enum DeactivationReason
+    {
+        Raid,
+        NomadMovement
     }
 }

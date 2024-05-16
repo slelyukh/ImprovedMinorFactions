@@ -80,7 +80,7 @@ namespace ImprovedMinorFactions.Patches
 
             if (battleState == BattleState.AttackerVictory)
             {
-                MFHideoutManager.Current.ClearHideout(mfHideout);
+                MFHideoutManager.Current.ClearHideout(mfHideout, DeactivationReason.Raid);
                 return false;
             }
             if (battleState == BattleState.None)

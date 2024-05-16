@@ -189,9 +189,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{=Exa8gzGlC}{MINOR_FACTION} Hideout Needs Recruits");
-                    textObject.SetTextVariable("MINOR_FACTION", IssueClan().Name);
-                    return textObject;
+                    TextObject text = new TextObject("{=Exa8gzGlC}{MINOR_FACTION} Hideout Needs Recruits");
+                    text.SetTextVariable("MINOR_FACTION", IssueClan().Name);
+                    return text;
                 }
             }
 
@@ -199,10 +199,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{=awjQeYiRo}A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\\?} Clan.");
-                    textObject.SetTextVariable("MINOR_FACTION", IssueClan().Name);
-                    textObject.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject, false);
-                    return textObject;
+                    TextObject text = new TextObject("{=awjQeYiRo}A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\\?} Clan.");
+                    text.SetTextVariable("MINOR_FACTION", IssueClan().Name);
+                    text.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject, false);
+                    return text;
                 }
             }
 
@@ -376,10 +376,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{=lpc6tS3bs}A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\\?} Clan.");
-                    textObject.SetTextVariable("MINOR_FACTION", QuestClan().Name);
-                    textObject.SetCharacterProperties("ISSUE_GIVER", base.QuestGiver.CharacterObject, false);
-                    return textObject;
+                    TextObject text = new TextObject("{=lpc6tS3bs}A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\\?} Clan.");
+                    text.SetTextVariable("MINOR_FACTION", QuestClan().Name);
+                    text.SetCharacterProperties("ISSUE_GIVER", base.QuestGiver.CharacterObject);
+                    return text;
                 }
             }
 
@@ -421,9 +421,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{=3ApJ6LaX}You have transferred the recruits to {QUEST_GIVER.LINK} as promised.");
-                    textObject.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
-                    return textObject;
+                    TextObject text = new TextObject("{=3ApJ6LaX}You have transferred the recruits to {QUEST_GIVER.LINK} as promised.");
+                    text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
+                    return text;
                 }
             }
 

@@ -65,6 +65,7 @@ namespace ImprovedMinorFactions
             return eNum;
         }
 
+        // TODO: maybe add nomad transfer delay?
         internal static CampaignTime HideoutActivationDelay(Clan ownerClan)
         {
             if (Helpers.IsSingleHideoutMF(ownerClan))
@@ -75,6 +76,8 @@ namespace ImprovedMinorFactions
                 return CampaignTime.Days(5);
             }
         }
+
+        internal static CampaignTime NomadHideoutLifetime = CampaignTime.Days(2);
 
         internal static int MinRelationToBeMFHFriend = 15;
         internal static float MinRelationToGetMFQuest = -30;

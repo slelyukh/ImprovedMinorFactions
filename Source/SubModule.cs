@@ -4,6 +4,7 @@ using System.Linq;
 using HarmonyLib;
 using ImprovedMinorFactions.Patches;
 using ImprovedMinorFactions.Source;
+using ImprovedMinorFactions.Source.CampaignBehaviors;
 using ImprovedMinorFactions.Source.Patches;
 using ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits;
 using ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits;
@@ -59,6 +60,7 @@ namespace ImprovedMinorFactions
             starter.AddBehavior(new MFHNotableNeedsTroopsTrainedIssueBehavior());
             starter.AddBehavior(new MFHLordNeedsRecruitsIssueBehavior());
             starter.AddBehavior(new NearbyMFHideoutIssueBehavior());
+            starter.AddBehavior(new NomadMFsCampaignBehavior());
 
             var clanFinanceModel = GetGameModel<ClanFinanceModel>(starter);
             if (clanFinanceModel is null)
