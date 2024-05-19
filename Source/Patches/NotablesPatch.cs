@@ -42,7 +42,7 @@ namespace ImprovedMinorFactions.Source.Patches
         {
             if (!hero.IsNotable || !Helpers.IsMFHideout(hero.CurrentSettlement))
                 return true;
-            hero.AddPower(MFHideoutModels.CalculateDailyNotablePowerChange(hero).ResultNumber);
+            hero.AddPower(IMFModels.CalculateDailyNotablePowerChange(hero).ResultNumber);
             return false;
         }
     }

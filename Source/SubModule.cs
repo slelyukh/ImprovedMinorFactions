@@ -103,7 +103,7 @@ namespace ImprovedMinorFactions
 
         public override void OnGameEnd(Game game)
         {
-            MFHideoutManager.ClearManager();
+            IMFManager.ClearManager();
         }
 
         public override void BeginGameStart(Game game)

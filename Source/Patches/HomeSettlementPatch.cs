@@ -18,10 +18,10 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(Clan __instance)
         {
-            if (!__instance.IsMinorFaction || Helpers.IsMFHideout(__instance.HomeSettlement) || !MFHideoutManager.Current.HasActiveHideouts(__instance))
+            if (!__instance.IsMinorFaction || Helpers.IsMFHideout(__instance.HomeSettlement) || !IMFManager.Current.HasActiveHideouts(__instance))
                 return;
 
-            var activeHideouts = MFHideoutManager.Current.GetActiveHideoutsOfClan(__instance);
+            var activeHideouts = IMFManager.Current.GetActiveHideoutsOfClan(__instance);
             Helpers.callPrivateMethod(__instance, "set_HomeSettlement", new object[] { activeHideouts[MBRandom.RandomInt(activeHideouts.Count)].Settlement });
             foreach (Hero hero in __instance.Heroes)
             {

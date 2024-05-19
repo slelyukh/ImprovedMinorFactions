@@ -53,8 +53,8 @@ namespace ImprovedMinorFactions
         [LoadInitializationCallback]
         private void OnLoad()
         {
-            MFHideoutManager.InitManagerIfNone();
-            MFHideoutManager.Current.AddLoadedMFHideout(this);
+            IMFManager.InitManagerIfNone();
+            IMFManager.Current.AddLoadedMFHideout(this);
         }
 
         // CreateHeroAtOccupation copypasta
@@ -94,19 +94,19 @@ namespace ImprovedMinorFactions
 
         public void ActivateHideoutFirstTime()
         {
-            if (MFHideoutManager.Current.GetActiveHideoutsOfClan(this.OwnerClan).Contains(this))
+            if (IMFManager.Current.GetActiveHideoutsOfClan(this.OwnerClan).Contains(this))
             {
                 InformationManager.DisplayMessage(new InformationMessage($"{this.Name} Double Activated!!!!", Color.Black));
                 throw new System.Exception("double clan activation");
             }
 
             var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
-            notable1.IsMinorFactionHero = true;
             var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
+            notable1.IsMinorFactionHero = true;
             notable2.IsMinorFactionHero = true;
 
             ActivateHideout();
-            base.Settlement.Militia += 5;
+            base.Settlement.Militia = IMFManager.Current.GetNumMilitiaFirstTime(this.OwnerClan);
             this.Hearth = 350;
         }
 
@@ -121,7 +121,7 @@ namespace ImprovedMinorFactions
                 notable.UpdateHomeSettlement();
             }
             if (reason == DeactivationReason.Raid)
-                ScheduleHideoutActivation(MFHideoutModels.HideoutActivationDelay(this.OwnerClan));
+                ScheduleHideoutActivation(IMFModels.HideoutActivationDelay(this.OwnerClan));
             else
                 ActivateHideout();
         }
@@ -138,16 +138,19 @@ namespace ImprovedMinorFactions
             this._isSpotted = false;
             this._activationTime = CampaignTime.Now;
 
-            // add 3 high tier militias
-            base.Settlement.Militia = 3;
-            UpgradeMilitia(3);
-            UpgradeMilitia(3);
+            var imfManager = IMFManager.Current;
 
-            // add 5 mid tier militias
-            base.Settlement.Militia += 5;
-            UpgradeMilitia(5);
+            // add lvl 3 militias
+            int numLvl3 = imfManager.GetNumLvl3Militia(this.OwnerClan);
+            base.Settlement.Militia = numLvl3;
+            UpgradeMilitia(numLvl3);
+            UpgradeMilitia(numLvl3);
 
-            base.Settlement.Militia += 7;
+            int numLvl2 = imfManager.GetNumLvl2Militia(this.OwnerClan);
+            base.Settlement.Militia += numLvl2;
+            UpgradeMilitia(numLvl2);
+
+            base.Settlement.Militia = imfManager.GetNumMilitiaPostRaid(this.OwnerClan);
             this.Hearth = 200;
 
 
@@ -268,7 +271,7 @@ namespace ImprovedMinorFactions
                 return;
             float curMil = base.Settlement.Militia;
             float milChange = this.MilitiaChange.ResultNumber;
-            if (curMil + milChange > MFHideoutModels.GetMaxMilitiaInHideout() + 1)
+            if (curMil + milChange > IMFManager.Current.GetMaxMilitia(this.OwnerClan) + 1)
             {
                 base.Settlement.Militia = (curMil + milChange) - 1;
                 this.UpgradeMilitia(1);
@@ -277,6 +280,18 @@ namespace ImprovedMinorFactions
             {
                 base.Settlement.Militia += this.MilitiaChange.ResultNumber;
             }
+
+            // backwards compatibility
+            if (base.Settlement.Militia < IMFManager.Current.GetNumMilitiaPostRaid(this.OwnerClan))
+            {
+                base.Settlement.Militia = IMFManager.Current.GetNumMilitiaPostRaid(this.OwnerClan);
+                this.UpgradeMilitia(10);
+            }
+
+            // 1/15 chance for a random militia to upgrade every day
+            if (MBRandom.RandomInt(15) == 1)
+                this.UpgradeMilitia(1);
+
             this.Hearth += this.HearthChange.ResultNumber;
         }
 
@@ -387,7 +402,7 @@ namespace ImprovedMinorFactions
         { 
             get
             {
-                return MFHideoutModels.GetMilitiaChange(this.Settlement);
+                return IMFModels.GetMilitiaChange(this.Settlement);
             }
         }
 
@@ -417,7 +432,7 @@ namespace ImprovedMinorFactions
         {
             get
             {
-                return MFHideoutModels.GetHearthChange(this.Settlement, true);
+                return IMFModels.GetHearthChange(this.Settlement, true);
             }
         }
 

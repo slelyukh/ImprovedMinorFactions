@@ -15,13 +15,20 @@ namespace ImprovedMinorFactions
 {
     internal class MFData
     {
-        public MFData() : this(1)
+        public MFData(Clan c)
         {
-        }
-        internal MFData(int numActiveHideouts)
-        {
-            NumActiveHideouts = numActiveHideouts;
             Hideouts = new List<MinorFactionHideout>();
+            NumActiveHideouts = IMFModels.DefaultNumActiveHideouts;
+            NumMilitiaFirstTime = IMFModels.DefaultNumMilitiaFirstTime(c);
+            NumMilitiaPostRaid = IMFModels.DefaultNumMilitiaPostRaid(c);
+            NumLvl3Militia = IMFModels.DefaultNumLvl3Militia(c);
+            NumLvl2Militia = IMFModels.DefaultNumLvl2Militia(c);
+            MaxMilitia = IMFModels.DefaultMaxMilitia(c);
+        }
+
+        public void Deserialize()
+        {
+            // TODO: implement
         }
 
         internal void AddMFHideout(MinorFactionHideout mfh)
@@ -36,48 +43,54 @@ namespace ImprovedMinorFactions
             Hideouts.Add(Helpers.GetMFHideout(s));
         }
 
-        public int NumActiveHideouts;
-        public List<MinorFactionHideout> Hideouts;
+        
         public int NumTotalHideouts
         {
             get => Hideouts.Count;
         }
 
+        public int NumActiveHideouts;
+        public int NumMilitiaFirstTime;
+        public int NumMilitiaPostRaid;
+        public int NumLvl3Militia;
+        public int NumLvl2Militia;
+        public int MaxMilitia;
+        public List<MinorFactionHideout> Hideouts;
         public bool IsWaitingForWarWithPlayer;
     }
-    internal class MFHideoutManager
+    internal class IMFManager
     {
-        public MFHideoutManager() 
+        public IMFManager() 
         {
             _LoadedMFHideouts = new Dictionary<string, MinorFactionHideout>();
         }
 
         private static void InitManager()
         {
-            MFHideoutManager.Current = new MFHideoutManager();
+            IMFManager.Current = new IMFManager();
             Current._mfDataInitialized = Current.TryInitMFHideoutsLists();
         }
 
         public static void InitManagerIfNone()
         {
-            if (MFHideoutManager.Current == null)
+            if (IMFManager.Current == null)
                 InitManager();
 
         }
         public static void ClearManager()
         {
-            MFHideoutManager.Current = null;
+            IMFManager.Current = null;
         }
 
         public void AddLoadedMFHideout(MinorFactionHideout mfh)
         {
             if (_LoadedMFHideouts.ContainsKey(mfh.StringId))
-                throw new Exception($"{mfh.StringId} duplicate hideout saves, likely a save definer issue!");
+                InformationManager.DisplayMessage(new InformationMessage($"{mfh.StringId} duplicate hideout saves! Please send your save file to modders on Nexus Mods.", Colors.Red));
             
             if (mfh.OwnerClan == null || mfh.OwnerClan.Leader == null)
                 return;
             
-            _LoadedMFHideouts.Add(mfh.StringId, mfh);
+            _LoadedMFHideouts[mfh.StringId] = mfh;
         }
 
         public MinorFactionHideout GetLoadedMFHideout(string stringId)
@@ -101,7 +114,7 @@ namespace ImprovedMinorFactions
                 {
                     var mfClan = settlement.OwnerClan;
                     if (!_mfData.ContainsKey(mfClan))
-                        _mfData[mfClan] = new MFData();
+                        _mfData[mfClan] = new MFData(mfClan);
                     _mfData[mfClan].AddMFHideout(settlement);
                 }
             }
@@ -271,7 +284,42 @@ namespace ImprovedMinorFactions
             get => this._hideouts;
         }
 
-        public static MFHideoutManager Current { get; private set; }
+        public int GetNumTotalHideouts(Clan c)
+        {
+            return _mfData[c].NumTotalHideouts;
+        }
+
+        public int GetNumActiveHideouts(Clan c)
+        {
+            return _mfData[c].NumActiveHideouts;
+        }
+
+        public int GetNumMilitiaFirstTime(Clan c)
+        {
+            return _mfData[c].NumMilitiaFirstTime;
+        }
+
+        public int GetNumMilitiaPostRaid(Clan c)
+        {
+            return _mfData[c].NumMilitiaPostRaid;
+        }
+
+        public int GetNumLvl3Militia(Clan c)
+        {
+            return _mfData[c].NumLvl3Militia;
+        }
+
+        public int GetNumLvl2Militia(Clan c)
+        {
+            return _mfData[c].NumLvl2Militia;
+        }
+
+        public int GetMaxMilitia(Clan c)
+        {
+            return _mfData[c].MaxMilitia;
+        }
+
+        public static IMFManager Current { get; private set; }
 
         private Dictionary<string, MinorFactionHideout> _LoadedMFHideouts;
 

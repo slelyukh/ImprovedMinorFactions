@@ -10,17 +10,12 @@ using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions
 {
-    internal static class MFHideoutModels
+    internal static class IMFModels
     {
         public static float GetDailyVolunteerProductionProbability(Hero hero, int index, Settlement settlement)
         {
             float num = 0.7f * (Helpers.GetMFHideout(settlement).Hearth / 400);
             return 0.75f * MathF.Clamp(MathF.Pow(num, (float)(index + 1)), 0f, 1f);
-        }
-
-        public static int GetMaxMilitiaInHideout()
-        {
-            return 40;
         }
 
         // TODO: maybe increase hearths upon certain actions such as attacking a party for bandits, etc
@@ -75,6 +70,51 @@ namespace ImprovedMinorFactions
             {
                 return CampaignTime.Days(5);
             }
+        }
+
+        public static int DefaultNumActiveHideouts
+        {
+            get => 1;
+        }
+
+        public static int DefaultNumMilitiaFirstTime (Clan c)
+        {
+            if (c.IsNomad)
+                return 60;
+            else
+                return 25;
+        }
+
+        public static int DefaultNumMilitiaPostRaid (Clan c)
+        {
+            if (c.IsNomad)
+                return 30;
+            else
+                return 18;
+        }
+
+        public static int DefaultNumLvl3Militia (Clan c)
+        {
+            if (c.IsNomad)
+                return 10;
+            else
+                return 3;
+        }
+
+        public static int DefaultNumLvl2Militia (Clan c)
+        {
+            if (c.IsNomad)
+                return 10;
+            else
+                return 5;
+        }
+
+        public static int DefaultMaxMilitia(Clan c)
+        {
+            if (c.IsNomad)
+                return 95;
+            else
+                return 40;
         }
 
         internal static CampaignTime NomadHideoutLifetime = CampaignTime.Days(45);

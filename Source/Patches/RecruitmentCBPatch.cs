@@ -26,7 +26,7 @@ namespace ImprovedMinorFactions.Patches
 
                 for (int i = 0; i < notable.VolunteerTypes.Length; i++)
                 {
-                    if (MBRandom.RandomFloat < MFHideoutModels.GetDailyVolunteerProductionProbability(notable, i, settlement))
+                    if (MBRandom.RandomFloat < IMFModels.GetDailyVolunteerProductionProbability(notable, i, settlement))
                     {
                         var upgradeLen = volunteerTypes[i]?.UpgradeTargets.Length ?? 0;
                         if (volunteerTypes[i] == null)

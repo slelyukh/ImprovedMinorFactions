@@ -14,20 +14,20 @@ using TaleWorlds.CampaignSystem.AgentOrigins;
 using TaleWorlds.Core;
 using TaleWorlds.CampaignSystem.ViewModelCollection.CharacterDeveloper;
 
-namespace ImprovedMinorFactions.Source
+namespace ImprovedMinorFactions.Source.CampaignBehaviors
 {
     internal class MFHNotablesCampaignBehavior : CampaignBehaviorBase
     {
         public override void RegisterEvents()
         {
-            CampaignEvents.SettlementEntered.AddNonSerializedListener(this, new Action<MobileParty, Settlement, Hero>(this.OnSettlementEntered));
-            CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, new Action(this.OnGameLoadFinished));
+            CampaignEvents.SettlementEntered.AddNonSerializedListener(this, new Action<MobileParty, Settlement, Hero>(OnSettlementEntered));
+            CampaignEvents.OnGameLoadFinishedEvent.AddNonSerializedListener(this, new Action(OnGameLoadFinished));
             // Location events
-            CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, new Action<IMission>(this.OnMissionEnded));
+            CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, new Action<IMission>(OnMissionEnded));
 
             // Debug listeners
-            CampaignEvents.OnTroopRecruitedEvent.AddNonSerializedListener(this, new Action<Hero, Settlement, Hero, CharacterObject, int>(this.OnTroopRecruited));
-            CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, new Action<Hero, Hero, KillCharacterAction.KillCharacterActionDetail, bool>(this.OnHeroKilled));
+            CampaignEvents.OnTroopRecruitedEvent.AddNonSerializedListener(this, new Action<Hero, Settlement, Hero, CharacterObject, int>(OnTroopRecruited));
+            CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, new Action<Hero, Hero, KillCharacterAction.KillCharacterActionDetail, bool>(OnHeroKilled));
         }
 
         private void OnTroopRecruited(Hero recruiterHero, Settlement settlement, Hero troopSource, CharacterObject troop, int amount)
@@ -41,11 +41,11 @@ namespace ImprovedMinorFactions.Source
         {
             if (Helpers.IsMFHideout(settlement))
             {
-                List<MobileParty> list = Enumerable.ToList<MobileParty>(Settlement.CurrentSettlement.Parties);
-                this.AddNotableLocationCharacters(settlement);
+                List<MobileParty> list = Settlement.CurrentSettlement.Parties.ToList<MobileParty>();
+                AddNotableLocationCharacters(settlement);
                 foreach (MobileParty mobileParty in list)
                 {
-                    this.AddPartyHero(mobileParty, settlement);
+                    AddPartyHero(mobileParty, settlement);
                 }
             }
         }
@@ -58,7 +58,7 @@ namespace ImprovedMinorFactions.Source
                 return;
 
             IFaction mapFaction = leaderHero.MapFaction;
-            uint color = (mapFaction != null) ? mapFaction.Color : 4291609515U;
+            uint color = mapFaction != null ? mapFaction.Color : 4291609515U;
             Monster monster = FaceGen.GetMonsterWithSuffix(leaderHero.CharacterObject.Race, "_settlement");
             string actionSet = ActionSetCode.GenerateActionSetNameWithSuffix(monster, leaderHero.CharacterObject.IsFemale, "_lord");
             AgentData agentData = new AgentData(new PartyAgentOrigin(mobileParty.Party, leaderHero.CharacterObject))
@@ -79,15 +79,15 @@ namespace ImprovedMinorFactions.Source
             {
                 foreach (Hero notable in settlement.Notables)
                 {
-                    this.AddNotableLocationCharacter(notable, settlement);
+                    AddNotableLocationCharacter(notable, settlement);
                 }
             }
         }
 
         private void AddNotableLocationCharacter(Hero notable, Settlement settlement)
         {
-            string suffix = notable.IsArtisan ? "_villager_artisan" : (notable.IsMerchant ? "_villager_merchant" : (notable.IsPreacher ? "_villager_preacher" : (Helpers.IsMFGangLeader(notable) ? "_villager_gangleader" : (notable.IsRuralNotable ? "_villager_ruralnotable" : (notable.IsFemale ? "_lord" : "_villager_merchant")))));
-            string text = notable.IsArtisan ? "sp_notable_artisan" : (notable.IsMerchant ? "sp_notable_merchant" : (notable.IsPreacher ? "sp_notable_preacher" : (Helpers.IsMFGangLeader(notable) ? "sp_notable_gangleader" : (notable.IsRuralNotable ? "sp_notable_rural_notable" : ((notable.GovernorOf == notable.CurrentSettlement.Town) ? "sp_governor" : "sp_notable")))));
+            string suffix = notable.IsArtisan ? "_villager_artisan" : notable.IsMerchant ? "_villager_merchant" : notable.IsPreacher ? "_villager_preacher" : Helpers.IsMFGangLeader(notable) ? "_villager_gangleader" : notable.IsRuralNotable ? "_villager_ruralnotable" : notable.IsFemale ? "_lord" : "_villager_merchant";
+            string text = notable.IsArtisan ? "sp_notable_artisan" : notable.IsMerchant ? "sp_notable_merchant" : notable.IsPreacher ? "sp_notable_preacher" : Helpers.IsMFGangLeader(notable) ? "sp_notable_gangleader" : notable.IsRuralNotable ? "sp_notable_rural_notable" : notable.GovernorOf == notable.CurrentSettlement.Town ? "sp_governor" : "sp_notable";
             Monster monsterWithSuffix = FaceGen.GetMonsterWithSuffix(notable.CharacterObject.Race, "_settlement");
             AgentData agentData = new AgentData(
                 new PartyAgentOrigin(null, notable.CharacterObject)).Monster(monsterWithSuffix).NoHorses(true);
@@ -110,7 +110,7 @@ namespace ImprovedMinorFactions.Source
                 if (newNotable != hero)
                 {
                     int relation = deadNotable.GetRelation(hero);
-                    if (Math.Abs(relation) >= 20 || (relation != 0 && hero.CurrentSettlement == notableSettlement))
+                    if (Math.Abs(relation) >= 20 || relation != 0 && hero.CurrentSettlement == notableSettlement)
                     {
                         newNotable.SetPersonalRelation(hero, relation);
                     }
@@ -131,7 +131,7 @@ namespace ImprovedMinorFactions.Source
                 if (victim.CurrentSettlement != null && victim.CurrentSettlement.OwnerClan.Heroes.Count > 0)
                 {
                     Hero hero = HeroCreator.CreateRelativeNotableHero(victim);
-                    this.ChangeDeadNotable(victim, hero, victim.CurrentSettlement);
+                    ChangeDeadNotable(victim, hero, victim.CurrentSettlement);
                 }
             }
         }
@@ -152,7 +152,7 @@ namespace ImprovedMinorFactions.Source
                     if (party == null)
                         return;
                     if (party.IsMainParty)
-                        this.AddMFHLocationCharacters(settlement);
+                        AddMFHLocationCharacters(settlement);
                     else if (MobileParty.MainParty.CurrentSettlement == settlement)
                         AddPartyHero(party, settlement);
                 }
@@ -163,17 +163,17 @@ namespace ImprovedMinorFactions.Source
         {
             if (LocationComplex.Current != null && PlayerEncounter.LocationEncounter != null && Settlement.CurrentSettlement != null && !Hero.MainHero.IsPrisoner && !Settlement.CurrentSettlement.IsUnderSiege)
             {
-                this.AddMFHLocationCharacters(Settlement.CurrentSettlement);
+                AddMFHLocationCharacters(Settlement.CurrentSettlement);
             }
         }
 
         public void OnGameLoadFinished()
         {
-            MFHideoutManager.InitManagerIfNone();
+            IMFManager.InitManagerIfNone();
             if (Settlement.CurrentSettlement != null && !Hero.MainHero.IsPrisoner
                 && LocationComplex.Current != null && PlayerEncounter.LocationEncounter != null)
             {
-                this.AddMFHLocationCharacters(Settlement.CurrentSettlement);
+                AddMFHLocationCharacters(Settlement.CurrentSettlement);
             }
         }
 

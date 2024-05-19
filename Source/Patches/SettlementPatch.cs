@@ -64,9 +64,9 @@ namespace ImprovedMinorFactions.Patches
                 return;
 
             // manual fix of MFHideouts not saving properly bug
-            if (MFHideoutManager.Current != null)
+            if (IMFManager.Current != null)
             {
-                var settlementMfh = MFHideoutManager.Current.GetLoadedMFHideout(mfHideout.StringId) ?? mfHideout;
+                var settlementMfh = IMFManager.Current.GetLoadedMFHideout(mfHideout.StringId) ?? mfHideout;
                 __instance.SetSettlementComponent(settlementMfh);
                 foreach (XmlNode child in node.ChildNodes)
                 {

@@ -21,8 +21,8 @@ namespace ImprovedMinorFactions
 
         internal static bool IsSingleHideoutMF(Clan c)
         {
-            MFHideoutManager.InitManagerIfNone();
-            return MFHideoutManager.Current.IsFullHideoutOccupationMF(c);
+            IMFManager.InitManagerIfNone();
+            return IMFManager.Current.IsFullHideoutOccupationMF(c);
         }
 
         internal static List<TooltipProperty> GetVillageOrMFHideoutMilitiaTooltip(Settlement s)
@@ -153,8 +153,7 @@ namespace ImprovedMinorFactions
 
         public static bool mfIsMounted(Clan minorFaction)
         {
-            var name = minorFaction.StringId;
-            return name == "ghilman" || name == "jawwal" || name == "eleftheroi" || name == "karakhuzaits";
+            return minorFaction.BasicTroop.IsMounted;
         }
 
 

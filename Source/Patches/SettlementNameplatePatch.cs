@@ -18,9 +18,9 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(SettlementNameplatesVM __instance, IEnumerable<Tuple<Settlement, GameEntity>> settlements)
         {
-            MFHideoutManager.InitManagerIfNone();
+            IMFManager.InitManagerIfNone();
 
-            MFHideoutManager.Current._allMFHideouts =
+            IMFManager.Current._allMFHideouts =
                 from x in settlements
                 where Helpers.IsMFHideout(x.Item1)
                 select x;
@@ -49,9 +49,9 @@ namespace ImprovedMinorFactions.Patches
             if (!party.IsSettlement || !(party.Settlement.SettlementComponent is MinorFactionHideout))
                 return;
 
-            MFHideoutManager.InitManagerIfNone();
+            IMFManager.InitManagerIfNone();
 
-            var desiredSettlementTuple = MFHideoutManager.Current._allMFHideouts
+            var desiredSettlementTuple = IMFManager.Current._allMFHideouts
                 .SingleOrDefault((Tuple<Settlement, GameEntity> h) => h.Item1 == party.Settlement);
             if (desiredSettlementTuple != null)
             {

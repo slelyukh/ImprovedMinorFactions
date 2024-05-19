@@ -19,7 +19,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             var mfHideout = Helpers.GetMFHideout(s);
             if (mfHideout == null 
                 || !mfHideout.OwnerClan.IsNomad 
-                || MFHideoutManager.Current.IsFullHideoutOccupationMF(mfHideout.OwnerClan))
+                || IMFManager.Current.IsFullHideoutOccupationMF(mfHideout.OwnerClan))
             {
                 return;
             }
@@ -28,8 +28,8 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 mfHideout.ActivationTime = CampaignTime.Now;
             }
             // if its time to move, move
-            if (mfHideout.IsActive && (mfHideout.ActivationTime + MFHideoutModels.NomadHideoutLifetime).IsPast)
-                MFHideoutManager.Current.ClearHideout(mfHideout, DeactivationReason.NomadMovement);
+            if (mfHideout.IsActive && (mfHideout.ActivationTime + IMFModels.NomadHideoutLifetime).IsPast)
+                IMFManager.Current.ClearHideout(mfHideout, DeactivationReason.NomadMovement);
 
             // if anyone is in settlement kick them out?
         }
