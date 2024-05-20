@@ -17,6 +17,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.MountAndBlade;
+using TaleWorlds.ObjectSystem;
 
 
 namespace ImprovedMinorFactions
@@ -88,19 +89,6 @@ namespace ImprovedMinorFactions
             starter.AddModel(new IMFEncounterModel(encounterModel));
             starter.AddModel(new IMFBanditDensityModel(banditDensityModel));
         }
-
-        private T? GetGameModel<T>(IGameStarter gameStarterObject) where T : GameModel
-        {
-            var models = gameStarterObject.Models.ToArray();
-
-            for (int index = models.Length - 1; index >= 0; --index)
-            {
-                if (models[index] is T gameModel1)
-                    return gameModel1;
-            }
-            return default;
-        }
-
         public override void OnGameEnd(Game game)
         {
             IMFManager.ClearManager();
@@ -111,7 +99,9 @@ namespace ImprovedMinorFactions
             base.BeginGameStart(game);
             if (game.GameType is Campaign || game.GameType is CampaignStoryMode)
             {
-                game.ObjectManager.RegisterType<MinorFactionHideout>("MinorFactionHideout", "Components", 99U, true);
+                game.ObjectManager.RegisterType<MinorFactionHideout>("MinorFactionHideout", "Components", 99U);
+                game.ObjectManager.RegisterType<MFData>("MFData", "MFDatas", 100U);
+                game.ObjectManager.LoadXML("MFDatas", false);
             }
         }
         public override void OnGameInitializationFinished(Game game)
@@ -119,6 +109,7 @@ namespace ImprovedMinorFactions
             base.OnGameInitializationFinished(game);
             if (Campaign.Current == null)
                 return;
+            
 
             ValidateGameModel(Campaign.Current.Models.ClanFinanceModel);
             ValidateGameModel(Campaign.Current.Models.TargetScoreCalculatingModel);
@@ -135,6 +126,18 @@ namespace ImprovedMinorFactions
                 TextObject error = new($"Game Model Error: {model.ToString()}, Please move " + GetType().Assembly.GetName().Name + " below " + model.GetType().Assembly.GetName().Name + " in your load order to ensure mod compatibility");
                 InformationManager.DisplayMessage(new InformationMessage(error.ToString(), Colors.Red));
             }
+        }
+
+        private T? GetGameModel<T>(IGameStarter gameStarterObject) where T : GameModel
+        {
+            var models = gameStarterObject.Models.ToArray();
+
+            for (int index = models.Length - 1; index >= 0; --index)
+            {
+                if (models[index] is T gameModel1)
+                    return gameModel1;
+            }
+            return default;
         }
     }
 }

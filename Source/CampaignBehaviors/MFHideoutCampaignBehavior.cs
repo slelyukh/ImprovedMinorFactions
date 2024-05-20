@@ -91,11 +91,11 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         protected void AddGameMenus(CampaignGameStarter campaignGameStarter)
         {
             // TODO: Better nomad texts
+            
             campaignGameStarter.AddGameMenu("mf_hideout_place", "{=!}{MF_HIDEOUT_TEXT}",
                 new OnInitDelegate(game_menu_hideout_place_on_init),
                 GameOverlays.MenuOverlayType.SettlementWithBoth);
-            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "attack",
-                Settlement.CurrentSettlement.OwnerClan.IsNomad ? "{=ldONWPCl6i}Raid Camp" : "{=zxMOqlhs}Attack Hideout",
+            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "attack", "{=!}{MF_HIDEOUT_ATTACK}",
                 new Options.OnConditionDelegate(menu_attack_on_condition),
                 new Options.OnConsequenceDelegate(menu_attack_on_consequence));
             
@@ -127,7 +127,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 new OnInitDelegate(hostile_menu_on_init),
                 GameOverlays.MenuOverlayType.SettlementWithBoth);
             campaignGameStarter.AddGameMenuOption("mf_hideout_hostile_action", "attack",
-                    Settlement.CurrentSettlement.OwnerClan.IsNomad ? "{=ldONWPCl6i}Raid Camp" : "{=zxMOqlhs}Attack Hideout",
+                    "{=!}{MF_HIDEOUT_ATTACK}",
                     new Options.OnConditionDelegate(hostile_action_menu_attack_on_condition),
                     new Options.OnConsequenceDelegate(menu_attack_on_consequence));
 
@@ -379,13 +379,19 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
 
             GameTexts.SetVariable("HIDEOUT_DESCRIPTION", "");
 
-            // TODO: nomad camp descriptions
             if (mfHideout.OwnerClan.IsNomad)
-                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{=prcBBqMR}{HIDEOUT_DESCRIPTION} You see armed men moving about." +
-                    " of conversation about raids, ransoms, and the best places to waylay travellers.");
-            else 
+            {
+                GameTexts.SetVariable("MF_HIDEOUT_ATTACK", "{=ldONWPCl6i}Raid Camp");
+                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{=prcBB123}{HIDEOUT_DESCRIPTION} You see a calm nomad village with" +
+                    " tents, herds of livestock, and simple clothing. There is conversation about raids, ransoms, and the best places to waylay travellers.");
+            }
+            else
+            {
+                GameTexts.SetVariable("MF_HIDEOUT_ATTACK", "{=zxMOqlhs}Attack Hideout");
                 GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{=prcBBqMR}{HIDEOUT_DESCRIPTION} You see armed men moving about. As you listen quietly, you hear scraps" +
                     " of conversation about raids, ransoms, and the best places to waylay travellers.");
+            }
+
 
             if (MobileParty.MainParty.CurrentSettlement == null)
                 PlayerEncounter.EnterSettlement();

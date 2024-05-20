@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Xml;
 using HarmonyLib;
 using Microsoft.VisualBasic;
 using TaleWorlds.CampaignSystem;
@@ -10,10 +11,11 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.ObjectSystem;
 
 namespace ImprovedMinorFactions
 {
-    internal class MFData
+    internal class MFData : MBObjectBase
     {
         public MFData(Clan c)
         {
@@ -26,9 +28,13 @@ namespace ImprovedMinorFactions
             MaxMilitia = IMFModels.DefaultMaxMilitia(c);
         }
 
-        public void Deserialize()
+        public override void Deserialize(MBObjectManager objectManager, XmlNode node)
         {
-            // TODO: implement
+            bool isInitialized = base.IsInitialized;
+            base.Deserialize(objectManager, node);
+            this.testField = node.Attributes.GetNamedItem("test").Value;
+            InformationManager.DisplayMessage(new InformationMessage($"{this.testField} hello?"));
+            return;
         }
 
         internal void AddMFHideout(MinorFactionHideout mfh)
@@ -55,6 +61,7 @@ namespace ImprovedMinorFactions
         public int NumLvl3Militia;
         public int NumLvl2Militia;
         public int MaxMilitia;
+        public string testField;
         public List<MinorFactionHideout> Hideouts;
         public bool IsWaitingForWarWithPlayer;
     }
