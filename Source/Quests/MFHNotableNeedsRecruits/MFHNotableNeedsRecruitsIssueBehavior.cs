@@ -270,6 +270,13 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                 flag = PreconditionFlags.None;
                 relationHero = null;
                 skill = null;
+
+                if ((issueGiver?.MapFaction ?? issueGiver?.CurrentSettlement?.OwnerClan
+                    ?? Hero.MainHero?.MapFaction) == null)
+                {
+                    return false;
+                }
+
                 if (issueGiver.GetRelationWithPlayer() < MFHideoutModels.MinRelationToGetMFQuest)
                 {
                     flag |= PreconditionFlags.Relation;
