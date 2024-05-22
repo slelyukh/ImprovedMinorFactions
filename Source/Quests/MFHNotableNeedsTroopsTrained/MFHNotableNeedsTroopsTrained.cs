@@ -282,7 +282,14 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 flag = PreconditionFlags.None;
                 relationHero = null;
                 skill = null;
-                if (issueGiver.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest)
+
+                if ((issueGiver?.MapFaction ?? issueGiver?.CurrentSettlement?.OwnerClan
+                    ?? Hero.MainHero?.MapFaction) == null)
+                {
+                    return false;
+                }
+
+                if (issueGiver.GetRelationWithPlayer() < MFHideoutModels.MinRelationToGetMFQuest)
                 {
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;

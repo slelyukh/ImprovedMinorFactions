@@ -308,7 +308,13 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 flags = PreconditionFlags.None;
                 relationHero = null;
                 skill = null;
-                if (issueGiver.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest
+                if ((issueGiver?.MapFaction ?? issueGiver?.CurrentSettlement?.OwnerClan
+                    ?? Hero.MainHero?.MapFaction) == null)
+                {
+                    return false;
+                }
+                    
+                if (issueGiver.GetRelationWithPlayer() < MFHideoutModels.MinRelationToGetMFQuest
                     || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
                 {
                     flags |= PreconditionFlags.Relation;
