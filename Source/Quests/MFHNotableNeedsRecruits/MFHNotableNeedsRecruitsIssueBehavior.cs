@@ -55,7 +55,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             return new MFHNotableNeedsRecruitsIssue(issueOwner);
         }
 
-        private const IssueBase.IssueFrequency _IssueFrequency = IssueBase.IssueFrequency.VeryCommon;
+        private const IssueBase.IssueFrequency _IssueFrequency = IssueBase.IssueFrequency.Common;
 
         public class MFHNotableNeedsRecruitsIssue : IssueBase
         {

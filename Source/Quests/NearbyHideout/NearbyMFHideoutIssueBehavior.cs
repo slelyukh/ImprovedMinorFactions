@@ -658,7 +658,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
         private const int NearbyHideoutMaxDistance = 40;
 
-        private const IssueBase.IssueFrequency NearbyHideoutIssueFrequency = IssueBase.IssueFrequency.VeryCommon;
+        private const IssueBase.IssueFrequency NearbyHideoutIssueFrequency = IssueBase.IssueFrequency.Common;
         public class NearbyMFHideoutIssueTypeDefiner : SaveableTypeDefiner
         {
             public NearbyMFHideoutIssueTypeDefiner() : base(404_322_929)

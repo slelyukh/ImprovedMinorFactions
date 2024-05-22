@@ -40,7 +40,7 @@ namespace ImprovedMinorFactions
 
         internal static bool IsMFGangLeader(Hero h)
         {
-            return h.Occupation == Occupation.GangLeader && IsMFHideout(h.CurrentSettlement);
+            return IsMFHideout(h.CurrentSettlement) && !h.IsLord && h.Occupation == Occupation.GangLeader;
         }
 
         internal static List<TooltipProperty> GetVillageOrMFHideoutProsperityTooltip(Settlement s)

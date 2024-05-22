@@ -72,9 +72,12 @@ namespace ImprovedMinorFactions
             }
         }
 
-        public static int DefaultNumActiveHideouts
+        public static int DefaultNumActiveHideouts(Clan c)
         {
-            get => 1;
+            if (c.StringId == "templar")
+                return 2;
+            else
+                return 1;
         }
 
         public static int DefaultNumMilitiaFirstTime (Clan c)

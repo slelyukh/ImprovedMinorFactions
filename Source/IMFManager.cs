@@ -20,7 +20,7 @@ namespace ImprovedMinorFactions
         public MFData(Clan c)
         {
             Hideouts = new List<MinorFactionHideout>();
-            NumActiveHideouts = IMFModels.DefaultNumActiveHideouts;
+            NumActiveHideouts = IMFModels.DefaultNumActiveHideouts(c);
             NumMilitiaFirstTime = IMFModels.DefaultNumMilitiaFirstTime(c);
             NumMilitiaPostRaid = IMFModels.DefaultNumMilitiaPostRaid(c);
             NumLvl3Militia = IMFModels.DefaultNumLvl3Militia(c);
