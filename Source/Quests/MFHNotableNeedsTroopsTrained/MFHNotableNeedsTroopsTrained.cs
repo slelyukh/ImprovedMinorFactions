@@ -289,7 +289,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                     return false;
                 }
 
-                if (issueGiver.GetRelationWithPlayer() < MFHideoutModels.MinRelationToGetMFQuest)
+                if (issueGiver.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest)
                 {
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;

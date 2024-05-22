@@ -271,7 +271,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     return false;
                 }
 
-                if (issueGiver.GetRelationWithPlayer() <  MFHideoutModels.MinRelationToGetMFQuest)
+                if (issueGiver.GetRelationWithPlayer() <  IMFModels.MinRelationToGetMFQuest)
                 {
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
