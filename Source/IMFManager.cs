@@ -15,56 +15,6 @@ using TaleWorlds.ObjectSystem;
 
 namespace ImprovedMinorFactions
 {
-    internal class MFData : MBObjectBase
-    {
-        public MFData(Clan c)
-        {
-            Hideouts = new List<MinorFactionHideout>();
-            NumActiveHideouts = IMFModels.DefaultNumActiveHideouts(c);
-            NumMilitiaFirstTime = IMFModels.DefaultNumMilitiaFirstTime(c);
-            NumMilitiaPostRaid = IMFModels.DefaultNumMilitiaPostRaid(c);
-            NumLvl3Militia = IMFModels.DefaultNumLvl3Militia(c);
-            NumLvl2Militia = IMFModels.DefaultNumLvl2Militia(c);
-            MaxMilitia = IMFModels.DefaultMaxMilitia(c);
-        }
-
-        public override void Deserialize(MBObjectManager objectManager, XmlNode node)
-        {
-            bool isInitialized = base.IsInitialized;
-            base.Deserialize(objectManager, node);
-            this.testField = node.Attributes.GetNamedItem("test").Value;
-            InformationManager.DisplayMessage(new InformationMessage($"{this.testField} hello?"));
-            return;
-        }
-
-        internal void AddMFHideout(MinorFactionHideout mfh)
-        {
-            Hideouts.Add(mfh);
-        }
-
-        internal void AddMFHideout(Settlement s)
-        {
-            if (!Helpers.IsMFHideout(s))
-                throw new Exception("Error 3242: trying to add non mfh settlement to MF hideouts list.");
-            Hideouts.Add(Helpers.GetMFHideout(s));
-        }
-
-        
-        public int NumTotalHideouts
-        {
-            get => Hideouts.Count;
-        }
-
-        public int NumActiveHideouts;
-        public int NumMilitiaFirstTime;
-        public int NumMilitiaPostRaid;
-        public int NumLvl3Militia;
-        public int NumLvl2Militia;
-        public int MaxMilitia;
-        public string testField;
-        public List<MinorFactionHideout> Hideouts;
-        public bool IsWaitingForWarWithPlayer;
-    }
     internal class IMFManager
     {
         public IMFManager() 
@@ -105,6 +55,12 @@ namespace ImprovedMinorFactions
             MinorFactionHideout mfh = null;
             _LoadedMFHideouts.TryGetValue(stringId, out mfh);
             return mfh;
+        }
+
+        // should only be called when you are sure the clan is not already here
+        internal void AddMFData(Clan c, MFData mfd)
+        {
+            _mfData[c] = mfd;
         }
 
         // should only be done when all Settlements are loaded in
@@ -337,5 +293,100 @@ namespace ImprovedMinorFactions
         private MBList<MinorFactionHideout> _hideouts;
 
         public IEnumerable<Tuple<Settlement, GameEntity>> _allMFHideouts;
+
+    }
+
+
+    public class MFData : MBObjectBase
+    {
+        public MFData()
+        {
+        }
+
+        public MFData(Clan c)
+        {
+            InitData(c);
+        }
+
+        private void InitData(Clan c)
+        {
+            Hideouts = new List<MinorFactionHideout>();
+            NumActiveHideouts = IMFModels.DefaultNumActiveHideouts(c);
+            NumMilitiaFirstTime = IMFModels.DefaultNumMilitiaFirstTime(c);
+            NumMilitiaPostRaid = IMFModels.DefaultNumMilitiaPostRaid(c);
+            NumLvl3Militia = IMFModels.DefaultNumLvl3Militia(c);
+            NumLvl2Militia = IMFModels.DefaultNumLvl2Militia(c);
+            MaxMilitia = IMFModels.DefaultMaxMilitia(c);
+        }
+
+        public override void Deserialize(MBObjectManager objectManager, XmlNode node)
+        {
+            base.Deserialize(objectManager, node);
+            Clan clan = objectManager.ReadObjectReferenceFromXml<Clan>("minor_faction", node);
+            if (clan == null)
+                return;
+
+            InitData(clan);
+
+            // parse data for me
+            if (node.Attributes.GetNamedItem("num_active_hideouts") != null)
+                this.NumActiveHideouts = Int32.Parse(node.Attributes.GetNamedItem("num_active_hideouts").Value);
+            if (node.Attributes.GetNamedItem("num_militia_first_time") != null)
+                this.NumMilitiaFirstTime = Int32.Parse(node.Attributes.GetNamedItem("num_militia_first_time").Value);
+            if (node.Attributes.GetNamedItem("num_militia_post_raid") != null)
+                this.NumMilitiaPostRaid = Int32.Parse(node.Attributes.GetNamedItem("num_militia_post_raid").Value);
+            if (node.Attributes.GetNamedItem("num_lvl2_militia") != null)
+                this.NumLvl2Militia = Int32.Parse(node.Attributes.GetNamedItem("num_lvl2_militia").Value);
+            if (node.Attributes.GetNamedItem("num_lvl3_militia") != null)
+                this.NumLvl3Militia = Int32.Parse(node.Attributes.GetNamedItem("num_lvl3_militia").Value);
+            if (node.Attributes.GetNamedItem("max_militia") != null)
+                this.MaxMilitia = Int32.Parse(node.Attributes.GetNamedItem("max_militia").Value);
+
+            IMFManager.InitManagerIfNone();
+
+            if (IMFManager.Current.GetClanMFData(clan) != null)
+            {
+                // set values for current data
+                MFData existingData = IMFManager.Current.GetClanMFData(clan);
+                existingData.NumActiveHideouts = this.NumActiveHideouts;
+                existingData.NumMilitiaFirstTime = this.NumMilitiaFirstTime;
+                existingData.NumMilitiaPostRaid = this.NumMilitiaPostRaid;
+                existingData.NumLvl2Militia = this.NumLvl2Militia;
+                existingData.NumLvl3Militia = this.NumLvl3Militia;
+                existingData.MaxMilitia = this.MaxMilitia;
+            }
+            else
+            {
+                IMFManager.Current.AddMFData(clan, this);
+            }
+            return;
+        }
+
+        internal void AddMFHideout(MinorFactionHideout mfh)
+        {
+            Hideouts.Add(mfh);
+        }
+
+        internal void AddMFHideout(Settlement s)
+        {
+            if (!Helpers.IsMFHideout(s))
+                throw new Exception("Error 3242: trying to add non mfh settlement to MF hideouts list.");
+            Hideouts.Add(Helpers.GetMFHideout(s));
+        }
+
+
+        public int NumTotalHideouts
+        {
+            get => Hideouts.Count;
+        }
+
+        public int NumActiveHideouts;
+        public int NumMilitiaFirstTime;
+        public int NumMilitiaPostRaid;
+        public int NumLvl3Militia;
+        public int NumLvl2Militia;
+        public int MaxMilitia;
+        public List<MinorFactionHideout> Hideouts;
+        public bool IsWaitingForWarWithPlayer;
     }
 }

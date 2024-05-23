@@ -112,12 +112,14 @@ namespace ImprovedMinorFactions
         // copypasta from ClanVariablesCampaignBehavior
         internal static void DetermineBasicTroopsForMinorFactionsCopypasta()
         {
-            
             foreach (Clan clan in Clan.All)
             {
                 if (clan.IsMinorFaction)
                 {
-                    if (clan.BasicTroop != clan.Culture.BasicTroop)
+                    if (clan.BasicTroop == null 
+                        || clan.Culture?.BasicTroop == null 
+                        || clan.BasicTroop != clan.Culture.BasicTroop
+                        || clan.DefaultPartyTemplate == null)
                         continue;
                     CharacterObject basicTroop = null;
                     PartyTemplateObject defaultPartyTemplate = clan.DefaultPartyTemplate;

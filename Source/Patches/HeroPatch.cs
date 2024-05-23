@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
@@ -27,6 +28,17 @@ namespace ImprovedMinorFactions.Source.Patches
         {
             if (__result == false && Helpers.IsMFGangLeader(__instance))
                 __result = true;
+        }
+    }
+
+    [HarmonyPatch(typeof(Hero), "SetTraitLevel")]
+    public class HeroSetTraitLevelPatch
+    {
+        static bool Prefix(TraitObject trait)
+        {
+            if (trait == null)
+                return false;
+            return true;
         }
     }
 }

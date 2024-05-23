@@ -101,7 +101,7 @@ namespace ImprovedMinorFactions
             {
                 game.ObjectManager.RegisterType<MinorFactionHideout>("MinorFactionHideout", "Components", 99U);
                 //game.ObjectManager.RegisterType<MFData>("MFData", "MFDatas", 100U);
-                //game.ObjectManager.LoadXML("MFDatas", false);
+                //MBObjectManager.Instance.LoadXML("MFDatas", false);
             }
         }
         public override void OnGameInitializationFinished(Game game)
