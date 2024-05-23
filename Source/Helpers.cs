@@ -22,11 +22,13 @@ namespace ImprovedMinorFactions
         internal static bool IsSingleHideoutMF(Clan c)
         {
             IMFManager.InitManagerIfNone();
-            return IMFManager.Current.IsFullHideoutOccupationMF(c);
+            return c!= null && IMFManager.Current.IsFullHideoutOccupationMF(c);
         }
 
         internal static List<TooltipProperty> GetVillageOrMFHideoutMilitiaTooltip(Settlement s)
         {
+            if (s == null)
+                return new List<TooltipProperty>();
             if (s.IsVillage) {
                 return CampaignUIHelper.GetVillageMilitiaTooltip(s.Village);
             } else {
@@ -40,7 +42,7 @@ namespace ImprovedMinorFactions
 
         internal static bool IsMFGangLeader(Hero h)
         {
-            return IsMFHideout(h.CurrentSettlement) && !h.IsLord && h.Occupation == Occupation.GangLeader;
+            return h != null && IsMFHideout(h.CurrentSettlement) && !h.IsLord && h.Occupation == Occupation.GangLeader;
         }
 
         internal static List<TooltipProperty> GetVillageOrMFHideoutProsperityTooltip(Settlement s)
@@ -73,7 +75,7 @@ namespace ImprovedMinorFactions
 
         internal static MinorFactionHideout GetMFHideout(Settlement s)
         {
-            return s.SettlementComponent as MinorFactionHideout;
+            return s?.SettlementComponent as MinorFactionHideout;
         }
 
         // Removes any normal militia units from MFHideout militia party
