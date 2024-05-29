@@ -232,7 +232,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         {
             args.optionLeaveType = Options.LeaveType.Recruit;
             Settlement curSettlement = Settlement.CurrentSettlement;
-            if (Clan.PlayerClan.GetRelationWithClan(curSettlement.OwnerClan) < IMFModels.MinRelationToBeMFHFriend)
+            if (!Helpers.IsPlayerFriendOfMF(curSettlement.OwnerClan))
             {
                 args.IsEnabled = false;
                 args.Tooltip = new TextObject("{=pzEj8yvXS}Your relation with this clan must be at least {MIN_RELATION} to recruit troops.")
@@ -254,7 +254,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             args.optionLeaveType = Options.LeaveType.Wait;
             MBTextManager.SetTextVariable("CURRENT_SETTLEMENT", Settlement.CurrentSettlement.Name);
             var curSettlement = Settlement.CurrentSettlement;
-            if (Clan.PlayerClan.GetRelationWithClan(curSettlement.OwnerClan) < IMFModels.MinRelationToBeMFHFriend)
+            if (!Helpers.IsPlayerFriendOfMF(curSettlement.OwnerClan))
             {
                 args.IsEnabled = false;
                 args.Tooltip = new TextObject("{=92PPJNVSa}You don't have enough relation to stay here.");
@@ -377,13 +377,33 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             else
                 _hideoutWaitTargetHours = 0f;
 
-            GameTexts.SetVariable("HIDEOUT_DESCRIPTION", "");
+            if (mfHideout.IsNomad)
+                GameTexts.SetVariable("HIDEOUT_DESCRIPTION", "The nomad camp sprawls out ahead of you. Livestock graze about, " +
+                    "attended to by herders who are discussing where to move on to next.");
+            else
+                GameTexts.SetVariable("HIDEOUT_DESCRIPTION", "");
 
-            if (mfHideout.OwnerClan.IsNomad)
+            // TODO: LOCALIZATION
+            if (mfHideout.IsNomad)
             {
                 GameTexts.SetVariable("MF_HIDEOUT_ATTACK", "{=ldONWPCl6i}Raid Camp");
-                GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{=prcBB123}{HIDEOUT_DESCRIPTION} You see a calm nomad village with" +
-                    " tents, herds of livestock, and simple clothing. There is conversation about raids, ransoms, and the best places to waylay travellers.");
+                if (Helpers.IsPlayerFriendOfMF(mfHideout.OwnerClan))
+                {
+                    GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{HIDEOUT_DESCRIPTION} You’re well-known and well-liked by the nomads, and they happily receive you into their camp.");
+                }
+                else if (Helpers.IsRivalOfMinorFaction(Clan.PlayerClan, mfHideout.OwnerClan))
+                {
+                    GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{HIDEOUT_DESCRIPTION} You and the nomads are at odds as your people have marked them as outlaws.");
+                }
+                else if (Clan.PlayerClan.IsAtWarWith(mfHideout.OwnerClan))
+                {
+                    GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{HIDEOUT_DESCRIPTION} You are at war with the nomads, and they are openly hostile to you. Expect no quarter if you approach the camp," +
+                        " they will defend their encampment with their lives.");
+                }
+                else
+                {
+                    GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{HIDEOUT_DESCRIPTION} You have no real standing with these nomads, do not expect any hospitality nor hostility from them.");
+                }
             }
             else
             {

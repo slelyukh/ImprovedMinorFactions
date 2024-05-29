@@ -73,9 +73,20 @@ namespace ImprovedMinorFactions
                 || (minorFaction.Culture.GetCultureCode() == CultureCode.Vakken && faction.Culture.GetCultureCode() == CultureCode.Sturgia));
         }
 
-        internal static MinorFactionHideout GetMFHideout(Settlement s)
+        internal static bool IsPlayerFriendOfMF(Clan minorFaction)
+        {
+            return Clan.PlayerClan.GetRelationWithClan(minorFaction) >= IMFModels.MinRelationToBeMFHFriend;
+        }
+
+        internal static MinorFactionHideout? GetMFHideout(Settlement s)
         {
             return s?.SettlementComponent as MinorFactionHideout;
+        }
+
+        // Nord removed due to only having 2 names for their culture...
+        internal static bool IsMinorCulture(CultureObject c)
+        {
+            return c.GetCultureCode() == CultureCode.Vakken || c.GetCultureCode() == CultureCode.Darshi;
         }
 
         // Removes any normal militia units from MFHideout militia party
@@ -121,7 +132,7 @@ namespace ImprovedMinorFactions
                         || clan.BasicTroop != clan.Culture.BasicTroop
                         || clan.DefaultPartyTemplate == null)
                         continue;
-                    CharacterObject basicTroop = null;
+                    CharacterObject? basicTroop = null;
                     PartyTemplateObject defaultPartyTemplate = clan.DefaultPartyTemplate;
                     int minLevel = 50;
                     foreach (PartyTemplateStack partyTemplateStack in defaultPartyTemplate.Stacks)
@@ -145,14 +156,14 @@ namespace ImprovedMinorFactions
         }
 
         // If method is static use null for instance and provide a type
-        internal static object callPrivateMethod(object instance, string methodName, object[] args, Type type = null)
+        internal static object? CallPrivateMethod(object? instance, string methodName, object[] args, Type type = null)
         {
-            MethodInfo method;
+            MethodInfo? method;
             if (type == null)
-                method = instance.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
+                method = instance?.GetType().GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Instance);
             else
                 method = type.GetMethod(methodName, BindingFlags.NonPublic | BindingFlags.Static);
-            return method.Invoke(instance, args);
+            return method?.Invoke(instance, args);
         }
 
         public static bool mfIsMounted(Clan minorFaction)

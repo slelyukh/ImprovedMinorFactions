@@ -37,7 +37,7 @@ namespace ImprovedMinorFactions.Patches
                 && Helpers.IsMFHideout(____defenderParty.Settlement))
             {
                 Helpers.setPrivateField(__instance, "_mapEvent", HideoutEventComponent.CreateHideoutEvent(____attackerParty, ____defenderParty).MapEvent);
-                Helpers.callPrivateMethod(__instance, "CheckNearbyPartiesToJoinPlayerMapEvent", new object[] { });
+                Helpers.CallPrivateMethod(__instance, "CheckNearbyPartiesToJoinPlayerMapEvent", new object[] { });
                 __result = ____mapEvent;
                 return false;
             }
@@ -75,7 +75,7 @@ namespace ImprovedMinorFactions.Patches
             }
             else
             {
-                Helpers.callPrivateMethod(mapEvent, "ResetBattleResults", new object[] { }); // PlayerEncounter.Battle.ResetBattleResults();
+                Helpers.CallPrivateMethod(mapEvent, "ResetBattleResults", new object[] { }); // PlayerEncounter.Battle.ResetBattleResults();
             }
 
             if (battleState == BattleState.AttackerVictory)
@@ -92,7 +92,7 @@ namespace ImprovedMinorFactions.Patches
             // TODO: what is this??
             if (playerLost)
             {
-                Helpers.callPrivateMethod(__instance, "set_EncounterState", new object[] { PlayerEncounterState.Begin }); // EncounterState = PlayerEncounterState.Begin;
+                Helpers.CallPrivateMethod(__instance, "set_EncounterState", new object[] { PlayerEncounterState.Begin }); // EncounterState = PlayerEncounterState.Begin;
                 GameMenu.SwitchToMenu("mf_hideout_place");
             }
             return false;
@@ -123,7 +123,7 @@ namespace ImprovedMinorFactions.Patches
 
             if (__instance.CheckIfBattleShouldContinueAfterBattleMission())
             {
-                Helpers.callPrivateMethod(__instance, "ContinueBattle", new object[] { }); //__instance.ContinueBattle();
+                Helpers.CallPrivateMethod(__instance, "ContinueBattle", new object[] { }); //__instance.ContinueBattle();
                 return false;
             }
 
@@ -142,7 +142,7 @@ namespace ImprovedMinorFactions.Patches
                         mapEvent?.SetOverrideWinner(PartyBase.MainParty.OpponentSide);
                     }
                 }
-                Helpers.callPrivateMethod(__instance, "set_EncounterState", new object[] { PlayerEncounterState.PrepareResults }); // EncounterState = PlayerEncounterState.PrepareResults;
+                Helpers.CallPrivateMethod(__instance, "set_EncounterState", new object[] { PlayerEncounterState.PrepareResults }); // EncounterState = PlayerEncounterState.PrepareResults;
 
             }
             else if (__instance.BattleSimulation != null && (PlayerEncounter.BattleState == BattleState.AttackerVictory || PlayerEncounter.BattleState == BattleState.DefenderVictory))
@@ -160,7 +160,7 @@ namespace ImprovedMinorFactions.Patches
                         PlayerEncounter.PlayerSurrender = true;
                     }
                 }
-                Helpers.callPrivateMethod(__instance, "set_EncounterState", new object[] { PlayerEncounterState.PrepareResults }); // EncounterState = PlayerEncounterState.PrepareResults;
+                Helpers.CallPrivateMethod(__instance, "set_EncounterState", new object[] { PlayerEncounterState.PrepareResults }); // EncounterState = PlayerEncounterState.PrepareResults;
             }
             else
             {

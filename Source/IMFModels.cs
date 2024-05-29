@@ -119,6 +119,13 @@ namespace ImprovedMinorFactions
             else
                 return 40;
         }
+        public enum Gender
+        {
+            Male,
+            Female,
+            Any
+        }
+
 
         internal static CampaignTime NomadHideoutLifetime = CampaignTime.Days(45);
 

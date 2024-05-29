@@ -18,7 +18,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         {
             var mfHideout = Helpers.GetMFHideout(s);
             if (mfHideout == null 
-                || !mfHideout.OwnerClan.IsNomad 
+                || !mfHideout.IsNomad 
                 || IMFManager.Current.IsFullHideoutOccupationMF(mfHideout.OwnerClan))
             {
                 return;

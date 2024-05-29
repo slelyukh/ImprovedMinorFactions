@@ -14,6 +14,10 @@ using static TaleWorlds.CampaignSystem.CampaignTime;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
+using Helpers;
+using TaleWorlds.CampaignSystem.Actions;
+using TaleWorlds.CampaignSystem.CharacterDevelopment;
+using TaleWorlds.MountAndBlade.GauntletUI.Widgets.Mission.NameMarker;
 
 namespace ImprovedMinorFactions
 {
@@ -85,12 +89,102 @@ namespace ImprovedMinorFactions
                     InformationManager.DisplayMessage(new InformationMessage($"ERROR: {this.Settlement.Culture} does not have template for {occupation}", Colors.Red));
                     return;
                 }
-            Hero hero = (Hero) Helpers.callPrivateMethod(null, "CreateNewHero", new object[] { template, 25 }, typeof(HeroCreator));
+            Hero hero = (Hero) Helpers.CallPrivateMethod(null, "CreateNewHero", new object[] { template, 25 }, typeof(HeroCreator));
             TextObject firstName;
             TextObject fullName;
             NameGenerator.Current.GenerateHeroNameAndHeroFullName(hero, out firstName, out fullName, false);
             heroToRename.SetName(fullName, firstName);
         }
+
+        // CreateHeroAtOccupation copypasta
+        private Hero CreateNotable(Occupation neededOccupation, IMFModels.Gender gender, Settlement forcedHomeSettlement)
+        {
+            Settlement settlement = forcedHomeSettlement ?? SettlementHelper.GetRandomTown(null);
+            IEnumerable<CharacterObject> enumerable;
+            if (gender == IMFModels.Gender.Male)
+            {
+                enumerable = Enumerable.Where<CharacterObject>(settlement.Culture.NotableAndWandererTemplates, (CharacterObject x) => x.Occupation == neededOccupation && !x.IsFemale);
+            } else if (gender == IMFModels.Gender.Female)
+            {
+                enumerable = Enumerable.Where<CharacterObject>(settlement.Culture.NotableAndWandererTemplates, (CharacterObject x) => x.Occupation == neededOccupation && x.IsFemale);
+            }
+            else
+            {
+                enumerable = Enumerable.Where<CharacterObject>(settlement.Culture.NotableAndWandererTemplates, (CharacterObject x) => x.Occupation == neededOccupation);
+            }
+
+            int num = 0;
+            foreach (CharacterObject characterObject in enumerable)
+            {
+                int num2 = characterObject.GetTraitLevel(DefaultTraits.Frequency) * 10;
+                num += ((num2 > 0) ? num2 : 100);
+            }
+
+            if (!Enumerable.Any(enumerable))
+            {
+                return null;
+            }
+            CharacterObject template = null;
+            int num3 = settlement.RandomIntWithSeed((uint)settlement.Notables.Count, 1, num);
+            foreach (CharacterObject characterObject2 in enumerable)
+            {
+                int num4 = characterObject2.GetTraitLevel(DefaultTraits.Frequency) * 10;
+                num3 -= ((num4 > 0) ? num4 : 100);
+                if (num3 < 0)
+                {
+                    template = characterObject2;
+                    break;
+                }
+            }
+
+            Hero hero = HeroCreator.CreateSpecialHero(template, settlement, null, null, -1);
+            CultureObject hideoutCulture = forcedHomeSettlement.OwnerClan.Culture;
+            // Give Darshi, Nord, and Vakken MFs correct notable names
+            // todo check why ori is so popular
+            if (Helpers.IsMinorCulture(hideoutCulture))
+            {
+                var nameList = new List<TextObject>();
+                if (hero.IsFemale)
+                   nameList = hideoutCulture.FemaleNameList;
+                else
+                    nameList = hideoutCulture.MaleNameList;
+                
+                TextObject firstName = nameList.GetRandomElement();
+                TextObject fullName = (TextObject)Helpers.CallPrivateMethod(NameGenerator.Current, "GenerateHeroFullName", new object[] { hero, firstName, true });
+                hero.SetName(fullName, firstName);
+            }
+
+            if (hero.HomeSettlement.IsVillage && hero.HomeSettlement.Village.Bound != null && hero.HomeSettlement.Village.Bound.IsCastle)
+            {
+                float value = MBRandom.RandomFloat * 20f;
+                hero.AddPower(value);
+            }
+            if (neededOccupation != Occupation.Wanderer)
+            {
+                hero.ChangeState(Hero.CharacterStates.Active);
+                EnterSettlementAction.ApplyForCharacterOnly(hero, settlement);
+                int amount = 10000;
+                GiveGoldAction.ApplyBetweenCharacters(null, hero, amount, true);
+            }
+            CharacterObject template2 = hero.Template;
+            if (((template2 != null) ? template2.HeroObject : null) != null && hero.Template.HeroObject.Clan != null && hero.Template.HeroObject.Clan.IsMinorFaction)
+            {
+                hero.SupporterOf = hero.Template.HeroObject.Clan;
+            }
+            else
+            {
+                hero.SupporterOf = HeroHelper.GetRandomClanForNotable(hero);
+            }
+
+            if (neededOccupation != Occupation.Wanderer)
+            {
+                Helpers.CallPrivateMethod(null, "AddRandomVarianceToTraits", new object[] {hero}, typeof(HeroCreator));
+            }
+
+            return hero;
+        }
+
+        
 
         public void ActivateHideoutFirstTime()
         {
@@ -100,10 +194,20 @@ namespace ImprovedMinorFactions
                 throw new System.Exception("double clan activation");
             }
 
-            var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
-            var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
-            notable1.IsMinorFactionHero = true;
-            notable2.IsMinorFactionHero = true;
+            // TODO: use mfData for gender info
+            if (this.OwnerClan.StringId == "skolderbrotva")
+            {
+                var notable1 = CreateNotable(Occupation.GangLeader, IMFModels.Gender.Male, this.Settlement);
+                var notable2 = CreateNotable(Occupation.GangLeader, IMFModels.Gender.Male, this.Settlement);
+                notable1.IsMinorFactionHero = true;
+                notable2.IsMinorFactionHero = true;
+            } else
+            {
+                var notable1 = CreateNotable(Occupation.GangLeader, IMFModels.Gender.Any, this.Settlement);
+                var notable2 = CreateNotable(Occupation.GangLeader, IMFModels.Gender.Any, this.Settlement);
+                notable1.IsMinorFactionHero = true;
+                notable2.IsMinorFactionHero = true;
+            }
 
             ActivateHideout();
             base.Settlement.Militia = IMFManager.Current.GetNumMilitiaFirstTime(this.OwnerClan);
@@ -154,7 +258,7 @@ namespace ImprovedMinorFactions
             this.Hearth = 200;
 
 
-            Helpers.callPrivateMethod(this.OwnerClan, "set_HomeSettlement", new object[] { this.Settlement });
+            Helpers.CallPrivateMethod(this.OwnerClan, "set_HomeSettlement", new object[] { this.Settlement });
             foreach (Hero hero in this.OwnerClan.Heroes)
             {
                 hero.UpdateHomeSettlement();
@@ -434,6 +538,11 @@ namespace ImprovedMinorFactions
             {
                 return IMFModels.GetHearthChange(this.Settlement, true);
             }
+        }
+
+        public bool IsNomad
+        {
+            get => this.OwnerClan.IsNomad;
         }
 
         public bool Equals(MinorFactionHideout mfh)

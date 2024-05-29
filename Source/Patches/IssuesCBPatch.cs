@@ -51,7 +51,7 @@ namespace ImprovedMinorFactions.Source.Patches
                 && numOccupiedLords < minIssues 
                 && (numOccupiedLords < maxIssues || MBRandom.RandomFloat < issueGenerationChance))
             {
-                Helpers.callPrivateMethod(__instance, "CreateAnIssueForClanNobles", new object[] { clan, numFreeIssues + 1 });
+                Helpers.CallPrivateMethod(__instance, "CreateAnIssueForClanNobles", new object[] { clan, numFreeIssues + 1 });
             }
         }
     }

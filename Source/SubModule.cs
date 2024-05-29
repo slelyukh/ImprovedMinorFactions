@@ -33,19 +33,20 @@ namespace ImprovedMinorFactions
 
             Harmony harmony = new Harmony("ImprovedMinorFactions");
             harmony.PatchCategory(assembly, "HarmonyStaticFixes"); // run this before other patches
+            //if (Harmony.HasAnyPatches("BannerKings"))
+                //harmony.PatchCategory(assembly, "BannerKingsPatches");
+
             harmony.PatchAllUncategorized(assembly);        
         }
 
         protected override void OnSubModuleUnloaded()
         {
             base.OnSubModuleUnloaded();
-
         }
 
         protected override void OnBeforeInitialModuleScreenSetAsRoot()
         {
             base.OnBeforeInitialModuleScreenSetAsRoot();
-
         }
 
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)

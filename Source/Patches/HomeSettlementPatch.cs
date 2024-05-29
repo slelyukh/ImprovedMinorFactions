@@ -22,7 +22,7 @@ namespace ImprovedMinorFactions.Patches
                 return;
 
             var activeHideouts = IMFManager.Current.GetActiveHideoutsOfClan(__instance);
-            Helpers.callPrivateMethod(__instance, "set_HomeSettlement", new object[] { activeHideouts[MBRandom.RandomInt(activeHideouts.Count)].Settlement });
+            Helpers.CallPrivateMethod(__instance, "set_HomeSettlement", new object[] { activeHideouts[MBRandom.RandomInt(activeHideouts.Count)].Settlement });
             foreach (Hero hero in __instance.Heroes)
             {
                 hero.UpdateHomeSettlement();

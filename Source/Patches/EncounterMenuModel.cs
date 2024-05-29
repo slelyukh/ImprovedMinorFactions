@@ -20,7 +20,7 @@ namespace ImprovedMinorFactions.Patches
 
             if (result == null)
             {
-                PartyBase? encounteredParty = Helpers.callPrivateMethod(null, 
+                PartyBase? encounteredParty = Helpers.CallPrivateMethod(null, 
                     "GetEncounteredPartyBase", 
                     new object[] { attackerParty, defenderParty }, 
                     typeof(DefaultEncounterGameMenuModel)) as PartyBase;
