@@ -86,7 +86,7 @@ namespace ImprovedMinorFactions
         // Nord removed due to only having 2 names for their culture...
         internal static bool IsMinorCulture(CultureObject c)
         {
-            return c.GetCultureCode() == CultureCode.Vakken || c.GetCultureCode() == CultureCode.Darshi;
+            return c.GetCultureCode() == CultureCode.Vakken || c.GetCultureCode() == CultureCode.Darshi || c.GetCultureCode() == CultureCode.Nord;
         }
 
         // Removes any normal militia units from MFHideout militia party

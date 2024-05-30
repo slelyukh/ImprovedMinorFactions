@@ -5,6 +5,7 @@ using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 
@@ -31,7 +32,14 @@ namespace ImprovedMinorFactions
         public static ExplainedNumber GetMilitiaChange(Settlement settlement, bool includeDescriptions = false)
         {
             var eNum = new ExplainedNumber(0f, includeDescriptions);
-            eNum.Add(0.05f, BaseText);
+            if (settlement.OwnerClan == null)
+                return eNum;
+
+            if (settlement.OwnerClan.IsNomad)
+               eNum.Add(0.25f, BaseText);
+            else
+                eNum.Add(0.05f, BaseText);
+
             eNum.Add((Helpers.GetMFHideout(settlement)).Hearth * 0.0005f, FromHearthsText);
             return eNum;
         }
@@ -80,6 +88,14 @@ namespace ImprovedMinorFactions
 
             // default values
             return 1;
+        }
+
+        public static bool UpgradeMilitiaRandom(Clan c)
+        {
+            if (c.IsNomad)
+                return MBRandom.RandomInt(4) == 1;
+            else
+                return MBRandom.RandomInt(8) == 1;
         }
 
         public static int NumMilitiaFirstTime(Clan c)

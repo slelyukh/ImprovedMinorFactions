@@ -42,7 +42,7 @@ namespace ImprovedMinorFactions
     }
     public class MinorFactionHideout : SettlementComponent, ISpottable
     {
-        
+
 
         public CampaignTime NextPossibleAttackTime
         {
@@ -61,120 +61,6 @@ namespace ImprovedMinorFactions
             IMFManager.Current.AddLoadedMFHideout(this);
         }
 
-        // CreateHeroAtOccupation copypasta
-        // TODO: rename hero to Vakken or Darshi
-        private void RenameHeroToNewOccupation(Hero heroToRename, Occupation occupation, uint seed)
-        {
-            IEnumerable<CharacterObject> enumerable = Enumerable.Where<CharacterObject>(
-                this.Settlement.Culture.NotableAndWandererTemplates, 
-                (CharacterObject x) => x.Occupation == occupation);
-            int randNum = this.Settlement.RandomIntWithSeed(seed, enumerable.Count());
-            int i = 0;
-            CharacterObject template = null;
-            foreach (CharacterObject characterObject in enumerable)
-            {
-                if (i == randNum)
-                {
-                    template = characterObject;
-                    break;
-                }
-                i++;
-            }
-            // TODO: return null instead of throwing an exception
-            if (template == null)
-                if (Helpers.IsDebugMode)
-                    throw new System.Exception($"ERROR: {this.Settlement.Culture} does not have template for {occupation}");
-                else
-                {
-                    InformationManager.DisplayMessage(new InformationMessage($"ERROR: {this.Settlement.Culture} does not have template for {occupation}", Colors.Red));
-                    return;
-                }
-            Hero hero = (Hero) Helpers.CallPrivateMethod(null, "CreateNewHero", new object[] { template, 25 }, typeof(HeroCreator));
-            TextObject firstName;
-            TextObject fullName;
-            NameGenerator.Current.GenerateHeroNameAndHeroFullName(hero, out firstName, out fullName, false);
-            heroToRename.SetName(fullName, firstName);
-        }
-
-        // CreateHeroAtOccupation copypasta
-        private Hero CreateNotable(Occupation neededOccupation, IMFModels.Gender gender, Settlement forcedHomeSettlement)
-        {
-            Settlement settlement = forcedHomeSettlement ?? SettlementHelper.GetRandomTown(null);
-            IEnumerable<CharacterObject> enumerable;
-            if (gender == IMFModels.Gender.Male)
-                enumerable = Enumerable.Where<CharacterObject>(settlement.Culture.NotableAndWandererTemplates, (CharacterObject x) => x.Occupation == neededOccupation && !x.IsFemale);
-            else if (gender == IMFModels.Gender.Female)
-                enumerable = Enumerable.Where<CharacterObject>(settlement.Culture.NotableAndWandererTemplates, (CharacterObject x) => x.Occupation == neededOccupation && x.IsFemale);
-            else
-                enumerable = Enumerable.Where<CharacterObject>(settlement.Culture.NotableAndWandererTemplates, (CharacterObject x) => x.Occupation == neededOccupation);
-
-            if (!Enumerable.Any(enumerable))
-                return null;
-
-            int num = 0;
-            foreach (CharacterObject characterObject in enumerable)
-            {
-                int num2 = characterObject.GetTraitLevel(DefaultTraits.Frequency) * 10;
-                num += ((num2 > 0) ? num2 : 100);
-            }
-            
-            CharacterObject template = null;
-            int num3 = settlement.RandomIntWithSeed((uint)settlement.Notables.Count, 1, num);
-            foreach (CharacterObject characterObject2 in enumerable)
-            {
-                int num4 = characterObject2.GetTraitLevel(DefaultTraits.Frequency) * 10;
-                num3 -= ((num4 > 0) ? num4 : 100);
-                if (num3 < 0)
-                {
-                    template = characterObject2;
-                    break;
-                }
-            }
-
-            Hero hero = HeroCreator.CreateSpecialHero(template, settlement, null, null, -1);
-            CultureObject hideoutCulture = forcedHomeSettlement.OwnerClan.Culture;
-            // Give Darshi, Nord, and Vakken MFs correct notable names
-            // NOT copy/pasted
-            if (Helpers.IsMinorCulture(hideoutCulture))
-            {
-                var nameList = new List<TextObject>();
-                if (hero.IsFemale)
-                   nameList = hideoutCulture.FemaleNameList;
-                else
-                    nameList = hideoutCulture.MaleNameList;
-                
-                TextObject firstName = nameList.GetRandomElement();
-                TextObject fullName = (TextObject)Helpers.CallPrivateMethod(NameGenerator.Current, "GenerateHeroFullName", new object[] { hero, firstName, true });
-                hero.SetName(fullName, firstName);
-            }
-            // NOT copy/pasted
-
-            if (hero.HomeSettlement.IsVillage && hero.HomeSettlement.Village.Bound != null && hero.HomeSettlement.Village.Bound.IsCastle)
-            {
-                float value = MBRandom.RandomFloat * 20f;
-                hero.AddPower(value);
-            }
-            if (neededOccupation != Occupation.Wanderer)
-            {
-                hero.ChangeState(Hero.CharacterStates.Active);
-                EnterSettlementAction.ApplyForCharacterOnly(hero, settlement);
-                int amount = 10000;
-                GiveGoldAction.ApplyBetweenCharacters(null, hero, amount, true);
-            }
-            CharacterObject template2 = hero.Template;
-            if (((template2 != null) ? template2.HeroObject : null) != null && hero.Template.HeroObject.Clan != null && hero.Template.HeroObject.Clan.IsMinorFaction)
-                hero.SupporterOf = hero.Template.HeroObject.Clan;
-            else
-                hero.SupporterOf = HeroHelper.GetRandomClanForNotable(hero);
-
-            if (neededOccupation != Occupation.Wanderer)
-                Helpers.CallPrivateMethod(null, "AddRandomVarianceToTraits", new object[] {hero}, typeof(HeroCreator));
-
-            return hero;
-        }
-
-        
-
         public void ActivateHideoutFirstTime()
         {
             if (IMFManager.Current.GetActiveHideoutsOfClan(this.OwnerClan).Contains(this))
@@ -183,8 +69,8 @@ namespace ImprovedMinorFactions
                 throw new System.Exception("double clan activation");
             }
 
-            var notable1 = CreateNotable(Occupation.GangLeader, IMFModels.ClanGender(this.OwnerClan), this.Settlement);
-            var notable2 = CreateNotable(Occupation.GangLeader, IMFModels.ClanGender(this.OwnerClan), this.Settlement);
+            var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
+            var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
             notable1.IsMinorFactionHero = true;
             notable2.IsMinorFactionHero = true;
 
@@ -256,8 +142,8 @@ namespace ImprovedMinorFactions
             newHideout.Hearth = this.Hearth;
             // We will handle the militia party ourselves
             CopyMilitiaToHideout(newHideout);
-            
-            
+
+
             this.DeactivateHideout(true);
             if (PlayerEncounter.Current != null
                 && PlayerEncounter.Current.IsPlayerWaiting
@@ -299,7 +185,7 @@ namespace ImprovedMinorFactions
             {
                 CampaignEventDispatcher.Instance.OnHideoutDeactivated(this.Settlement);
             }
-            
+
             this.Settlement.Notables.Clear();
             this._isActive = false;
             this._isSpotted = false;
@@ -312,12 +198,14 @@ namespace ImprovedMinorFactions
         {
             var militiaParty = this.Settlement.MilitiaPartyComponent.Party;
             var militiaRoster = militiaParty.MemberRoster;
-            count = MathF.Min(count, (int) this.Settlement.Militia);
+            count = MathF.Min(count, (int)this.Settlement.Militia);
             int loopCounter = 0;
             while (count > 0 && loopCounter < 20)
             {
                 CharacterObject troopToUpgrade = null;
                 loopCounter++;
+
+                // TODO: randomly choose troop to upgrade
                 foreach (var troop in militiaRoster.GetTroopRoster())
                 {
                     if (troop.Character.UpgradeTargets.Length != 0)
@@ -337,8 +225,8 @@ namespace ImprovedMinorFactions
                 }
             }
             // if (loopCounter >= 20)
-                // InformationManager.DisplayMessage(new InformationMessage("UPGRADE MILITIA INFINITE LOOP"));
-            
+            // InformationManager.DisplayMessage(new InformationMessage("UPGRADE MILITIA INFINITE LOOP"));
+
         }
 
         public void DailyTick()
@@ -370,8 +258,8 @@ namespace ImprovedMinorFactions
                 this.UpgradeMilitia(10);
             }
 
-            // 1/15 chance for a random militia to upgrade every day
-            if (MBRandom.RandomInt(15) == 1)
+            // daily random chance for militia to upgrade
+            if (IMFModels.UpgradeMilitiaRandom(this.OwnerClan))
                 this.UpgradeMilitia(1);
 
             this.Hearth += this.HearthChange.ResultNumber;
@@ -452,7 +340,7 @@ namespace ImprovedMinorFactions
             base.OnPartyEntered(mobileParty);
         }
 
-        
+
         public override void OnPartyLeft(MobileParty mobileParty)
         {
             base.OnPartyLeft(mobileParty);
@@ -481,7 +369,7 @@ namespace ImprovedMinorFactions
         }
 
         public ExplainedNumber MilitiaChange
-        { 
+        {
             get
             {
                 return IMFModels.GetMilitiaChange(this.Settlement);
@@ -492,6 +380,11 @@ namespace ImprovedMinorFactions
         {
             get => this._ownerclan;
             set => this._ownerclan = value;
+        }
+
+        public CultureObject Culture
+        {
+            get => this.Settlement.Culture;
         }
 
         public bool IsActive

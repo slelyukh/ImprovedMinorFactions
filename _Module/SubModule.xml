@@ -51,6 +51,13 @@
 			</IncludedGameTypes>
 		</XmlNode>
 		<XmlNode>
+			<XmlName id="SPCultures" path="spcultures"/>
+			<IncludedGameTypes>
+				<GameType value = "Campaign"/>
+				<GameType value = "CampaignStoryMode"/>
+			</IncludedGameTypes>
+		</XmlNode>
+		<XmlNode>
 			<XmlName id="MFDatas" path="mf_data"/>
 			<IncludedGameTypes>
 				<GameType value = "Campaign"/>
