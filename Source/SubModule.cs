@@ -101,8 +101,8 @@ namespace ImprovedMinorFactions
             if (game.GameType is Campaign || game.GameType is CampaignStoryMode)
             {
                 game.ObjectManager.RegisterType<MinorFactionHideout>("MinorFactionHideout", "Components", 99U);
-                //game.ObjectManager.RegisterType<MFData>("MFData", "MFDatas", 100U);
-                //MBObjectManager.Instance.LoadXML("MFDatas", false);
+                game.ObjectManager.RegisterType<MFData>("MFData", "MFDatas", 100U);
+                MBObjectManager.Instance.LoadXML("MFDatas", false);
             }
         }
         public override void OnGameInitializationFinished(Game game)

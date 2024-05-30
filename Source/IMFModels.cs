@@ -72,52 +72,92 @@ namespace ImprovedMinorFactions
             }
         }
 
-        public static int DefaultNumActiveHideouts(Clan c)
+        public static int NumActiveHideouts(Clan c)
         {
+            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
+            if (mfData != null)
+                return mfData.NumActiveHideouts;
+
+            // default values
             if (c.StringId == "templar")
                 return 2;
             else
                 return 1;
         }
 
-        public static int DefaultNumMilitiaFirstTime (Clan c)
+        public static int NumMilitiaFirstTime(Clan c)
         {
+            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
+            if (mfData != null)
+                return mfData.NumMilitiaFirstTime;
+
+            // default values
             if (c.IsNomad)
-                return 60;
+                return 65;
             else
-                return 25;
+                return 28;
         }
 
-        public static int DefaultNumMilitiaPostRaid (Clan c)
+        public static int NumMilitiaPostRaid(Clan c)
         {
+            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
+            if (mfData != null)
+                return mfData.NumMilitiaPostRaid;
+
+            // default values
             if (c.IsNomad)
-                return 30;
+                return 40;
             else
-                return 18;
+                return 20;
         }
 
-        public static int DefaultNumLvl3Militia (Clan c)
+        public static int NumLvl3Militia(Clan c)
         {
+            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
+            if (mfData != null)
+                return mfData.NumLvl3Militia;
+
+            // default values
             if (c.IsNomad)
                 return 10;
             else
                 return 3;
         }
 
-        public static int DefaultNumLvl2Militia (Clan c)
+        public static int NumLvl2Militia(Clan c)
         {
+            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
+            if (mfData != null)
+                return mfData.NumLvl2Militia;
+
+            // default values
             if (c.IsNomad)
-                return 10;
+                return 15;
             else
                 return 5;
         }
 
-        public static int DefaultMaxMilitia(Clan c)
+        public static int MaxMilitia(Clan c)
         {
+            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
+            if (mfData != null)
+                return mfData.MaxMilitia;
+
+            // default values
             if (c.IsNomad)
-                return 95;
+                return 120;
             else
                 return 40;
+        }
+
+        public static Gender ClanGender(Clan c)
+        {
+            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
+            if (mfData != null)
+                return mfData.ClanGender;
+
+            // default value
+            return Gender.Any;
         }
         public enum Gender
         {

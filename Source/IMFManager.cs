@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using HarmonyLib;
-using Microsoft.VisualBasic;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
@@ -20,6 +19,7 @@ namespace ImprovedMinorFactions
         public IMFManager() 
         {
             _LoadedMFHideouts = new Dictionary<string, MinorFactionHideout>();
+            _mfData = new Dictionary<Clan, MFData>();
         }
 
         private static void InitManager()
@@ -66,11 +66,11 @@ namespace ImprovedMinorFactions
         // should only be done when all Settlements are loaded in
         public bool TryInitMFHideoutsLists()
         {
-            if (Campaign.Current == null)
+            if (Campaign.Current?.Settlements == null)
                 return false;
             if (_mfDataInitialized)
                 return true;
-            _mfData = new Dictionary<Clan, MFData>();
+
             foreach (Settlement settlement in Campaign.Current.Settlements)
             {
                 if ((settlement.OwnerClan?.IsMinorFaction ?? false) && Helpers.IsMFHideout(settlement))
@@ -97,17 +97,33 @@ namespace ImprovedMinorFactions
 
             foreach (var (mfClan, mfData) in _mfData.Select(x => (x.Key, x.Value)))
             {
-                if (HasActiveOrScheduledHideouts(mfClan) || mfData == null)
+                int NumExistingActiveOrScheduled = NumActiveOrScheduledHideouts(mfClan);
+                if (mfData == null || NumExistingActiveOrScheduled == mfData.NumActiveHideouts)
                     continue;
+                int NumExpectedActiveOrScheduled = mfData.NumActiveHideouts;
+
                 var hideouts = mfData.Hideouts;
-                if (mfData.NumActiveHideouts > hideouts.Count)
+                if (NumExpectedActiveOrScheduled > hideouts.Count)
                 {
                     throw new Exception($"{mfClan} has more active hideouts than hideouts...");
                 }
-                for (int i = 0; i < mfData.NumActiveHideouts; i++)
+
+                // deactivate hideouts if needed
+                for (int i = NumExpectedActiveOrScheduled; i < NumExistingActiveOrScheduled; i++)
+                {
+                    int deactivateIndex = MBRandom.RandomInt(hideouts.Count);
+                    while (!hideouts[deactivateIndex].IsActiveOrScheduled)
+                    {
+                        deactivateIndex = MBRandom.RandomInt(hideouts.Count);
+                    }
+                    hideouts[deactivateIndex].DeactivateHideout(false);
+                }
+
+                // activate new hideouts if needed
+                for (int i = NumExistingActiveOrScheduled; i < NumExpectedActiveOrScheduled; i++)
                 {
                     int activateIndex = MBRandom.RandomInt(hideouts.Count);
-                    while (hideouts[activateIndex].IsActive || hideouts[activateIndex].IsScheduledToBeActive)
+                    while (hideouts[activateIndex].IsActiveOrScheduled)
                     {
                         activateIndex = MBRandom.RandomInt(hideouts.Count);
                     }
@@ -116,10 +132,10 @@ namespace ImprovedMinorFactions
             }
         }
 
-        public MFData GetClanMFData(Clan c)
+        public MFData? GetClanMFData(Clan c)
         {
             MFData mfData = null;
-            _mfData.TryGetValue(c, out mfData);
+            _mfData?.TryGetValue(c, out mfData);
             return mfData;
         }
 
@@ -178,17 +194,23 @@ namespace ImprovedMinorFactions
             return GetActiveHideoutsOfClan(c).Count > 0;
         }
 
-        public bool HasActiveOrScheduledHideouts(Clan minorFaction)
+        public int NumActiveOrScheduledHideouts(Clan c)
         {
-            if (minorFaction == null || !minorFaction.IsMinorFaction || !this.HasFaction(minorFaction))
-                return false;
+            if (c == null || !c.IsMinorFaction || !this.HasFaction(c))
+                return 0;
 
-            foreach (var mfHideout in _mfData[minorFaction].Hideouts)
+            int count = 0;
+            foreach (var mfHideout in _mfData[c].Hideouts)
             {
                 if (mfHideout.IsActive || mfHideout.IsScheduledToBeActive)
-                    return true;
+                    count++;
             }
-            return false;
+            return count;
+        }
+
+        public bool HasActiveOrScheduledHideouts(Clan c)
+        {
+            return NumActiveOrScheduledHideouts(c) > 0;
         }
 
         public bool HasFaction(Clan minorFaction)
@@ -247,41 +269,6 @@ namespace ImprovedMinorFactions
             get => this._hideouts;
         }
 
-        public int GetNumTotalHideouts(Clan c)
-        {
-            return _mfData[c].NumTotalHideouts;
-        }
-
-        public int GetNumActiveHideouts(Clan c)
-        {
-            return _mfData[c].NumActiveHideouts;
-        }
-
-        public int GetNumMilitiaFirstTime(Clan c)
-        {
-            return _mfData[c].NumMilitiaFirstTime;
-        }
-
-        public int GetNumMilitiaPostRaid(Clan c)
-        {
-            return _mfData[c].NumMilitiaPostRaid;
-        }
-
-        public int GetNumLvl3Militia(Clan c)
-        {
-            return _mfData[c].NumLvl3Militia;
-        }
-
-        public int GetNumLvl2Militia(Clan c)
-        {
-            return _mfData[c].NumLvl2Militia;
-        }
-
-        public int GetMaxMilitia(Clan c)
-        {
-            return _mfData[c].MaxMilitia;
-        }
-
         public static IMFManager Current { get; private set; }
 
         private Dictionary<string, MinorFactionHideout> _LoadedMFHideouts;
@@ -310,54 +297,80 @@ namespace ImprovedMinorFactions
 
         private void InitData(Clan c)
         {
+            IMFManager.InitManagerIfNone();
             Hideouts = new List<MinorFactionHideout>();
-            NumActiveHideouts = IMFModels.DefaultNumActiveHideouts(c);
-            NumMilitiaFirstTime = IMFModels.DefaultNumMilitiaFirstTime(c);
-            NumMilitiaPostRaid = IMFModels.DefaultNumMilitiaPostRaid(c);
-            NumLvl3Militia = IMFModels.DefaultNumLvl3Militia(c);
-            NumLvl2Militia = IMFModels.DefaultNumLvl2Militia(c);
-            MaxMilitia = IMFModels.DefaultMaxMilitia(c);
+            mfClan = c;
+            NumActiveHideouts = IMFModels.NumActiveHideouts(c);
+            NumMilitiaFirstTime = IMFModels.NumMilitiaFirstTime(c);
+            NumMilitiaPostRaid = IMFModels.NumMilitiaPostRaid(c);
+            NumLvl3Militia = IMFModels.NumLvl3Militia(c);
+            NumLvl2Militia = IMFModels.NumLvl2Militia(c);
+            MaxMilitia = IMFModels.MaxMilitia(c);
+            ClanGender = IMFModels.ClanGender(c);
         }
 
         public override void Deserialize(MBObjectManager objectManager, XmlNode node)
         {
             base.Deserialize(objectManager, node);
-            Clan clan = objectManager.ReadObjectReferenceFromXml<Clan>("minor_faction", node);
-            if (clan == null)
+            string? mfClanId = node.Attributes?.GetNamedItem("minor_faction")?.Value.Replace("Faction.", "");
+            Clan? mfClan = Clan.All?.Find((x) => x.StringId == mfClanId);
+            if (mfClan == null)
+                mfClan = objectManager.ReadObjectReferenceFromXml<Clan>("minor_faction", node);
+            if (mfClan == null)
+            {
+                InformationManager.DisplayMessage(new InformationMessage($"IMF: {mfClanId} not found. mf_data.xml data not loaded", Colors.Red));
                 return;
+            }
 
-            InitData(clan);
+            InitData(mfClan);
 
             // parse data for me
-            if (node.Attributes.GetNamedItem("num_active_hideouts") != null)
+            if (node.Attributes?.GetNamedItem("num_active_hideouts") != null)
                 this.NumActiveHideouts = Int32.Parse(node.Attributes.GetNamedItem("num_active_hideouts").Value);
-            if (node.Attributes.GetNamedItem("num_militia_first_time") != null)
+            if (node.Attributes?.GetNamedItem("num_militia_first_time") != null)
                 this.NumMilitiaFirstTime = Int32.Parse(node.Attributes.GetNamedItem("num_militia_first_time").Value);
-            if (node.Attributes.GetNamedItem("num_militia_post_raid") != null)
+            if (node.Attributes?.GetNamedItem("num_militia_post_raid") != null)
                 this.NumMilitiaPostRaid = Int32.Parse(node.Attributes.GetNamedItem("num_militia_post_raid").Value);
-            if (node.Attributes.GetNamedItem("num_lvl2_militia") != null)
+            if (node.Attributes?.GetNamedItem("num_lvl2_militia") != null)
                 this.NumLvl2Militia = Int32.Parse(node.Attributes.GetNamedItem("num_lvl2_militia").Value);
-            if (node.Attributes.GetNamedItem("num_lvl3_militia") != null)
+            if (node.Attributes?.GetNamedItem("num_lvl3_militia") != null)
                 this.NumLvl3Militia = Int32.Parse(node.Attributes.GetNamedItem("num_lvl3_militia").Value);
-            if (node.Attributes.GetNamedItem("max_militia") != null)
+            if (node.Attributes?.GetNamedItem("max_militia") != null)
                 this.MaxMilitia = Int32.Parse(node.Attributes.GetNamedItem("max_militia").Value);
+            if (node.Attributes?.GetNamedItem("clan_gender") != null)
+            {
+                string genderString = node.Attributes.GetNamedItem("clan_gender").Value;
+                if (genderString == "Male")
+                {
+                    this.ClanGender = IMFModels.Gender.Male;
+                } else if (genderString == "Female")
+                {
+                    this.ClanGender = IMFModels.Gender.Female;
+                } else if ((genderString == "Any"))
+                {
+                    this.ClanGender = IMFModels.Gender.Any;
+                } else
+                {
+                    throw new Exception($"{genderString} is not a valid gender type for {mfClanId}. " +
+                        $"The only valid options are 'Male', 'Female', or 'Any'");
+                }
+            }
 
-            IMFManager.InitManagerIfNone();
-
-            if (IMFManager.Current.GetClanMFData(clan) != null)
+            if (IMFManager.Current?.GetClanMFData(mfClan) != null)
             {
                 // set values for current data
-                MFData existingData = IMFManager.Current.GetClanMFData(clan);
+                MFData existingData = IMFManager.Current.GetClanMFData(mfClan);
                 existingData.NumActiveHideouts = this.NumActiveHideouts;
                 existingData.NumMilitiaFirstTime = this.NumMilitiaFirstTime;
                 existingData.NumMilitiaPostRaid = this.NumMilitiaPostRaid;
                 existingData.NumLvl2Militia = this.NumLvl2Militia;
                 existingData.NumLvl3Militia = this.NumLvl3Militia;
                 existingData.MaxMilitia = this.MaxMilitia;
+                existingData.ClanGender = this.ClanGender;
             }
             else
             {
-                IMFManager.Current.AddMFData(clan, this);
+                IMFManager.Current?.AddMFData(mfClan, this);
             }
             return;
         }
@@ -380,12 +393,14 @@ namespace ImprovedMinorFactions
             get => Hideouts.Count;
         }
 
+        public Clan mfClan;
         public int NumActiveHideouts;
         public int NumMilitiaFirstTime;
         public int NumMilitiaPostRaid;
         public int NumLvl3Militia;
         public int NumLvl2Militia;
         public int MaxMilitia;
+        internal IMFModels.Gender ClanGender;
         public List<MinorFactionHideout> Hideouts;
         public bool IsWaitingForWarWithPlayer;
     }

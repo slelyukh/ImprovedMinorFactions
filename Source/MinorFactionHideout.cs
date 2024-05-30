@@ -102,16 +102,14 @@ namespace ImprovedMinorFactions
             Settlement settlement = forcedHomeSettlement ?? SettlementHelper.GetRandomTown(null);
             IEnumerable<CharacterObject> enumerable;
             if (gender == IMFModels.Gender.Male)
-            {
                 enumerable = Enumerable.Where<CharacterObject>(settlement.Culture.NotableAndWandererTemplates, (CharacterObject x) => x.Occupation == neededOccupation && !x.IsFemale);
-            } else if (gender == IMFModels.Gender.Female)
-            {
+            else if (gender == IMFModels.Gender.Female)
                 enumerable = Enumerable.Where<CharacterObject>(settlement.Culture.NotableAndWandererTemplates, (CharacterObject x) => x.Occupation == neededOccupation && x.IsFemale);
-            }
             else
-            {
                 enumerable = Enumerable.Where<CharacterObject>(settlement.Culture.NotableAndWandererTemplates, (CharacterObject x) => x.Occupation == neededOccupation);
-            }
+
+            if (!Enumerable.Any(enumerable))
+                return null;
 
             int num = 0;
             foreach (CharacterObject characterObject in enumerable)
@@ -119,11 +117,7 @@ namespace ImprovedMinorFactions
                 int num2 = characterObject.GetTraitLevel(DefaultTraits.Frequency) * 10;
                 num += ((num2 > 0) ? num2 : 100);
             }
-
-            if (!Enumerable.Any(enumerable))
-            {
-                return null;
-            }
+            
             CharacterObject template = null;
             int num3 = settlement.RandomIntWithSeed((uint)settlement.Notables.Count, 1, num);
             foreach (CharacterObject characterObject2 in enumerable)
@@ -140,7 +134,7 @@ namespace ImprovedMinorFactions
             Hero hero = HeroCreator.CreateSpecialHero(template, settlement, null, null, -1);
             CultureObject hideoutCulture = forcedHomeSettlement.OwnerClan.Culture;
             // Give Darshi, Nord, and Vakken MFs correct notable names
-            // todo check why ori is so popular
+            // NOT copy/pasted
             if (Helpers.IsMinorCulture(hideoutCulture))
             {
                 var nameList = new List<TextObject>();
@@ -153,6 +147,7 @@ namespace ImprovedMinorFactions
                 TextObject fullName = (TextObject)Helpers.CallPrivateMethod(NameGenerator.Current, "GenerateHeroFullName", new object[] { hero, firstName, true });
                 hero.SetName(fullName, firstName);
             }
+            // NOT copy/pasted
 
             if (hero.HomeSettlement.IsVillage && hero.HomeSettlement.Village.Bound != null && hero.HomeSettlement.Village.Bound.IsCastle)
             {
@@ -168,18 +163,12 @@ namespace ImprovedMinorFactions
             }
             CharacterObject template2 = hero.Template;
             if (((template2 != null) ? template2.HeroObject : null) != null && hero.Template.HeroObject.Clan != null && hero.Template.HeroObject.Clan.IsMinorFaction)
-            {
                 hero.SupporterOf = hero.Template.HeroObject.Clan;
-            }
             else
-            {
                 hero.SupporterOf = HeroHelper.GetRandomClanForNotable(hero);
-            }
 
             if (neededOccupation != Occupation.Wanderer)
-            {
                 Helpers.CallPrivateMethod(null, "AddRandomVarianceToTraits", new object[] {hero}, typeof(HeroCreator));
-            }
 
             return hero;
         }
@@ -194,23 +183,13 @@ namespace ImprovedMinorFactions
                 throw new System.Exception("double clan activation");
             }
 
-            // TODO: use mfData for gender info
-            if (this.OwnerClan.StringId == "skolderbrotva")
-            {
-                var notable1 = CreateNotable(Occupation.GangLeader, IMFModels.Gender.Male, this.Settlement);
-                var notable2 = CreateNotable(Occupation.GangLeader, IMFModels.Gender.Male, this.Settlement);
-                notable1.IsMinorFactionHero = true;
-                notable2.IsMinorFactionHero = true;
-            } else
-            {
-                var notable1 = CreateNotable(Occupation.GangLeader, IMFModels.Gender.Any, this.Settlement);
-                var notable2 = CreateNotable(Occupation.GangLeader, IMFModels.Gender.Any, this.Settlement);
-                notable1.IsMinorFactionHero = true;
-                notable2.IsMinorFactionHero = true;
-            }
+            var notable1 = CreateNotable(Occupation.GangLeader, IMFModels.ClanGender(this.OwnerClan), this.Settlement);
+            var notable2 = CreateNotable(Occupation.GangLeader, IMFModels.ClanGender(this.OwnerClan), this.Settlement);
+            notable1.IsMinorFactionHero = true;
+            notable2.IsMinorFactionHero = true;
 
             ActivateHideout();
-            base.Settlement.Militia = IMFManager.Current.GetNumMilitiaFirstTime(this.OwnerClan);
+            base.Settlement.Militia = IMFModels.NumMilitiaFirstTime(this.OwnerClan);
             this.Hearth = 350;
         }
 
@@ -242,19 +221,17 @@ namespace ImprovedMinorFactions
             this._isSpotted = false;
             this._activationTime = CampaignTime.Now;
 
-            var imfManager = IMFManager.Current;
-
             // add lvl 3 militias
-            int numLvl3 = imfManager.GetNumLvl3Militia(this.OwnerClan);
+            int numLvl3 = IMFModels.NumLvl3Militia(this.OwnerClan);
             base.Settlement.Militia = numLvl3;
             UpgradeMilitia(numLvl3);
             UpgradeMilitia(numLvl3);
 
-            int numLvl2 = imfManager.GetNumLvl2Militia(this.OwnerClan);
+            int numLvl2 = IMFModels.NumLvl2Militia(this.OwnerClan);
             base.Settlement.Militia += numLvl2;
             UpgradeMilitia(numLvl2);
 
-            base.Settlement.Militia = imfManager.GetNumMilitiaPostRaid(this.OwnerClan);
+            base.Settlement.Militia = IMFModels.NumMilitiaPostRaid(this.OwnerClan);
             this.Hearth = 200;
 
 
@@ -323,6 +300,7 @@ namespace ImprovedMinorFactions
                 CampaignEventDispatcher.Instance.OnHideoutDeactivated(this.Settlement);
             }
             
+            this.Settlement.Notables.Clear();
             this._isActive = false;
             this._isSpotted = false;
             this.Settlement.IsVisible = false;
@@ -375,7 +353,7 @@ namespace ImprovedMinorFactions
                 return;
             float curMil = base.Settlement.Militia;
             float milChange = this.MilitiaChange.ResultNumber;
-            if (curMil + milChange > IMFManager.Current.GetMaxMilitia(this.OwnerClan) + 1)
+            if (curMil + milChange > IMFModels.MaxMilitia(this.OwnerClan) + 1)
             {
                 base.Settlement.Militia = (curMil + milChange) - 1;
                 this.UpgradeMilitia(1);
@@ -386,9 +364,9 @@ namespace ImprovedMinorFactions
             }
 
             // backwards compatibility
-            if (base.Settlement.Militia < IMFManager.Current.GetNumMilitiaPostRaid(this.OwnerClan))
+            if (base.Settlement.Militia < IMFModels.NumMilitiaPostRaid(this.OwnerClan))
             {
-                base.Settlement.Militia = IMFManager.Current.GetNumMilitiaPostRaid(this.OwnerClan);
+                base.Settlement.Militia = IMFModels.NumMilitiaPostRaid(this.OwnerClan);
                 this.UpgradeMilitia(10);
             }
 
@@ -527,6 +505,10 @@ namespace ImprovedMinorFactions
             set => this._activationTime = value;
         }
 
+        public bool IsActiveOrScheduled
+        {
+            get => this.IsActive || this._activationScheduled;
+        }
         public bool IsScheduledToBeActive
         {
             get => this._activationScheduled;

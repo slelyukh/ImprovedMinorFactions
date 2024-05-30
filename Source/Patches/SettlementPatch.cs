@@ -81,7 +81,7 @@ namespace ImprovedMinorFactions.Patches
             if (__instance.OwnerClan == null || !Clan.All.Contains(__instance.OwnerClan))
             {
                 string mfClanId = node.Attributes.GetNamedItem("owner").Value.Replace("Faction.", "");
-                Clan mfClan = Clan.All.Find((x) => x.StringId == mfClanId);
+                Clan? mfClan = Clan.All?.Find((x) => x.StringId == mfClanId);
                 if (mfClan == null)
                 {
                     mfClan = objectManager.ReadObjectReferenceFromXml<Clan>("owner", node);
