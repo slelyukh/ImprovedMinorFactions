@@ -79,10 +79,7 @@ namespace ImprovedMinorFactions
                 return mfData.NumActiveHideouts;
 
             // default values
-            if (c.StringId == "templar")
-                return 2;
-            else
-                return 1;
+            return 1;
         }
 
         public static int NumMilitiaFirstTime(Clan c)
