@@ -127,10 +127,8 @@ namespace ImprovedMinorFactions
             {
                 if (clan.IsMinorFaction)
                 {
-                    if (clan.BasicTroop == null 
-                        || clan.Culture?.BasicTroop == null 
-                        || clan.BasicTroop != clan.Culture.BasicTroop
-                        || clan.DefaultPartyTemplate == null)
+                    if (clan.BasicTroop == null || clan.Culture?.BasicTroop == null || clan.DefaultPartyTemplate == null 
+                        || clan.BasicTroop != clan.Culture.BasicTroop)
                         continue;
                     CharacterObject? basicTroop = null;
                     PartyTemplateObject defaultPartyTemplate = clan.DefaultPartyTemplate;
