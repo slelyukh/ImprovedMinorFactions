@@ -265,8 +265,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                 relationHero = null;
                 skill = null;
 
-                if ((issueGiver?.MapFaction ?? issueGiver?.CurrentSettlement?.OwnerClan
-                    ?? Hero.MainHero?.MapFaction) == null)
+                if ((issueGiver?.MapFaction ?? issueGiver?.Clan ?? Hero.MainHero?.MapFaction) == null)
                 {
                     return false;
                 }
@@ -277,7 +276,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     relationHero = issueGiver;
                 }
                 if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
+                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.Clan))
                 {
                     flag |= PreconditionFlags.AtWar;
                 }
