@@ -105,7 +105,8 @@ namespace ImprovedMinorFactions
                 var hideouts = mfData.Hideouts;
                 if (NumExpectedActiveOrScheduled > hideouts.Count)
                 {
-                    throw new Exception($"{mfClan} has more active hideouts than hideouts...");
+                    throw new Exception($"{mfClan} has more active hideouts than hideouts." +
+                        $" Change num_active_hideouts in mf_data.xml to a number less than or equal to {mfData.NumTotalHideouts}");
                 }
 
                 // deactivate hideouts if needed

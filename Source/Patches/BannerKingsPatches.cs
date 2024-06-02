@@ -284,10 +284,16 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKNotablePatchesCreateHeroAtOccupationPatchPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
+        private static MethodBase TargetMethod()
+        {
+            var type = AccessTools
+            .TypeByName("BannerKings.Patches.NotablesPatches.CreateHeroAtOccupationPatch");
+            var method = AccessTools
             .Method(AccessTools
             .TypeByName("BannerKings.Patches.NotablesPatches.CreateHeroAtOccupationPatch"),
             "Prefix");
+            return method;
+        }
 
         private static bool Prepare() => TargetMethod() != null;
 
