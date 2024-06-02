@@ -24,15 +24,14 @@ namespace ImprovedMinorFactions
 
         private static void InitManager()
         {
-            IMFManager.Current = new IMFManager();
+            if (IMFManager.Current == null)
+                IMFManager.Current = new IMFManager();
             Current._mfDataInitialized = Current.TryInitMFHideoutsLists();
         }
 
         public static void InitManagerIfNone()
         {
-            if (IMFManager.Current == null)
-                InitManager();
-
+            InitManager();
         }
         public static void ClearManager()
         {
@@ -270,7 +269,7 @@ namespace ImprovedMinorFactions
             get => this._hideouts;
         }
 
-        public static IMFManager Current { get; private set; }
+        public static IMFManager Current { get; set; }
 
         private Dictionary<string, MinorFactionHideout> _LoadedMFHideouts;
 
@@ -298,7 +297,9 @@ namespace ImprovedMinorFactions
 
         private void InitData(Clan c)
         {
-            IMFManager.InitManagerIfNone();
+            // Only want to set the current manager here because if we try to call init our new hideouts are not loaded in yet.
+            if (IMFManager.Current == null)
+                IMFManager.Current = new IMFManager();
             Hideouts = new List<MinorFactionHideout>();
             mfClan = c;
             NumActiveHideouts = IMFModels.NumActiveHideouts(c);
