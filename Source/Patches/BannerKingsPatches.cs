@@ -4,21 +4,50 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Linq;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
+    public static class BKHelpers
+    {
+        public static MethodInfo? ResolveOriginalMethod(string assemblyName, string typeName, string methodName)
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().SingleOrDefault(assembly => assembly.GetName().Name == assemblyName) // Assembly name
+                ?.GetType(typeName) // class with full namespace
+                ?.GetMethod(methodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
+        }
+
+        public static bool Prepare(MethodBase? method, string assemblyName, string typeName, string methodName)
+        {
+            bool res = method != null;
+            if (res == false && Harmony.HasAnyPatches(assemblyName))
+            {
+                string whyCantISeeVariablesInTheDebuggerNormally = $"IMF Error: {assemblyName} {typeName} {methodName} patch failed!";
+                InformationManager.DisplayMessage(new InformationMessage($"IMF Error: {assemblyName} {typeName} {methodName} patch failed!", Colors.Red));
+            } 
+            return res;
+        }
+    }
+    
     [HarmonyPatch]
     public class BKClanBehaviorOnSettlementEnteredPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools.TypeByName("BannerKings.Behaviours.BKClanBehavior"), "OnSettlementEntered");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Behaviours.BKClanBehavior";
+        private static string methodName = "OnSettlementEntered";
+        
+        private static MethodBase? TargetMethod()
+        {
+            return BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+        }
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Settlement target)
         {
@@ -31,10 +60,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKEducationBehaviorPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools.TypeByName("BannerKings.Behaviours.BKEducationBehavior"), "InitializeEducation");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Behaviours.BKEducationBehavior";
+        private static string methodName = "InitializeEducation";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Hero hero)
         {
@@ -47,10 +79,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKGentryBehaviorPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools.TypeByName("BannerKings.Behaviours.BKGentryBehavior"), "OnSettlementEntered");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Behaviours.BKGentryBehavior";
+        private static string methodName = "OnSettlementEntered";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Settlement target)
         {
@@ -63,10 +98,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKLifestyleBehaviorOnSettlementEnteredPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools.TypeByName("BannerKings.Behaviours.BKLifestyleBehavior"), "OnSettlementEntered");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Behaviours.BKLifestyleBehavior";
+        private static string methodName = "OnSettlementEntered";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Settlement settlement)
         {
@@ -80,10 +118,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKLifestyleBehaviorOnConversationEndedPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools.TypeByName("BannerKings.Behaviours.BKLifestyleBehavior"), "OnConversationEnded");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Behaviours.BKLifestyleBehavior";
+        private static string methodName = "OnConversationEnded";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(IEnumerable<CharacterObject> characters)
         {
@@ -95,10 +136,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKLordPropertyBehaviorPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools.TypeByName("BannerKings.Behaviours.BKLordPropertyBehavior"), "OnSettlementEntered");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Behaviours.BKLordPropertyBehavior";
+        private static string methodName = "OnSettlementEntered";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Settlement target)
         {
@@ -111,10 +155,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKLordPartyBehaviorPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools.TypeByName("BannerKings.Behaviours.BKPartyBehavior"), "OnSettlementEntered");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Behaviours.BKPartyBehavior";
+        private static string methodName = "OnSettlementEntered";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Settlement target)
         {
@@ -127,10 +174,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKReligionsBehaviorPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools.TypeByName("BannerKings.Behaviours.BKReligionsBehavior"), "OnSettlementEntered");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Behaviours.BKReligionsBehavior";
+        private static string methodName = "OnSettlementEntered";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Settlement target)
         {
@@ -143,10 +193,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKFeastBehaviorPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools.TypeByName("BannerKings.Behaviours.Feasts.BKFeastBehavior"), "OnSettlementEntered");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Behaviours.Feasts.BKFeastBehavior";
+        private static string methodName = "OnSettlementEntered";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Settlement target)
         {
@@ -159,10 +212,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKPartyNeedsBehaviorPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools.TypeByName("BannerKings.Behaviours.PartyNeeds.BKPartyNeedsBehavior"), "OnSettlementEntered");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Behaviours.PartyNeeds.BKPartyNeedsBehavior";
+        private static string methodName = "OnSettlementEntered";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Settlement target)
         {
@@ -176,10 +232,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKAIBehaviorLifestylePatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools.TypeByName("BannerKings.Managers.AI.AIBehavior"), "ChooseLifestyle");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Managers.AI.AIBehavior";
+        private static string methodName = "ChooseLifestyle";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix()
         {
@@ -191,10 +250,12 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKEconomyModelPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools.TypeByName("BannerKings.Models.Vanilla.BKEconomyModel"), "GetNotableCaravanLimit");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Models.Vanilla.BKEconomyModel";
+        private static string methodName = "GetNotableCaravanLimit";
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Hero notable, ref int __result)
         {
@@ -209,33 +270,35 @@ namespace ImprovedMinorFactions.Source.Patches
 
     // PATCH PATCHES
     [HarmonyPatch]
-    public class BKFixesPatchesGetGarrisonLeaveOrTakeDataOfPartyPatchPatch
-    {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools
-            .TypeByName("BannerKings.Patches.FixesPatches.GarrisonTroopsCampaignBehaviorPatches"),
-            "GetGarrisonLeaveOrTakeDataOfPartyPrefix");
+    //public class BKFixesPatchesGetGarrisonLeaveOrTakeDataOfPartyPatchPatch
+    //{
+    //    private static string assemblyName = "BannerKings";
+    //    private static string typeName = "BannerKings.Patches.FixesPatches+GarrisonTroopsCampaignBehaviorPatches";
+    //    private static string methodName = "GetGarrisonLeaveOrTakeDataOfPartyPrefix";
 
-        private static bool Prepare() => TargetMethod() != null;
+    //    private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
 
-        public static bool Prefix(MobileParty mobileparty)
-        {
-            if (Helpers.IsMFHideout(mobileparty.CurrentSettlement))
-                return false;
-            return true;
-        }
-    }
+    //    private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
+
+    //    public static bool Prefix(MobileParty mobileparty)
+    //    {
+    //        if (Helpers.IsMFHideout(mobileparty.CurrentSettlement))
+    //            return false;
+    //        return true;
+    //    }
+    //}
 
     // may not need this
     [HarmonyPatch]
     public class BKFixesPatchesGangLeaderNeedsToOffloadStolenGoodsIssueBehaviorPatchPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools
-            .TypeByName("BannerKings.Patches.FixesPatches.GangLeaderNeedsToOffloadStolenGoodsIssueBehaviorPatches"),
-            "ConditionsHoldPrefix");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Patches.FixesPatches+GangLeaderNeedsToOffloadStolenGoodsIssueBehaviorPatches";
+        private static string methodName = "ConditionsHoldPrefix";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Hero issueGiver)
         {
@@ -248,12 +311,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKFixesPatchesSiegeAftermathCampaignBehaviorPatchPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools
-            .TypeByName("BannerKings.Patches.FixesPatches.SiegeAftermathCampaignBehaviorPatches"),
-            "GetSiegeAftermathInfluenceCostPrefix");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Patches.FixesPatches+SiegeAftermathCampaignBehaviorPatches";
+        private static string methodName = "GetSiegeAftermathInfluenceCostPrefix";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Settlement settlement)
         {
@@ -266,12 +330,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKFixesPatchesCraftingCampaignBehaviorPatchPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools
-            .TypeByName("BannerKings.Patches.FixesPatches.CraftingCampaignBehaviorPatches"),
-            "CreateTownOrderPrefix");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Patches.FixesPatches+CraftingCampaignBehaviorPatches";
+        private static string methodName = "CreateTownOrderPrefix";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Settlement settlement)
         {
@@ -284,23 +349,20 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKNotablePatchesCreateHeroAtOccupationPatchPatch
     {
-        private static MethodBase TargetMethod()
-        {
-            var type = AccessTools
-            .TypeByName("BannerKings.Patches.NotablesPatches.CreateHeroAtOccupationPatch");
-            var method = AccessTools
-            .Method(AccessTools
-            .TypeByName("BannerKings.Patches.NotablesPatches.CreateHeroAtOccupationPatch"),
-            "Prefix");
-            return method;
-        }
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Patches.NotablePatches+CreateHeroAtOccupationPatch";
+        private static string methodName = "Prefix";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
 
-        public static bool Prefix(Settlement forcedHomeSettlement)
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
+
+        public static bool Prefix(Occupation neededOccupation, Settlement forcedHomeSettlement)
         {
             if (Helpers.IsMFHideout(forcedHomeSettlement))
+            {
                 return false;
+            }
             return true;
         }
     }
@@ -308,12 +370,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKNotablePatchesSpawnNotablesIfNeededPatchPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools
-            .TypeByName("BannerKings.Patches.NotablesPatches.SpawnNotablesIfNeededPatch"),
-            "Prefix");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Patches.NotablePatches+SpawnNotablesIfNeededPatch";
+        private static string methodName = "Prefix";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Settlement settlement)
         {
@@ -326,12 +389,13 @@ namespace ImprovedMinorFactions.Source.Patches
     [HarmonyPatch]
     public class BKNotablePatchesDailyTickSettlementPatchPatch
     {
-        private static MethodBase TargetMethod() => AccessTools
-            .Method(AccessTools
-            .TypeByName("BannerKings.Patches.NotablesPatches.DailyTickSettlementPatch"),
-            "Prefix");
+        private static string assemblyName = "BannerKings";
+        private static string typeName = "BannerKings.Patches.NotablePatches+DailyTickSettlementPatch";
+        private static string methodName = "Prefix";
 
-        private static bool Prepare() => TargetMethod() != null;
+        private static MethodBase? TargetMethod() => BKHelpers.ResolveOriginalMethod(assemblyName, typeName, methodName);
+
+        private static bool Prepare() => BKHelpers.Prepare(TargetMethod(), assemblyName, typeName, methodName);
 
         public static bool Prefix(Settlement settlement)
         {

@@ -22,7 +22,7 @@ namespace ImprovedMinorFactions.Source.Patches
     {
         static bool Prefix(Hero notable)
         {
-            if(!Helpers.IsMFHideout(notable.CurrentSettlement))
+            if (!Helpers.IsMFHideout(notable.CurrentSettlement))
                 return true;
             return false;
         }
@@ -54,10 +54,11 @@ namespace ImprovedMinorFactions.Source.Patches
     }
 
     // mostly copypasta
+    [HarmonyBefore(new string[] {"BannerKings"})]
     [HarmonyPatch(typeof(HeroCreator), "CreateHeroAtOccupation")]
     public class CreateHeroAtOccupationPatch
     {
-        static bool Prefix(Occupation neededOccupation, Settlement forcedHomeSettlement, ref Hero __result)
+        public static bool Prefix(Occupation neededOccupation, Settlement forcedHomeSettlement, ref Hero __result)
         {
             if (!Helpers.IsMFHideout(forcedHomeSettlement))
                 return true;
