@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
 using HarmonyLib;
+using ImprovedMinorFactions.Source;
+using JetBrains.Annotations;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
@@ -10,6 +12,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
+using TaleWorlds.Localization;
 using TaleWorlds.ObjectSystem;
 
 namespace ImprovedMinorFactions
@@ -62,6 +65,14 @@ namespace ImprovedMinorFactions
             _mfData[c] = mfd;
         }
 
+        private void CreateMFDataIfNone(Clan c)
+        {
+            if (!_mfData.ContainsKey(c))
+            {
+                _mfData[c] = new MFData(c);
+            }
+        }
+
         // should only be done when all Settlements are loaded in
         public bool TryInitMFHideoutsLists()
         {
@@ -74,6 +85,7 @@ namespace ImprovedMinorFactions
             {
                 if ((settlement.OwnerClan?.IsMinorFaction ?? false) && Helpers.IsMFHideout(settlement))
                 {
+                    // TODO: store ownerless hideouts somewhere
                     var mfClan = settlement.OwnerClan;
                     if (!_mfData.ContainsKey(mfClan))
                         _mfData[mfClan] = new MFData(mfClan);
@@ -88,11 +100,195 @@ namespace ImprovedMinorFactions
             return true;
         }
 
+        private Dictionary<Clan, int> DetermineHideoutCountsPostReassignment(
+            int numFreeHideouts, HashSet<Clan> hideoutAssignedNonNomadClans, ref List<Clan> NonNomadMFClans)
+        {
+            Dictionary<Clan, int>  numHideoutsToGive = new Dictionary<Clan, int>();
+
+            // delegate bare minimum numbers to hideout assigned clans
+            foreach (Clan c in hideoutAssignedNonNomadClans)
+            {
+                int numToGive = IMFModels.NumActiveHideouts(c);
+                numHideoutsToGive.Add(c, numToGive);
+                numFreeHideouts -= numToGive;
+            }
+
+            // delegate bare minimum numbers to other clans
+            foreach (Clan c in NonNomadMFClans)
+            {
+                if (numHideoutsToGive.ContainsKey(c))
+                    continue;
+                int numToGive = IMFModels.NumActiveHideouts(c);
+                if (numToGive > numFreeHideouts)
+                {
+                    continue;
+                }
+                numHideoutsToGive.Add(c, numToGive);
+                numFreeHideouts -= numToGive;
+            }
+
+            // remove hideoutless clans from list and MFData
+            List<Clan> clansToRemove = NonNomadMFClans.Where(c => !numHideoutsToGive.ContainsKey(c)).ToList();
+            foreach (Clan clan in clansToRemove)
+            {
+                NonNomadMFClans.Remove(clan);
+                _mfData.Remove(clan);
+            }
+
+            // distribute remaining numbers evenly
+            while (numFreeHideouts > 0)
+            {
+                foreach (Clan c in NonNomadMFClans)
+                {
+                    if (numFreeHideouts == 0) break;
+                    // not assigning hideouts to lost causes or clans that already have all their hideouts
+                    if (!numHideoutsToGive.ContainsKey(c) || numHideoutsToGive[c] == GetClanMFData(c)!.Hideouts.Count)
+                        continue;
+                    numHideoutsToGive[c]++;
+                    numFreeHideouts--;
+                }
+            }
+            return numHideoutsToGive;
+        }
+
+        private static int mfhComparator(Clan c, MinorFactionHideout mfh1, MinorFactionHideout mfh2)
+        {
+            int priority1 = 0;
+            int priority2 = 0;
+            if (mfh1.OwnerClan == c)
+            {
+                priority1 += 10;
+                if (mfh1.IsActiveOrScheduled)
+                    priority1 += 100;
+            }
+            if (mfh2.OwnerClan == c)
+            {
+                priority2 += 10;
+                if (mfh2.IsActiveOrScheduled)
+                    priority2 += 100;
+            }
+            
+            // mfh1 is closer
+            if (mfh1.Settlement.Position2D.Distance(c.InitialPosition) 
+                < mfh2.Settlement.Position2D.Distance(c.InitialPosition))
+            {
+                priority1 += 1;
+            } else
+            {
+                priority2 += 1;
+            }
+
+            // already active foreign hideouts are lowest priority
+            if (mfh1.IsActiveOrScheduled && mfh1.OwnerClan != c)
+                priority1 = 0;
+            if (mfh2.IsActiveOrScheduled && mfh2.OwnerClan != c)
+                priority2 = 0;
+
+            return priority1 - priority2;
+        }
+
+        // Transfer ownership of an mfh from one clan to another or do nothing.
+        private void AssignHideoutToClan(Clan newOwner, MinorFactionHideout mfh)
+        {
+            Clan oldOwner = mfh.OwnerClan;
+            if (oldOwner == newOwner)
+                return;
+            if (mfh.IsActiveOrScheduled)
+                throw new Exception("Trying to reassign active hideout to another clan!");
+
+            // TODO: update Name
+            mfh.OwnerClan = newOwner;
+            mfh.Settlement.Name = new TextObject("{=dt9393yju}{MINOR_FACTION} Hideout")
+                .SetTextVariable("MINOR_FACTION", newOwner.Name);
+
+            if (newOwner.Culture.NotableAndWandererTemplates.Count > 0)
+                mfh.Settlement.Culture = newOwner.Culture;
+
+            GetClanMFData(newOwner)!.AddMFHideout(mfh);
+            if (_mfData.ContainsKey(oldOwner))
+                GetClanMFData(oldOwner)!.Hideouts.Remove(mfh);
+        }
+
+        // This function dynamically distributes MFHs to all Minor factions whether or not they are listed in settlements.xml
+        private void ReassignHideouts()
+        {
+            // Preprocess
+            HashSet<Clan> hideoutAssignedNonNomadClans = new HashSet<Clan>();
+            List<Clan> NonNomadMFClans = new List<Clan>();
+            foreach (Clan c in Clan.All)
+            {
+                if (c.IsMinorFaction && c != Clan.PlayerClan && !c.IsRebelClan && !c.IsNomad)
+                {
+                    if (HasFaction(c) && GetClanMFData(c)!.Hideouts.Count > 0)
+                        hideoutAssignedNonNomadClans.Add(c);
+
+                    NonNomadMFClans.Add(c);
+                    CreateMFDataIfNone(c);
+                }
+            }
+
+            HashSet<MinorFactionHideout> hideoutPool = new HashSet<MinorFactionHideout>();
+            foreach (MinorFactionHideout mfh in _hideouts)
+            {
+                // TODO: handle nomad camps too
+                if (mfh.OwnerClan?.IsNomad == false)
+                {
+                    hideoutPool.Add(mfh);
+                }
+            }
+
+            // Number deciding (hideoutless non-nomad clans should be removed here)
+            Dictionary<Clan, int> numHideoutsToGive = DetermineHideoutCountsPostReassignment(
+                hideoutPool.Count, hideoutAssignedNonNomadClans, ref NonNomadMFClans);
+
+            // Hideout assignment
+            // make sorted version of HideoutPool for each NonNomad MFClan
+            Dictionary<Clan, List<MinorFactionHideout>> priorityLists = new Dictionary<Clan, List<MinorFactionHideout>>();
+            foreach (Clan c in NonNomadMFClans)
+            {
+                var priorityList = hideoutPool.ToList();
+                priorityList.Sort((mfh1, mfh2) => - mfhComparator(c, mfh1, mfh2));
+                priorityLists[c] = priorityList;
+            }
+
+            // dish out hideouts
+            while (!hideoutPool.IsEmpty())
+            {
+                HashSet<Clan> satisfiedClans = new HashSet<Clan>();
+                foreach (var kvp in priorityLists)
+                {
+                    Clan mfClan = kvp.Key;
+                    
+                    HashSet<MinorFactionHideout> mfhsToRemoveFromPriorityList = new HashSet<MinorFactionHideout>();
+                    foreach(var mfh in kvp.Value)
+                    {
+                        mfhsToRemoveFromPriorityList.Add(mfh);
+                        if (hideoutPool.Contains(mfh))
+                        {
+                            AssignHideoutToClan(mfClan, mfh);
+                            hideoutPool.Remove(mfh);
+                            numHideoutsToGive[mfClan]--;
+                            break;
+                        }
+                    }
+                    kvp.Value.RemoveAll(mfh => mfhsToRemoveFromPriorityList.Contains(mfh));
+                    if (numHideoutsToGive[mfClan] == 0)
+                        satisfiedClans.Add(mfClan);
+                }
+
+                // remove clans that got all the hideouts they needed
+                foreach (Clan c  in satisfiedClans)
+                    priorityLists.Remove(c);
+            }
+        }
+
         // activates 1 hideout for every Minor Faction if they have no currently active hideouts
         public void ActivateAllFactionHideouts()
         {
             if (!TryInitMFHideoutsLists())
                 throw new Exception("Trying to activate faction hideouts early :(");
+
+            ReassignHideouts();
 
             foreach (var (mfClan, mfData) in _mfData.Select(x => (x.Key, x.Value)))
             {
@@ -281,129 +477,5 @@ namespace ImprovedMinorFactions
 
         public IEnumerable<Tuple<Settlement, GameEntity>> _allMFHideouts;
 
-    }
-
-
-    public class MFData : MBObjectBase
-    {
-        public MFData()
-        {
-        }
-
-        public MFData(Clan c)
-        {
-            InitData(c);
-        }
-
-        private void InitData(Clan c)
-        {
-            // Only want to set the current manager here because if we try to call init our new hideouts are not loaded in yet.
-            if (IMFManager.Current == null)
-                IMFManager.Current = new IMFManager();
-            Hideouts = new List<MinorFactionHideout>();
-            mfClan = c;
-            NumActiveHideouts = IMFModels.NumActiveHideouts(c);
-            NumMilitiaFirstTime = IMFModels.NumMilitiaFirstTime(c);
-            NumMilitiaPostRaid = IMFModels.NumMilitiaPostRaid(c);
-            NumLvl3Militia = IMFModels.NumLvl3Militia(c);
-            NumLvl2Militia = IMFModels.NumLvl2Militia(c);
-            MaxMilitia = IMFModels.MaxMilitia(c);
-            ClanGender = IMFModels.ClanGender(c);
-        }
-
-        public override void Deserialize(MBObjectManager objectManager, XmlNode node)
-        {
-            base.Deserialize(objectManager, node);
-            string? mfClanId = node.Attributes?.GetNamedItem("minor_faction")?.Value.Replace("Faction.", "");
-            Clan? mfClan = Clan.All?.Find((x) => x.StringId == mfClanId);
-            if (mfClan == null)
-                mfClan = objectManager.ReadObjectReferenceFromXml<Clan>("minor_faction", node);
-            if (mfClan == null)
-            {
-                InformationManager.DisplayMessage(new InformationMessage($"IMF: {mfClanId} not found. mf_data.xml data not loaded", Colors.Red));
-                return;
-            }
-
-            InitData(mfClan);
-
-            // parse data for me
-            if (node.Attributes?.GetNamedItem("num_active_hideouts") != null)
-                this.NumActiveHideouts = Int32.Parse(node.Attributes.GetNamedItem("num_active_hideouts").Value);
-            if (node.Attributes?.GetNamedItem("num_militia_first_time") != null)
-                this.NumMilitiaFirstTime = Int32.Parse(node.Attributes.GetNamedItem("num_militia_first_time").Value);
-            if (node.Attributes?.GetNamedItem("num_militia_post_raid") != null)
-                this.NumMilitiaPostRaid = Int32.Parse(node.Attributes.GetNamedItem("num_militia_post_raid").Value);
-            if (node.Attributes?.GetNamedItem("num_lvl2_militia") != null)
-                this.NumLvl2Militia = Int32.Parse(node.Attributes.GetNamedItem("num_lvl2_militia").Value);
-            if (node.Attributes?.GetNamedItem("num_lvl3_militia") != null)
-                this.NumLvl3Militia = Int32.Parse(node.Attributes.GetNamedItem("num_lvl3_militia").Value);
-            if (node.Attributes?.GetNamedItem("max_militia") != null)
-                this.MaxMilitia = Int32.Parse(node.Attributes.GetNamedItem("max_militia").Value);
-            if (node.Attributes?.GetNamedItem("clan_gender") != null)
-            {
-                string genderString = node.Attributes.GetNamedItem("clan_gender").Value;
-                if (genderString == "Male")
-                {
-                    this.ClanGender = IMFModels.Gender.Male;
-                } else if (genderString == "Female")
-                {
-                    this.ClanGender = IMFModels.Gender.Female;
-                } else if ((genderString == "Any"))
-                {
-                    this.ClanGender = IMFModels.Gender.Any;
-                } else
-                {
-                    throw new Exception($"{genderString} is not a valid gender type for {mfClanId}. " +
-                        $"The only valid options are 'Male', 'Female', or 'Any'");
-                }
-            }
-
-            if (IMFManager.Current?.GetClanMFData(mfClan) != null)
-            {
-                // set values for current data
-                MFData existingData = IMFManager.Current.GetClanMFData(mfClan);
-                existingData.NumActiveHideouts = this.NumActiveHideouts;
-                existingData.NumMilitiaFirstTime = this.NumMilitiaFirstTime;
-                existingData.NumMilitiaPostRaid = this.NumMilitiaPostRaid;
-                existingData.NumLvl2Militia = this.NumLvl2Militia;
-                existingData.NumLvl3Militia = this.NumLvl3Militia;
-                existingData.MaxMilitia = this.MaxMilitia;
-                existingData.ClanGender = this.ClanGender;
-            }
-            else
-            {
-                IMFManager.Current?.AddMFData(mfClan, this);
-            }
-            return;
-        }
-
-        internal void AddMFHideout(MinorFactionHideout mfh)
-        {
-            Hideouts.Add(mfh);
-        }
-
-        internal void AddMFHideout(Settlement s)
-        {
-            if (!Helpers.IsMFHideout(s))
-                throw new Exception("Error 3242: trying to add non mfh settlement to MF hideouts list.");
-            Hideouts.Add(Helpers.GetMFHideout(s));
-        }
-
-
-        public int NumTotalHideouts
-        {
-            get => Hideouts.Count;
-        }
-
-        public Clan mfClan;
-        public int NumActiveHideouts;
-        public int NumMilitiaFirstTime;
-        public int NumMilitiaPostRaid;
-        public int NumLvl3Militia;
-        public int NumLvl2Militia;
-        public int MaxMilitia;
-        internal IMFModels.Gender ClanGender;
-        public List<MinorFactionHideout> Hideouts;
-        public bool IsWaitingForWarWithPlayer;
     }
 }

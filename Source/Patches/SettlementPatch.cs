@@ -62,6 +62,7 @@ namespace ImprovedMinorFactions.Patches
             MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
             if (mfHideout == null)
                 return;
+            string mfClanId = node.Attributes.GetNamedItem("owner").Value.Replace("Faction.", "");
 
             // manual fix of MFHideouts not saving properly bug
             if (IMFManager.Current != null)
@@ -80,7 +81,6 @@ namespace ImprovedMinorFactions.Patches
             // if "Faction.factionID" doesn't get us the clan we want we must manually find it
             if (__instance.OwnerClan == null || !Clan.All.Contains(__instance.OwnerClan))
             {
-                string mfClanId = node.Attributes.GetNamedItem("owner").Value.Replace("Faction.", "");
                 Clan? mfClan = Clan.All?.Find((x) => x.StringId == mfClanId);
                 if (mfClan == null)
                 {
@@ -93,6 +93,18 @@ namespace ImprovedMinorFactions.Patches
                         
                 }
                 mfHideout.OwnerClan = mfClan;
+            }
+
+            // Update hideout name only if the current owner is not the original owner
+            if (__instance.OwnerClan != null && mfClanId != __instance.OwnerClan.StringId)
+            {
+                if (__instance.OwnerClan.IsNomad)
+                    __instance.Name = new TextObject("{=dt9395yju}{MINOR_FACTION} Camp")
+                        .SetTextVariable("MINOR_FACTION", __instance.OwnerClan.Name);
+                else
+                    __instance.Name = new TextObject("{=dt9393yju}{MINOR_FACTION} Hideout")
+                        .SetTextVariable("MINOR_FACTION", __instance.OwnerClan.Name);
+                
             }
         }
     }
