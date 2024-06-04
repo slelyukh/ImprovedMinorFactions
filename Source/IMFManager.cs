@@ -100,6 +100,43 @@ namespace ImprovedMinorFactions
             return true;
         }
 
+        private static int mfhComparator(Clan c, MinorFactionHideout mfh1, MinorFactionHideout mfh2)
+        {
+            int priority1 = 0;
+            int priority2 = 0;
+            if (mfh1.OwnerClan == c)
+            {
+                priority1 += 10;
+                if (mfh1.IsActiveOrScheduled)
+                    priority1 += 100;
+            }
+            if (mfh2.OwnerClan == c)
+            {
+                priority2 += 10;
+                if (mfh2.IsActiveOrScheduled)
+                    priority2 += 100;
+            }
+
+            // mfh1 is closer
+            if (mfh1.Settlement.Position2D.Distance(c.InitialPosition)
+                < mfh2.Settlement.Position2D.Distance(c.InitialPosition))
+            {
+                priority1 += 1;
+            }
+            else
+            {
+                priority2 += 1;
+            }
+
+            // already active foreign hideouts are lowest priority
+            if (mfh1.IsActiveOrScheduled && mfh1.OwnerClan != c)
+                priority1 = 0;
+            if (mfh2.IsActiveOrScheduled && mfh2.OwnerClan != c)
+                priority2 = 0;
+
+            return priority1 - priority2;
+        }
+
         private Dictionary<Clan, int> DetermineHideoutCountsPostReassignment(
             int numFreeHideouts, HashSet<Clan> hideoutAssignedNonNomadClans, ref List<Clan> NonNomadMFClans)
         {
@@ -138,6 +175,7 @@ namespace ImprovedMinorFactions
             // distribute remaining numbers evenly
             while (numFreeHideouts > 0)
             {
+                int hideoutsGivenThisRound = 0;
                 foreach (Clan c in NonNomadMFClans)
                 {
                     if (numFreeHideouts == 0) break;
@@ -145,46 +183,12 @@ namespace ImprovedMinorFactions
                     if (!numHideoutsToGive.ContainsKey(c) || numHideoutsToGive[c] == GetClanMFData(c)!.Hideouts.Count)
                         continue;
                     numHideoutsToGive[c]++;
+                    hideoutsGivenThisRound++;
                     numFreeHideouts--;
                 }
+                if (hideoutsGivenThisRound == 0) break;
             }
             return numHideoutsToGive;
-        }
-
-        private static int mfhComparator(Clan c, MinorFactionHideout mfh1, MinorFactionHideout mfh2)
-        {
-            int priority1 = 0;
-            int priority2 = 0;
-            if (mfh1.OwnerClan == c)
-            {
-                priority1 += 10;
-                if (mfh1.IsActiveOrScheduled)
-                    priority1 += 100;
-            }
-            if (mfh2.OwnerClan == c)
-            {
-                priority2 += 10;
-                if (mfh2.IsActiveOrScheduled)
-                    priority2 += 100;
-            }
-            
-            // mfh1 is closer
-            if (mfh1.Settlement.Position2D.Distance(c.InitialPosition) 
-                < mfh2.Settlement.Position2D.Distance(c.InitialPosition))
-            {
-                priority1 += 1;
-            } else
-            {
-                priority2 += 1;
-            }
-
-            // already active foreign hideouts are lowest priority
-            if (mfh1.IsActiveOrScheduled && mfh1.OwnerClan != c)
-                priority1 = 0;
-            if (mfh2.IsActiveOrScheduled && mfh2.OwnerClan != c)
-                priority2 = 0;
-
-            return priority1 - priority2;
         }
 
         // Transfer ownership of an mfh from one clan to another or do nothing.
@@ -209,19 +213,68 @@ namespace ImprovedMinorFactions
                 GetClanMFData(oldOwner)!.Hideouts.Remove(mfh);
         }
 
+        private void AssignHideoutsForList(List<Clan> receivingClans, ref HashSet<MinorFactionHideout> hideoutPool,
+            ref Dictionary<Clan, int> numHideoutsToGive, Dictionary<Clan, List<MinorFactionHideout>> priorityLists)
+        {
+            while (!hideoutPool.IsEmpty() && !receivingClans.IsEmpty())
+            {
+                HashSet<Clan> satisfiedClans = new HashSet<Clan>();
+                int givenHideouts = 0;
+                foreach (Clan mfClan in receivingClans)
+                {
+                    List<MinorFactionHideout>? priorityList = null;
+                    priorityLists.TryGetValue(mfClan, out priorityList);
+
+                    if (numHideoutsToGive[mfClan] == 0)
+                        satisfiedClans.Add(mfClan);
+                    if (satisfiedClans.Contains(mfClan)) continue;
+
+                    HashSet<MinorFactionHideout> mfhsToRemoveFromPriorityList = new HashSet<MinorFactionHideout>();
+                    foreach (var mfh in priorityList)
+                    {
+                        mfhsToRemoveFromPriorityList.Add(mfh);
+                        if (hideoutPool.Contains(mfh))
+                        {
+                            AssignHideoutToClan(mfClan, mfh);
+                            hideoutPool.Remove(mfh);
+                            numHideoutsToGive[mfClan]--;
+                            givenHideouts++;
+                            break;
+                        }
+                    }
+                    priorityList.RemoveAll(mfh => mfhsToRemoveFromPriorityList.Contains(mfh));
+                }
+
+                foreach (Clan c in satisfiedClans)
+                {
+                    receivingClans.Remove(c);
+                }
+                if (givenHideouts == 0)
+                    break;
+            }
+        }
+
         // This function dynamically distributes MFHs to all Minor factions whether or not they are listed in settlements.xml
         private void ReassignHideouts()
         {
-            // Preprocess
+            // Preprocess lists
             HashSet<Clan> hideoutAssignedNonNomadClans = new HashSet<Clan>();
             List<Clan> NonNomadMFClans = new List<Clan>();
+            // add MFs with assigned hideouts to clan list first to give them priority later
+            foreach (Clan c in Clan.All)
+            {
+                if (c.IsMinorFaction && c != Clan.PlayerClan && !c.IsRebelClan && !c.IsNomad && HasFaction(c) && GetClanMFData(c)!.Hideouts.Count > 0)
+                {
+                    hideoutAssignedNonNomadClans.Add(c);
+                    NonNomadMFClans.Add(c);
+                }
+            }
+
+            // add MFs without assigned hideouts to clan list second to give them less priority
             foreach (Clan c in Clan.All)
             {
                 if (c.IsMinorFaction && c != Clan.PlayerClan && !c.IsRebelClan && !c.IsNomad)
                 {
-                    if (HasFaction(c) && GetClanMFData(c)!.Hideouts.Count > 0)
-                        hideoutAssignedNonNomadClans.Add(c);
-
                     NonNomadMFClans.Add(c);
                     CreateMFDataIfNone(c);
                 }
@@ -230,19 +283,17 @@ namespace ImprovedMinorFactions
             HashSet<MinorFactionHideout> hideoutPool = new HashSet<MinorFactionHideout>();
             foreach (MinorFactionHideout mfh in _hideouts)
             {
-                // TODO: handle nomad camps too
                 if (mfh.OwnerClan?.IsNomad == false)
                 {
                     hideoutPool.Add(mfh);
                 }
             }
 
-            // Number deciding (hideoutless non-nomad clans should be removed here)
+            // Determine the number of hideouts each MF will get in the end
             Dictionary<Clan, int> numHideoutsToGive = DetermineHideoutCountsPostReassignment(
                 hideoutPool.Count, hideoutAssignedNonNomadClans, ref NonNomadMFClans);
 
-            // Hideout assignment
-            // make sorted version of HideoutPool for each NonNomad MFClan
+            // Make sorted version of HideoutPool for each NonNomad MFClan
             Dictionary<Clan, List<MinorFactionHideout>> priorityLists = new Dictionary<Clan, List<MinorFactionHideout>>();
             foreach (Clan c in NonNomadMFClans)
             {
@@ -251,35 +302,11 @@ namespace ImprovedMinorFactions
                 priorityLists[c] = priorityList;
             }
 
-            // dish out hideouts
-            while (!hideoutPool.IsEmpty())
-            {
-                HashSet<Clan> satisfiedClans = new HashSet<Clan>();
-                foreach (var kvp in priorityLists)
-                {
-                    Clan mfClan = kvp.Key;
-                    
-                    HashSet<MinorFactionHideout> mfhsToRemoveFromPriorityList = new HashSet<MinorFactionHideout>();
-                    foreach(var mfh in kvp.Value)
-                    {
-                        mfhsToRemoveFromPriorityList.Add(mfh);
-                        if (hideoutPool.Contains(mfh))
-                        {
-                            AssignHideoutToClan(mfClan, mfh);
-                            hideoutPool.Remove(mfh);
-                            numHideoutsToGive[mfClan]--;
-                            break;
-                        }
-                    }
-                    kvp.Value.RemoveAll(mfh => mfhsToRemoveFromPriorityList.Contains(mfh));
-                    if (numHideoutsToGive[mfClan] == 0)
-                        satisfiedClans.Add(mfClan);
-                }
-
-                // remove clans that got all the hideouts they needed
-                foreach (Clan c  in satisfiedClans)
-                    priorityLists.Remove(c);
-            }
+            // assign hideouts to clans with existing hideouts
+            AssignHideoutsForList(hideoutAssignedNonNomadClans.ToList(), ref hideoutPool,
+                ref numHideoutsToGive, priorityLists);
+            // assign hideouts for others
+            AssignHideoutsForList(NonNomadMFClans, ref hideoutPool, ref numHideoutsToGive, priorityLists);
         }
 
         // activates 1 hideout for every Minor Faction if they have no currently active hideouts
