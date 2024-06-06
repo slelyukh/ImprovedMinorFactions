@@ -43,7 +43,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         {
             if (party.MapFaction.IsMinorFaction)
             {
-                // print something
+                // debug print InformationManager.DisplayMessage(new InformationMessage("WAWAWA"));
             }
         }
 

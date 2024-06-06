@@ -463,6 +463,7 @@ namespace ImprovedMinorFactions
             }
                 
             _mfData.Remove(destroyedClan);
+            ReassignHideouts();
         }
 
         public void RegisterClanForPlayerWarOnEndingMercenaryContract(Clan minorFaction)

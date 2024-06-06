@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>0.2.3</Version>
+    <Version>0.3.0</Version>
     <TargetFrameworks>net472;net6</TargetFrameworks>
     <Platforms>x64</Platforms>
     <LangVersion>10.0</LangVersion>
@@ -72,5 +72,9 @@
     <PackageReference Include="Bannerlord.BuildResources" Version="1.1.0.104" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
     <PackageReference Include="BUTR.Harmony.Analyzer" Version="1.0.1.50" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
   </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Improved Minor Factions (AD1259)\bin\Win64_Shipping_Client&quot; /Y&#xD;&#xA;xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\ImprovedMinorFactions (CE)\bin\Win64_Shipping_Client&quot; /Y&#xD;&#xA;xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Improved Minor Factions (No Map)\bin\Win64_Shipping_Client&quot; /Y" />
+  </Target>
 
 </Project>
