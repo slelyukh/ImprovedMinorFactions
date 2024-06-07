@@ -171,7 +171,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             if (curSettlement.OwnerClan.IsNomad)
             {
                 PrepareForBattle();
-                CampaignMission.OpenBattleMission(Helpers.GetMFHideout(curSettlement).SceneName, true);
+                CampaignMission.OpenBattleMission(Helpers.GetMFHideout(curSettlement)!.SceneName, true);
                 return;
             }
 
@@ -491,7 +491,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             if (mfClan.IsUnderMercenaryService)
             {
                 ChangeRelationAction.ApplyPlayerRelation(mfClan.Leader, -20);
-                IMFManager.Current.RegisterClanForPlayerWarOnEndingMercenaryContract(mfClan);
+                IMFManager.Current!.RegisterClanForPlayerWarOnEndingMercenaryContract(mfClan);
             }
             else
             {

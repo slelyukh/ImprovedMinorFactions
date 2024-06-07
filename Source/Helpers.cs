@@ -12,7 +12,7 @@ namespace ImprovedMinorFactions
 {
     public static class Helpers
     {
-        internal static bool IsMFHideout(Settlement s)
+        internal static bool IsMFHideout(Settlement? s)
         {
             return s != null && GetMFHideout(s) != null;
         }
@@ -78,7 +78,7 @@ namespace ImprovedMinorFactions
             return Clan.PlayerClan.GetRelationWithClan(minorFaction) >= IMFModels.MinRelationToBeMFHFriend;
         }
 
-        internal static MinorFactionHideout? GetMFHideout(Settlement s)
+        internal static MinorFactionHideout? GetMFHideout(Settlement? s)
         {
             return s?.SettlementComponent as MinorFactionHideout;
         }
@@ -169,6 +169,9 @@ namespace ImprovedMinorFactions
             return minorFaction.BasicTroop.IsMounted;
         }
 
-
+        internal static bool HasMFHideout(Clan clan)
+        {
+            return (IMFManager.Current!.GetClanMFData(clan)?.Hideouts.Count ?? 0) > 0;
+        }
     }
 }

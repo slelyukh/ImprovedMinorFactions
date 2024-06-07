@@ -167,14 +167,14 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{=R3fkc5wSH}You asked {COMPANION.LINK} to deliver at least {WANTED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} to " +
+                    TextObject text = new TextObject("{=R3fkc5wSH}You asked {COMPANION.LINK} to deliver at least {WANTED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} to " +
                         "{ISSUE_GIVER.LINK}. They should rejoin your party in {RETURN_DAYS} days.");
-                    setTextTroopDescriptions(textObject);
-                    textObject.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject);
-                    textObject.SetCharacterProperties("COMPANION", base.AlternativeSolutionHero.CharacterObject);
-                    textObject.SetTextVariable("WANTED_RECRUIT_AMOUNT", this.RequestedRecruitCount);
-                    textObject.SetTextVariable("RETURN_DAYS", base.GetTotalAlternativeSolutionDurationInDays());
-                    return textObject;
+                    setTextTroopDescriptions(text);
+                    text.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject);
+                    text.SetCharacterProperties("COMPANION", base.AlternativeSolutionHero.CharacterObject);
+                    text.SetTextVariable("WANTED_RECRUIT_AMOUNT", this.RequestedRecruitCount);
+                    text.SetTextVariable("RETURN_DAYS", base.GetTotalAlternativeSolutionDurationInDays());
+                    return text;
                 }
             }
 

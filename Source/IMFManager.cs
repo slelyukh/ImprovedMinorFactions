@@ -52,9 +52,9 @@ namespace ImprovedMinorFactions
             _LoadedMFHideouts[mfh.StringId] = mfh;
         }
 
-        public MinorFactionHideout GetLoadedMFHideout(string stringId)
+        public MinorFactionHideout? GetLoadedMFHideout(string stringId)
         {
-            MinorFactionHideout mfh = null;
+            MinorFactionHideout? mfh = null;
             _LoadedMFHideouts.TryGetValue(stringId, out mfh);
             return mfh;
         }
@@ -393,7 +393,7 @@ namespace ImprovedMinorFactions
                     oldHideout.MoveHideoutsNomad(newHideout);
             } catch (KeyNotFoundException ex)
             {
-                InformationManager.DisplayMessage(new InformationMessage("IMF ERROR: Somehow we tried to clear a hideout not in MFHManager._mfData.", Colors.Red));
+                InformationManager.DisplayMessage(new InformationMessage($"IMF ERROR: Somehow we tried to clear a hideout not in MFHManager._mfData. {ex}", Colors.Red));
             }
             
         }
@@ -493,7 +493,7 @@ namespace ImprovedMinorFactions
             get => this._hideouts;
         }
 
-        public static IMFManager Current { get; set; }
+        public static IMFManager? Current { get; set; }
 
         private Dictionary<string, MinorFactionHideout> _LoadedMFHideouts;
 

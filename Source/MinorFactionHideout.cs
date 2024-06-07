@@ -58,18 +58,21 @@ namespace ImprovedMinorFactions
         private void OnLoad()
         {
             IMFManager.InitManagerIfNone();
-            IMFManager.Current.AddLoadedMFHideout(this);
+            IMFManager.Current!.AddLoadedMFHideout(this);
         }
 
         public void ActivateHideoutFirstTime()
         {
-            if (IMFManager.Current.GetActiveHideoutsOfClan(this.OwnerClan).Contains(this))
+            IMFManager.InitManagerIfNone();
+            if (IMFManager.Current!.GetActiveHideoutsOfClan(this.OwnerClan).Contains(this))
             {
                 InformationManager.DisplayMessage(new InformationMessage($"{this.Name} Double Activated!!!!", Color.Black));
                 throw new System.Exception("double clan activation");
             }
 
             var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
+            if (notable1 == null)
+                return;
             var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
             notable1.IsMinorFactionHero = true;
             notable2.IsMinorFactionHero = true;
