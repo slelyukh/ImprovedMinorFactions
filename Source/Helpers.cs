@@ -22,7 +22,7 @@ namespace ImprovedMinorFactions
         internal static bool IsSingleHideoutMF(Clan c)
         {
             IMFManager.InitManagerIfNone();
-            return c!= null && IMFManager.Current.IsFullHideoutOccupationMF(c);
+            return c!= null && IMFManager.Current!.IsFullHideoutOccupationMF(c);
         }
 
         internal static List<TooltipProperty> GetVillageOrMFHideoutMilitiaTooltip(Settlement s)
@@ -149,12 +149,12 @@ namespace ImprovedMinorFactions
 
         internal static void setPrivateField<I, V>(I instance, string field, V value)
         {
-            FieldInfo fieldInfo = typeof(I).GetField(field, BindingFlags.NonPublic | BindingFlags.Instance);
-            fieldInfo.SetValue(instance, value);
+            FieldInfo fieldInfo = typeof(I)!.GetField(field, BindingFlags.NonPublic | BindingFlags.Instance)!;
+            fieldInfo!.SetValue(instance, value);
         }
 
         // If method is static use null for instance and provide a type
-        internal static object? CallPrivateMethod(object? instance, string methodName, object[] args, Type type = null)
+        internal static object? CallPrivateMethod(object? instance, string methodName, object[] args, Type? type = null)
         {
             MethodInfo? method;
             if (type == null)

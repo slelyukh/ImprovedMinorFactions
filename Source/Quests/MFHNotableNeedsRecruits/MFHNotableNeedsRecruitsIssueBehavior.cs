@@ -265,7 +265,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                 return _IssueFrequency;
             }
 
-            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero relationHero, out SkillObject skill)
+            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero? relationHero, out SkillObject? skill)
             {
                 flag = PreconditionFlags.None;
                 relationHero = null;
@@ -277,12 +277,12 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     return false;
                 }
 
-                if (issueGiver.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest)
+                if (issueGiver!.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest)
                 {
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
                 }
-                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction)
+                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero!.MapFaction)
                     || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
                 {
                     flag |= PreconditionFlags.AtWar;
@@ -662,8 +662,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     new Tuple<TraitObject, int>(DefaultTraits.Honor, PlayerHonorBonusOnSuccess)
                 });
                 var mfHideout = Helpers.GetMFHideout(base.QuestGiver.CurrentSettlement);
-                mfHideout.Hearth += QuestSettlementHearthBonusOnSuccess;
-                mfHideout.Settlement.Militia += QuestSettlementMilitiaBonusOnSuccess;
+                mfHideout!.Hearth += QuestSettlementHearthBonusOnSuccess;
+                mfHideout!.Settlement.Militia += QuestSettlementMilitiaBonusOnSuccess;
                 ChangeRelationAction.ApplyPlayerRelation(QuestClan().Leader, ClanRelationBonusOnSuccess);
                 GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero, this._rewardGold, false);
                 base.QuestGiver.AddPower(QuestGiverNotablePowerBonusOnSuccess);

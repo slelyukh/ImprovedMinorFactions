@@ -60,9 +60,9 @@ namespace ImprovedMinorFactions.Patches
         static void Postfix(Settlement __instance, MBObjectManager objectManager, XmlNode node)
         {
             MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
-            if (mfHideout == null)
+            if (mfHideout == null || node == null)
                 return;
-            string mfClanId = node.Attributes.GetNamedItem("owner").Value.Replace("Faction.", "");
+            string mfClanId = node!.Attributes!.GetNamedItem("owner")!.Value!.Replace("Faction.", "");
 
             // manual fix of MFHideouts not saving properly bug
             if (IMFManager.Current != null)
@@ -73,7 +73,7 @@ namespace ImprovedMinorFactions.Patches
                 {
                     if (child.Name != "Components")
                         continue;
-                    XmlNode mfhNode = child.FirstChild;
+                    XmlNode mfhNode = child.FirstChild!;
                     settlementMfh.Deserialize(MBObjectManager.Instance, mfhNode);
                     settlementMfh.AfterInitialized();
                 }

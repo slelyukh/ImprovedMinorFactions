@@ -194,7 +194,7 @@ namespace ImprovedMinorFactions
         // Transfer ownership of an mfh from one clan to another or do nothing.
         private void AssignHideoutToClan(Clan newOwner, MinorFactionHideout mfh)
         {
-            Clan oldOwner = mfh.OwnerClan;
+            Clan oldOwner = mfh!.OwnerClan!;
             if (oldOwner == newOwner)
                 return;
             if (mfh.IsActiveOrScheduled)
@@ -225,12 +225,16 @@ namespace ImprovedMinorFactions
                     List<MinorFactionHideout>? priorityList = null;
                     priorityLists.TryGetValue(mfClan, out priorityList);
 
+                    if (priorityList == null)
+                        continue;
+
                     if (numHideoutsToGive[mfClan] == 0)
                         satisfiedClans.Add(mfClan);
-                    if (satisfiedClans.Contains(mfClan)) continue;
+                    if (satisfiedClans.Contains(mfClan)) 
+                        continue;
 
                     HashSet<MinorFactionHideout> mfhsToRemoveFromPriorityList = new HashSet<MinorFactionHideout>();
-                    foreach (var mfh in priorityList)
+                    foreach (var mfh in priorityList!)
                     {
                         mfhsToRemoveFromPriorityList.Add(mfh);
                         if (hideoutPool.Contains(mfh))
@@ -357,7 +361,7 @@ namespace ImprovedMinorFactions
 
         public MFData? GetClanMFData(Clan c)
         {
-            MFData mfData = null;
+            MFData? mfData = null;
             _mfData?.TryGetValue(c, out mfData);
             return mfData;
         }
@@ -483,9 +487,9 @@ namespace ImprovedMinorFactions
             }
         }
 
-        internal bool IsFullHideoutOccupationMF(Clan c)
+        internal bool IsFullHideoutOccupationMF(Clan? c)
         {
-            return _mfData.ContainsKey(c) && _mfData[c].NumTotalHideouts == _mfData[c].NumActiveHideouts;
+            return c != null && _mfData.ContainsKey(c) && _mfData[c].NumTotalHideouts == _mfData[c].NumActiveHideouts;
         }
 
         internal MBReadOnlyList<MinorFactionHideout> AllMFHideouts

@@ -205,7 +205,7 @@ namespace ImprovedMinorFactions
             int loopCounter = 0;
             while (count > 0 && loopCounter < 20)
             {
-                CharacterObject troopToUpgrade = null;
+                CharacterObject? troopToUpgrade = null;
                 loopCounter++;
 
                 // TODO: randomly choose troop to upgrade
@@ -295,7 +295,7 @@ namespace ImprovedMinorFactions
         }
 
         // Hideout copypasta
-        public PartyBase GetNextDefenderParty(ref int partyIndex, MapEvent.BattleTypes battleType)
+        public PartyBase? GetNextDefenderParty(ref int partyIndex, MapEvent.BattleTypes battleType)
         {
             partyIndex++;
             if (partyIndex == 0)
@@ -319,7 +319,7 @@ namespace ImprovedMinorFactions
 
         public IFaction MapFaction
         {
-            get => _ownerclan.MapFaction;
+            get => _ownerclan!.MapFaction;
         }
 
         public bool IsSpotted
@@ -361,13 +361,13 @@ namespace ImprovedMinorFactions
 
         public override void Deserialize(MBObjectManager objectManager, XmlNode node)
         {
-            base.BackgroundCropPosition = float.Parse(node.Attributes.GetNamedItem("background_crop_position").Value);
-            base.BackgroundMeshName = node.Attributes.GetNamedItem("background_mesh").Value;
-            base.WaitMeshName = node.Attributes.GetNamedItem("wait_mesh").Value;
+            base.BackgroundCropPosition = float.Parse(node!.Attributes!.GetNamedItem("background_crop_position")!.Value!);
+            base.BackgroundMeshName = node!.Attributes!.GetNamedItem("background_mesh")!.Value;
+            base.WaitMeshName = node!.Attributes!.GetNamedItem("wait_mesh")!.Value;
             base.Deserialize(objectManager, node);
-            if (node.Attributes.GetNamedItem("scene_name") != null)
+            if (node!.Attributes!.GetNamedItem("scene_name") != null)
             {
-                this.SceneName = node.Attributes.GetNamedItem("scene_name").InnerText;
+                this.SceneName = node!.Attributes!.GetNamedItem("scene_name")!.InnerText;
             }
         }
 
@@ -375,7 +375,7 @@ namespace ImprovedMinorFactions
         {
             get
             {
-                return IMFModels.GetMilitiaChange(this.Settlement);
+                return IMFModels.GetMilitiaChange(this);
             }
         }
 
@@ -414,7 +414,7 @@ namespace ImprovedMinorFactions
         {
             get
             {
-                return IMFModels.GetHearthChange(this.Settlement, true);
+                return IMFModels.GetHearthChange(this, true);
             }
         }
 

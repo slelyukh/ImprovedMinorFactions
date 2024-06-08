@@ -50,13 +50,13 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         private void OnClanDestroyed(Clan destroyedClan)
         {
             if (destroyedClan.IsMinorFaction)
-                IMFManager.Current.RemoveClan(destroyedClan);
+                IMFManager.Current!.RemoveClan(destroyedClan);
         }
 
         private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification = true)
         {
             if (clan.IsMinorFaction && detail == ChangeKingdomAction.ChangeKingdomActionDetail.LeaveAsMercenary)
-                IMFManager.Current.DeclareWarOnPlayerIfNeeded(clan);
+                IMFManager.Current!.DeclareWarOnPlayerIfNeeded(clan);
         }
 
         private void OnMFHideoutSpotted(PartyBase party, PartyBase mfHideoutParty)
@@ -197,7 +197,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             ArrangeHideoutTroopCountsForMission();
             GameMenu.SwitchToMenu("mf_hideout_place");
             var mfHideout = Helpers.GetMFHideout(curSettlement);
-            if (!Helpers.IsMFHideout(curSettlement))
+            if (mfHideout == null)
                 return;
             mfHideout.UpdateNextPossibleAttackTime();
             if (PlayerEncounter.IsActive)
@@ -509,7 +509,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             PrepareForBattle();
 
             var mfHideout = Helpers.GetMFHideout(Settlement.CurrentSettlement);
-            CampaignMission.OpenHideoutBattleMission(mfHideout.SceneName, playerTroops.ToFlattenedRoster());
+            CampaignMission.OpenHideoutBattleMission(mfHideout!.SceneName, playerTroops.ToFlattenedRoster());
         }
 
         private bool CanChangeStatusOfTroop(CharacterObject character)
@@ -537,14 +537,14 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         {
             AddGameMenus(campaignGameStarter);
             IMFManager.InitManagerIfNone();
-            IMFManager.Current.ActivateAllFactionHideouts();
+            IMFManager.Current!.ActivateAllFactionHideouts();
         }
 
         public void OnGameLoaded(CampaignGameStarter campaignGameStarter)
         {
             AddGameMenus(campaignGameStarter);
             IMFManager.InitManagerIfNone();
-            IMFManager.Current.ActivateAllFactionHideouts();
+            IMFManager.Current!.ActivateAllFactionHideouts();
         }
     }
 

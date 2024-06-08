@@ -90,7 +90,7 @@ namespace ImprovedMinorFactions.Source.Patches
                 num += ((num2 > 0) ? num2 : 100);
             }
 
-            CharacterObject template = null;
+            CharacterObject? template = null;
             int num3 = settlement.RandomIntWithSeed((uint)settlement.Notables.Count, 1, num);
             foreach (CharacterObject characterObject2 in enumerable)
             {
@@ -104,7 +104,7 @@ namespace ImprovedMinorFactions.Source.Patches
             }
 
             Hero hero = HeroCreator.CreateSpecialHero(template, settlement, null, null, -1);
-            CultureObject hideoutCulture = forcedHomeSettlement.Culture;
+            CultureObject hideoutCulture = forcedHomeSettlement!.Culture;
             // Give Darshi, Nord, and Vakken MFs correct notable names (their templates have incorrect names)
             // NOT copy/pasted
             if (Helpers.IsMinorCulture(hideoutCulture))
@@ -116,7 +116,7 @@ namespace ImprovedMinorFactions.Source.Patches
                     nameList = hideoutCulture.MaleNameList;
 
                 TextObject firstName = nameList.GetRandomElement();
-                TextObject fullName = (TextObject)Helpers.CallPrivateMethod(NameGenerator.Current, "GenerateHeroFullName", new object[] { hero, firstName, true });
+                TextObject fullName = (TextObject)Helpers.CallPrivateMethod(NameGenerator.Current, "GenerateHeroFullName", new object[] { hero, firstName, true })!;
                 hero.SetName(fullName, firstName);
             }
             // NOT copy/pasted

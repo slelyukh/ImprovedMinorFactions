@@ -9,8 +9,8 @@ namespace ImprovedMinorFactions.Patches
     [HarmonyPatch(typeof(GameTexts))]
     internal class GameTextsPatches
     {
-        private static readonly FieldInfo get_GameTextManager = typeof(GameTexts)
-            .GetField("_gameTextManager", BindingFlags.Static | BindingFlags.NonPublic);
+        private static readonly FieldInfo get_GameTextManager = typeof(GameTexts)!
+            .GetField("_gameTextManager", BindingFlags.Static | BindingFlags.NonPublic)!;
 
         [HarmonyPatch(nameof(GameTexts.FindText))]
         [HarmonyPrefix]

@@ -22,12 +22,15 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 {
     public class NearbyMFHideoutIssueBehavior : CampaignBehaviorBase
     {
-        private Settlement FindSuitableHideout(Hero issueOwner)
+        private Settlement? FindSuitableHideout(Hero issueOwner)
         {
-            Settlement result = null;
+            Settlement? result = null;
             float minDistance = float.MaxValue;
             IMFManager.InitManagerIfNone();
-            foreach (var mfHideout in (from mfh in IMFManager.Current.AllMFHideouts where mfh.IsActive && Helpers.IsEnemyOfMinorFaction(issueOwner.MapFaction, mfh.OwnerClan) select mfh))
+            foreach (var mfHideout in (
+                from mfh in IMFManager.Current!.AllMFHideouts 
+                where mfh.IsActive && Helpers.IsEnemyOfMinorFaction(issueOwner.MapFaction, mfh.OwnerClan) 
+                select mfh))
             {
                 float distance = mfHideout.Settlement.GatePosition.Distance(issueOwner.GetMapPoint().Position2D);
                 if (distance <= NearbyHideoutMaxDistance 
@@ -45,7 +48,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
         {
             if (this.ConditionsHold(hero))
             {
-                Settlement settlement = this.FindSuitableHideout(hero);
+                Settlement? settlement = this.FindSuitableHideout(hero);
                 if (settlement != null)
                 {
                     Campaign.Current.IssueManager.AddPotentialIssueData(
@@ -66,7 +69,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
         private IssueBase OnIssueSelected(in PotentialIssueData pid, Hero issueOwner)
         {
-            return new NearbyMFHideoutIssue(issueOwner, pid.RelatedObject as Settlement);
+            return new NearbyMFHideoutIssue(issueOwner, (pid.RelatedObject as Settlement)!);
         }
 
         private bool ConditionsHold(Hero issueGiver)
@@ -74,7 +77,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             return issueGiver.IsNotable && issueGiver.IsHeadman && issueGiver.CurrentSettlement != null && issueGiver.CurrentSettlement.Village.Bound.Town.Security <= 50f;
         }
 
-        private void OnIssueUpdated(IssueBase issue, IssueBase.IssueUpdateDetails details, Hero issueSolver = null)
+        private void OnIssueUpdated(IssueBase issue, IssueBase.IssueUpdateDetails details, Hero? issueSolver = null)
         {
         }
 
@@ -222,9 +225,9 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             protected override float GetIssueEffectAmountInternal(IssueEffect issueEffect)
             {
                 if (issueEffect == DefaultIssueEffects.SettlementProsperity)
-                    return -0.3f * (Helpers.GetMFHideout(_targetHideout).Hearth / 300);
+                    return -0.3f * (Helpers.GetMFHideout(_targetHideout)!.Hearth / 300);
                 if (issueEffect == DefaultIssueEffects.SettlementSecurity)
-                    return -0.6f * (Helpers.GetMFHideout(_targetHideout).Hearth / 300);
+                    return -0.6f * (Helpers.GetMFHideout(_targetHideout)!.Hearth / 300);
                 return 0f;
             }
 
@@ -274,7 +277,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 });
                 GainRenownAction.Apply(Hero.MainHero, 1f);
                 MFHideoutCampaignBehavior.ApplyHideoutRaidConsequences(_targetHideout);
-                IMFManager.Current.ClearHideout(Helpers.GetMFHideout(_targetHideout), DeactivationReason.Raid);
+                IMFManager.Current!.ClearHideout(Helpers.GetMFHideout(_targetHideout)!, DeactivationReason.Raid);
             }
 
             protected override void AlternativeSolutionEndWithFailureConsequence()
@@ -303,7 +306,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 return NearbyHideoutIssueFrequency;
             }
 
-            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flags, out Hero relationHero, out SkillObject skill)
+            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flags, out Hero? relationHero, out SkillObject? skill)
             {
                 flags = PreconditionFlags.None;
                 relationHero = null;
@@ -314,13 +317,13 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                     return false;
                 }
                     
-                if (issueGiver.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
+                if (issueGiver!.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest
+                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero!.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
                 {
                     flags |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
                 }
-                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction))
+                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero!.MapFaction))
                 {
                     flags |= PreconditionFlags.AtWar;
                 }
@@ -329,7 +332,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
             public override bool IssueStayAliveConditions()
             {
-                return Helpers.GetMFHideout(this._targetHideout).IsActive 
+                return Helpers.GetMFHideout(this._targetHideout)!.IsActive 
                     && base.IssueOwner.CurrentSettlement.IsVillage 
                     && !base.IssueOwner.CurrentSettlement.IsRaided 
                     && !base.IssueOwner.CurrentSettlement.IsUnderRaid 
@@ -520,7 +523,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             private void OnQuestAccepted()
             {
                 base.StartQuest();
-                Helpers.GetMFHideout(this._targetHideout).IsSpotted = true;
+                Helpers.GetMFHideout(this._targetHideout)!.IsSpotted = true;
                 this._targetHideout.IsVisible = true;
                 base.AddTrackedObject(this._targetHideout);
                 QuestHelper.AddMapArrowFromPointToTarget(new TextObject("{=xpsQyPaV}Direction to Hideout"), this._questSettlement.Position2D, this._targetHideout.Position2D, 5f, 0.1f);

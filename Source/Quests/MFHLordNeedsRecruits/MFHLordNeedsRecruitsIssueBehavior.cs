@@ -259,7 +259,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                 return _IssueFrequency;
             }
 
-            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero relationHero, out SkillObject skill)
+            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero? relationHero, out SkillObject? skill)
             {
                 flag = PreconditionFlags.None;
                 relationHero = null;
@@ -275,7 +275,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
                 }
-                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction)
+                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero!.MapFaction)
                     || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.Clan))
                 {
                     flag |= PreconditionFlags.AtWar;

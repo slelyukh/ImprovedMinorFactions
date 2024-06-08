@@ -20,7 +20,7 @@ namespace ImprovedMinorFactions.Patches
         {
             IMFManager.InitManagerIfNone();
 
-            IMFManager.Current._allMFHideouts =
+            IMFManager.Current!._allMFHideouts =
                 from x in settlements
                 where Helpers.IsMFHideout(x.Item1)
                 select x;
@@ -34,7 +34,7 @@ namespace ImprovedMinorFactions.Patches
 
             foreach (var nameplate in mfhNameplates)
             {
-                if (!Helpers.GetMFHideout(nameplate.Settlement).IsSpotted)
+                if (!Helpers.GetMFHideout(nameplate.Settlement)!.IsSpotted)
                     __instance.Nameplates.Remove(nameplate);
             }
         }

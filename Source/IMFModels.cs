@@ -8,39 +8,39 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
+using static ImprovedMinorFactions.IMFModels;
 
 namespace ImprovedMinorFactions
 {
     internal static class IMFModels
     {
-        public static float GetDailyVolunteerProductionProbability(Hero hero, int index, Settlement settlement)
+        public static float GetDailyVolunteerProductionProbability(Hero hero, int index, MinorFactionHideout mfh)
         {
-            float num = 0.7f * (Helpers.GetMFHideout(settlement).Hearth / 400);
+            float num = 0.7f * (mfh.Hearth / 400);
             return 0.75f * MathF.Clamp(MathF.Pow(num, (float)(index + 1)), 0f, 1f);
         }
 
         // TODO: maybe increase hearths upon certain actions such as attacking a party for bandits, etc
-        public static ExplainedNumber GetHearthChange(Settlement settlement, bool includeDescriptions = false)
+        public static ExplainedNumber GetHearthChange(MinorFactionHideout mfh, bool includeDescriptions = false)
         {
-            var mfHideout = Helpers.GetMFHideout(settlement);
             var eNum = new ExplainedNumber(0f, includeDescriptions, null);
-            eNum.Add((mfHideout.Hearth < 300f) ? 0.6f : ((mfHideout.Hearth < 600f) ? 0.4f : 0.2f), BaseText);
+            eNum.Add((mfh.Hearth < 300f) ? 0.6f : ((mfh.Hearth < 600f) ? 0.4f : 0.2f), BaseText);
             return eNum;
 
         }
 
-        public static ExplainedNumber GetMilitiaChange(Settlement settlement, bool includeDescriptions = false)
+        public static ExplainedNumber GetMilitiaChange(MinorFactionHideout mfh, bool includeDescriptions = false)
         {
             var eNum = new ExplainedNumber(0f, includeDescriptions);
-            if (settlement.OwnerClan == null)
+            if (mfh.OwnerClan == null)
                 return eNum;
 
-            if (settlement.OwnerClan.IsNomad)
+            if (mfh.OwnerClan.IsNomad)
                eNum.Add(0.25f, BaseText);
             else
                 eNum.Add(0.05f, BaseText);
 
-            eNum.Add((Helpers.GetMFHideout(settlement)).Hearth * 0.0005f, FromHearthsText);
+            eNum.Add(mfh.Hearth * 0.0005f, FromHearthsText);
             return eNum;
         }
 
@@ -179,6 +179,65 @@ namespace ImprovedMinorFactions
             Any
         }
 
+        public static MFRelation GetRelationLevel(int relation)
+        {
+            switch (relation)
+            {
+                case >= 100:
+                    return MFRelation.Tier6;
+                case >= 80:
+                    return MFRelation.Tier5;
+                case >= 60:
+                    return MFRelation.Tier4;
+                case >= 40:
+                    return MFRelation.Tier3;
+                case >= 25:
+                    return MFRelation.Tier2;
+                case >= 15:
+                    return MFRelation.Tier1;
+                case >= -30:
+                    return MFRelation.Neutral;
+                default:
+                    return MFRelation.Enemy;
+            }
+        }
+
+        public static int MinRelationNeeded(MFRelation minRelationship)
+        {
+            switch (minRelationship)
+            {
+                case MFRelation.Tier6:
+                    return 100;
+                case MFRelation.Tier5:
+                    return 80;
+                case MFRelation.Tier4:
+                    return 60;
+                case MFRelation.Tier3:
+                    return 40;
+                case MFRelation.Tier2:
+                    return 25;
+                case MFRelation.Tier1:
+                    return 15;
+                case MFRelation.Neutral:
+                    return -30;
+                case MFRelation.Enemy:
+                    return -100;
+                default:
+                    return -100;
+            }
+        }
+
+        public enum MFRelation
+        {
+            Tier6,
+            Tier5,
+            Tier4,
+            Tier3,
+            Tier2,
+            Tier1,
+            Neutral,
+            Enemy,
+        }
 
         internal static CampaignTime NomadHideoutLifetime = CampaignTime.Days(45);
 

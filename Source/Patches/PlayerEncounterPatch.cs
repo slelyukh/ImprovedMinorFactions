@@ -28,8 +28,8 @@ namespace ImprovedMinorFactions.Patches
     [HarmonyPatch(typeof(PlayerEncounter), "StartBattleInternal")]
     public class StartBattleInternalPatch
     {
-        static bool Prefix(ref MapEvent __result, PlayerEncounter __instance,
-            ref PartyBase ____defenderParty, ref PartyBase ____attackerParty, ref MapEvent ____mapEvent)
+        static bool Prefix(ref MapEvent? __result, PlayerEncounter __instance,
+            ref PartyBase ____defenderParty, ref PartyBase ____attackerParty, ref MapEvent? ____mapEvent)
         {
             if (____mapEvent == null 
                 && ____defenderParty != null 
@@ -80,7 +80,7 @@ namespace ImprovedMinorFactions.Patches
 
             if (battleState == BattleState.AttackerVictory)
             {
-                IMFManager.Current.ClearHideout(mfHideout, DeactivationReason.Raid);
+                IMFManager.Current!.ClearHideout(mfHideout, DeactivationReason.Raid);
                 return false;
             }
             if (battleState == BattleState.None)
