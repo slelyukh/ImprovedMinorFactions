@@ -212,7 +212,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
             {
                 this._requestedCaravanCount = requestedCaravanCount;
                 this._extortedCaravanCount = 0;
-                this._rewardGold = RewardGold;
+                this._rewardGold = 0;
+                MBTextManager.SetTextVariable("MAFIA_EXTORTION_REWARD", this._rewardGold);
                 this._playerReachedRequestedAmount = false;
                 this._targetCaravans = new List<MobileParty>();
                 this._extortedCaravans = new List<MobileParty>();
@@ -272,7 +273,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                     {
                         if (mParty?.Position2D == null || !mParty.IsActive || !mParty.IsCaravan
                             || mParty.IsMainParty || mParty.IsDisbanding || mParty.MapFaction == Hero.MainHero.MapFaction
-                            || _extortedCaravans.Contains(mParty))
+                            || _extortedCaravans.Contains(mParty) || mParty.MapFaction == QuestGiver.MapFaction)
                             continue;
 
                         AddCaravanToPotentialTargets(mParty);
@@ -304,6 +305,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
             {
                 if (FactionManager.IsAtWarAgainstFaction(QuestGiver.MapFaction, Hero.MainHero.MapFaction))
                     base.CompleteQuestWithCancel(QuestCancelledDueToWarLog);
+
+                if (clan == QuestGiver.Clan)
+                    _targetCaravans.RemoveAll(caravan => caravan?.MapFaction == QuestGiver.MapFaction);
             }
 
             private void OnWarDeclared(IFaction faction1, IFaction faction2, DeclareWarAction.DeclareWarDetail detail)
@@ -364,10 +368,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                     && this._targetCaravans.Contains(MobileParty.ConversationParty);
             }
 
-            // TODO: use relative strength
+            // TODO: increase clan power if player attacks caravan for quest and increase extortion failure likelyhood if clan is weak
             private bool caravan_extortion_failure_on_condition()
             {
-                return CampaignTime.Now.IsDayTime;
+                return MobileParty.ConversationParty.GetTotalStrengthWithFollowers() > PartyBase.MainParty.MobileParty.GetTotalStrengthWithFollowers();
             }
 
             private void caravan_extortion_failure_on_consequence()
@@ -382,7 +386,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
 
             private bool caravan_extortion_success_on_condition()
             {
-                return CampaignTime.Now.IsNightTime;
+                return MobileParty.ConversationParty.GetTotalStrengthWithFollowers() <= PartyBase.MainParty.MobileParty.GetTotalStrengthWithFollowers();
             }
 
             private void caravan_extortion_success_on_consequence()
@@ -408,38 +412,39 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                     .Consequence(new ConversationSentence.OnConsequenceDelegate(this.QuestAcceptedConsequences))
                     .CloseDialog();
 
-                TextObject npcDiscussLine = new TextObject("{=!}{MFHIDEOUT_NEEDS_RECRUITS_QUEST_NOTABLE_DISCUSS}");
-                TextObject npcResponseLine = new TextObject("{=!}{MFHIDEOUT_NEEDS_RECRUITS_QUEST_NOTABLE_RESPONSE}");
-                bool changeDialogAfterTransfer = false;
                 this.DiscussDialogFlow = DialogFlow.CreateDialogFlow("quest_discuss")
                     .BeginNpcOptions()
-                    .NpcOption(new TextObject("{=BGgDjRcW}I think that's enough. Here is your payment."),
+                    .NpcOption(new TextObject("{=!}I see you have reminded quite a few caravans of the boundaries of our territory."),
                         () => Hero.OneToOneConversationHero == this.QuestGiver && this._playerReachedRequestedAmount)
-                        .Consequence(delegate {
-                            this.ApplyQuestSuccessConsequences();
-                            this.CompleteQuestWithSuccess();
-                        })
-                        .CloseDialog()
-                    .NpcOption(new TextObject("{=1hpeeCJD}Have you found any good men?[ib:confident3]"), () => Hero.OneToOneConversationHero == this.QuestGiver)
-                    .BeginPlayerOptions()
-                    .PlayerOption(new TextObject("{=!}Yes, I have extorted some caravans for you."))
-                        .Condition(() => this._extortedCaravanCount >= this._requestedCaravanCount)
-
-                        .NpcLine(new TextObject("{=!}Great, here is your share of the profits"))
-                    .GotoDialogState("quest_discuss")
-                    .PlayerOption(new TextObject("{=PZqGagXt}No, not yet. I'm still looking for them."))
-                        .Condition(() => !this._playerReachedRequestedAmount & changeDialogAfterTransfer)
-                        .Consequence(delegate {
-                            changeDialogAfterTransfer = false;
-                        })
-                        .NpcLine(new TextObject("{=L1JyetPq}I am glad to hear that.[ib:closed2]"))
-                        .CloseDialog()
-                    .PlayerOption(new TextObject("{=OlOhuO7X}No thank you. Good day to you."))
-                        .Condition(() => !this._playerReachedRequestedAmount && !changeDialogAfterTransfer)
-                        .CloseDialog()
+                        .BeginPlayerOptions()
+                        .PlayerOption(new TextObject("{=!}Yes, I have extorted some caravans for you. Here is your gold."))
+                            .Condition(() => Hero.MainHero.Gold >= this.QuestGiverExpectedGold)
+                            .NpcLine(new TextObject("{=!}Great, you can keep {MAFIA_EXTORTION_REWARD}{GOLD_ICON} of your profits.")
+                                                    .SetTextVariable("GOLD_ICON", "{=!}<img src=\"General\\Icons\\Coin@2x\" extend=\"8\">"))
+                            .Consequence(delegate {
+                                this.ApplyQuestSuccessConsequences();
+                                this.CompleteQuestWithSuccess();
+                            })
+                            .CloseDialog()
+                        .PlayerOption(new TextObject("{=!}Yes, but I would like to continue this job."))
+                            .Condition(() => Hero.MainHero.Gold >= this.QuestGiverExpectedGold)
+                            .NpcLine(new TextObject("{=!}I see you enjoy the life of a scoundrel. You can continue extorting for us but don't even consider keeping the profits..."))
+                            .GotoDialogState("hero_main_options")
+                        .PlayerOption(new TextObject("{=!}I have extorted them but don't have the money ready yet"))
+                            .Condition(() => Hero.OneToOneConversationHero == this.QuestGiver && Hero.MainHero.Gold < this.QuestGiverExpectedGold)
+                            .NpcLine(new TextObject("{=!}You spent your profits? You better muster up some gold soon if you want to keep your head on your shoulders!"))
+                            .CloseDialog()
                         .EndPlayerOptions()
                         .CloseDialog()
-                        .EndNpcOptions();
+                    .NpcOption(new TextObject("{=!}Have you been collecting protection fees on our behalf?[ib:confident3]"), 
+                                () => Hero.OneToOneConversationHero == this.QuestGiver && !this._playerReachedRequestedAmount)
+                        .BeginPlayerOptions()
+                        .PlayerOption(new TextObject("{=!}I am still working on it."))
+                            .NpcLine(new TextObject("{=!}Why are you wasting time talking to me then?"))
+                            .CloseDialog()
+                        .EndPlayerOptions()
+                    .CloseDialog()
+                    .EndNpcOptions();
             }
 
             public override TextObject Title
@@ -530,7 +535,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 });
 
                 ChangeRelationAction.ApplyPlayerRelation(this.QuestGiver, ClanRelationBonusOnSuccess);
-                GiveGoldAction.ApplyBetweenCharacters(this.QuestGiver, Hero.MainHero, this._rewardGold);
+                GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, this.QuestGiver, this.QuestGiverExpectedGold);
 
                 this.RelationshipChangeWithQuestGiver = QuestGiverRelationBonusOnSuccess;
             }
@@ -576,10 +581,21 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
             private void AddDestroyedCaravan(MobileParty caravan)
             {
                 this._extortedCaravanCount++;
+                this._rewardGold += MathF.Ceiling(SafePassagePrice * PlayerRewardPercentage);
+                MBTextManager.SetTextVariable("MAFIA_EXTORTION_REWARD", this._rewardGold);
                 this._questProgressLogTest!.UpdateCurrentProgress(this._extortedCaravanCount);
                 this._targetCaravans.Remove(caravan);
                 base.RemoveTrackedObject(caravan);
                 this._extortedCaravans.Add(caravan);
+                if (_extortedCaravanCount >= _requestedCaravanCount && this._playerReachedRequestedAmount == false)
+                {
+                    this._playerReachedRequestedAmount = true;
+                    MBInformationManager.AddQuickInformation(new TextObject("{=!} "));
+                    var description = new TextObject("{=!}You have extorted enough caravans for {QUEST_GIVER.LINK}. You can now deliver the earnings to {?QUEST_GIVER.GENDER}her{?}him{\\?}.");
+                    description.SetCharacterProperties("QUEST_GIVER", this.QuestGiver.CharacterObject);
+                    var title = new TextObject("{=!}{MINOR_FACTION} Extortion").SetTextVariable("MINOR_FACTION", this.QuestClan().Name);
+                    InformationManager.ShowInquiry(new InquiryData(title.ToString(), description.ToString(), true, false, "Ok", "", null, null));
+                }
             }
 
             protected override void HourlyTick() {}
@@ -591,7 +607,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
 
             public int QuestGiverExpectedGold
             {
-                get => SafePassagePrice * _requestedCaravanCount;
+                get => SafePassagePrice * MathF.Floor(_extortedCaravanCount * (1 - PlayerRewardPercentage));
             }
 
             private int PlayerRogueryBonusOnSuccess
