@@ -10,14 +10,9 @@ using TaleWorlds.SaveSystem;
 using TaleWorlds.Library;
 using System.Linq;
 using TaleWorlds.Localization;
-using static TaleWorlds.CampaignSystem.CampaignTime;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
-using Helpers;
-using TaleWorlds.CampaignSystem.Actions;
-using TaleWorlds.CampaignSystem.CharacterDevelopment;
-using TaleWorlds.MountAndBlade.GauntletUI.Widgets.Mission.NameMarker;
 
 namespace ImprovedMinorFactions
 {
@@ -227,8 +222,6 @@ namespace ImprovedMinorFactions
                     break;
                 }
             }
-            // if (loopCounter >= 20)
-            // InformationManager.DisplayMessage(new InformationMessage("UPGRADE MILITIA INFINITE LOOP"));
 
         }
 
@@ -294,7 +287,6 @@ namespace ImprovedMinorFactions
             yield break;
         }
 
-        // Hideout copypasta
         public PartyBase? GetNextDefenderParty(ref int partyIndex, MapEvent.BattleTypes battleType)
         {
             partyIndex++;
