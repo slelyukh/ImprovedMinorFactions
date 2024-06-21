@@ -13,7 +13,6 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
-using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.SaveSystem;
 using static ImprovedMinorFactions.IMFModels;
@@ -406,7 +405,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
             private const int IssueDuration = 15;
 
-            private const int QuestTimeLimit = 30;
+            private const int QuestTimeLimit = 20;
 
             [SaveableField(100)]
             private readonly Settlement _targetHideout;
@@ -531,6 +530,10 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 MBInformationManager.AddQuickInformation(setCommonTextVariables(
                     new TextObject("{=fMVPO1kzzz}{QUEST_GIVER.NAME} has marked the {HIDEOUT_NAME} on your map")));
                 base.AddLog(this._onQuestStartedLogText);
+
+                // Make sure the nomad camp doesn't move mid quest
+                if (_targetHideout.OwnerClan.IsNomad)
+                    Helpers.GetMFHideout(_targetHideout)!.ExtendNomadCampMigrationTimePastTime(this.QuestDueTime);
             }
 
             private void OnQuestSucceeded()

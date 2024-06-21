@@ -348,6 +348,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                     base.AddTrackedObject(QuestHideout());
                 }
                 this._questProgressLogTest = base.AddDiscreteLog(this.QuestStartedLogText, new TextObject("{=AJXiWK0TL1}Caravans Extorted"), this._extortedCaravanCount, this._requestedCaravanCount);
+
+                // Make sure the nomad camp is inhabited at least for 3 days after quest is done
+                if (QuestClan().IsNomad)
+                     Helpers.GetMFHideout(QuestHideout())!.ExtendNomadCampMigrationTimePastTime(this.QuestDueTime);
             }
 
             private void AddDialogs(CampaignGameStarter starter)

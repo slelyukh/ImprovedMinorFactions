@@ -317,13 +317,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
                     base.AddTrackedObject(village.Settlement);
                 }
 
-                var mfHideout = Helpers.GetMFHideout(QuestHideout());
-
                 // Make sure the nomad camp is inhabited at least for 3 days after quest is done
-                if (mfHideout!.ActivationTime + IMFModels.NomadHideoutLifetime < this.QuestDueTime)
-                {
-                    mfHideout!.ActivationTime = this.QuestDueTime - IMFModels.NomadHideoutLifetime + CampaignTime.Days(3);
-                }
+                Helpers.GetMFHideout(QuestHideout())!.ExtendNomadCampMigrationTimePastTime(this.QuestDueTime);
                 
                 InformationManager.DisplayMessage(new InformationMessage($"Quest due at {this.QuestDueTime}"));
             }

@@ -287,6 +287,15 @@ namespace ImprovedMinorFactions
             yield break;
         }
 
+        // makes sure nomad camp does not migrate before this time
+        public void ExtendNomadCampMigrationTimePastTime(CampaignTime time)
+        {
+            if (this.ActivationTime + IMFModels.NomadHideoutLifetime < time)
+            {
+                this.ActivationTime = time - IMFModels.NomadHideoutLifetime + CampaignTime.Days(3);
+            }
+        }
+
         public PartyBase? GetNextDefenderParty(ref int partyIndex, MapEvent.BattleTypes battleType)
         {
             partyIndex++;
