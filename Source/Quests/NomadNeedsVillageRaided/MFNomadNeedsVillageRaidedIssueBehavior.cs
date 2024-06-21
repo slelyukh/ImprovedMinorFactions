@@ -4,10 +4,8 @@ using static ImprovedMinorFactions.IMFModels;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Conversation;
-using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.Issues;
 using TaleWorlds.CampaignSystem.Map;
-using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
@@ -17,8 +15,6 @@ using TaleWorlds.SaveSystem;
 using MathF = TaleWorlds.Library.MathF;
 using TaleWorlds.CampaignSystem.Extensions;
 using TaleWorlds.CampaignSystem.MapEvents;
-using System.Linq;
-using System.IO.Ports;
 
 namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBehavior.cs
 {
@@ -35,16 +31,32 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
 
         private static bool ConditionsHold(Hero issueGiver)
         {
-            return issueGiver.IsLord
-                && issueGiver.Clan != null
+            if (issueGiver.IsNotable)
+            {
+                var issueGiverClan = issueGiver.CurrentSettlement?.OwnerClan;
+                return issueGiverClan != null
+                && issueGiverClan.IsMinorFaction
+                && !issueGiver.IsPrisoner
+                && issueGiverClan.IsNomad
+                && issueGiver.Gold > 2000
+                && Helpers.IsMFHideout(issueGiver.CurrentSettlement)
+                && issueGiverClan.IsUnderMercenaryService;
+
+            } else if (issueGiver.IsLord)
+            {
+                return issueGiver.Clan != null
                 && issueGiver.Clan.IsMinorFaction
                 && issueGiver.IsPartyLeader
                 && Helpers.HasMFHideout(issueGiver.Clan)
                 && !issueGiver.IsPrisoner
-                && issueGiver.Clan.IsNomad 
+                && issueGiver.Clan.IsNomad
                 && issueGiver.Gold > 2000
                 && Helpers.IsMFHideout(issueGiver.HomeSettlement)
                 && issueGiver.Clan.IsUnderMercenaryService;
+            } else
+            {
+                return false;
+            }
         }
 
         private const IssueBase.IssueFrequency _IssueFrequency = IssueBase.IssueFrequency.Common;
@@ -214,7 +226,18 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
 
             private Clan IssueClan()
             {
-                return base.IssueOwner.Clan;
+                if (base.IssueOwner.IsNotable)
+                {
+                    return base.IssueOwner.CurrentSettlement.OwnerClan;
+                }
+                else if (base.IssueOwner.IsLord)
+                {
+                    return base.IssueOwner.Clan;
+                }
+                else
+                {
+                    throw new Exception("Nomad needs village raided quest giver not notable or lord.");
+                }
             }
 
             private const int IssueAndQuestDuration = 30;
@@ -472,7 +495,15 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
 
             private Clan QuestClan()
             {
-                return base.QuestGiver.Clan;
+                if (base.QuestGiver.IsNotable)
+                {
+                    return base.QuestGiver.CurrentSettlement.OwnerClan;
+                } else if (base.QuestGiver.IsLord)
+                {
+                    return base.QuestGiver.Clan;
+                } else {
+                    throw new Exception("Nomad needs village raided quest giver not notable or lord.");
+                }
             }
 
             private int PlayerRogueryBonusOnSuccess

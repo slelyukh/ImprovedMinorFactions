@@ -45,8 +45,7 @@ namespace ImprovedMinorFactions.Source.Patches
             int maxIssues = MathF.Ceiling((float)numLords * 0.1f);
 
             // the constant is 0.2f in the original method
-            // TODO: change to 0.25
-            int minIssues = MathF.Floor((float)numLords * 0.9f);
+            int minIssues = MathF.Floor((float)numLords * 0.25f);
             float issueGenerationChance = MathF.Pow((1f - ((float)numOccupiedLords / (float)minIssues)), 2f) * 0.3f;
             if (minIssues > 0 
                 && numOccupiedLords < minIssues 

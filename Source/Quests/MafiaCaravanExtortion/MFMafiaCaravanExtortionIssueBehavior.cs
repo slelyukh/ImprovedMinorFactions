@@ -34,8 +34,21 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
 
         private static bool ConditionsHold(Hero issueGiver)
         {
-            return issueGiver.IsLord
-                && issueGiver.Clan != null
+            if (issueGiver.IsNotable)
+            {
+                var issueGiverClan = issueGiver.CurrentSettlement?.OwnerClan;
+                return issueGiverClan != null
+                && issueGiverClan.IsMinorFaction
+                && !issueGiver.IsPrisoner
+                && (issueGiver.Clan.IsMafia || issueGiver.Clan.StringId == "jawwal")
+                && issueGiver.Gold > 2000
+                && Helpers.IsMFHideout(issueGiver.CurrentSettlement)
+                && issueGiverClan.IsUnderMercenaryService;
+
+            }
+            else if (issueGiver.IsLord)
+            {
+                return issueGiver.Clan != null
                 && issueGiver.Clan.IsMinorFaction
                 && issueGiver.IsPartyLeader
                 && Helpers.HasMFHideout(issueGiver.Clan)
@@ -44,6 +57,11 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 && issueGiver.Gold > 2000
                 && Helpers.IsMFHideout(issueGiver.HomeSettlement)
                 && issueGiver.Clan.IsUnderMercenaryService;
+            }
+            else
+            {
+                return false;
+            }
         }
 
         private const IssueBase.IssueFrequency _IssueFrequency = IssueBase.IssueFrequency.Common;
@@ -198,7 +216,18 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
 
             private Clan IssueClan()
             {
-                return base.IssueOwner.Clan;
+                if (base.IssueOwner.IsNotable)
+                {
+                    return base.IssueOwner.CurrentSettlement.OwnerClan;
+                }
+                else if (base.IssueOwner.IsLord)
+                {
+                    return base.IssueOwner.Clan;
+                }
+                else
+                {
+                    throw new Exception("Nomad needs village raided quest giver not notable or lord.");
+                }
             }
 
             private const int IssueAndQuestDuration = 30;
@@ -642,7 +671,18 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
 
             private Clan QuestClan()
             {
-                return base.QuestGiver.Clan;
+                if (base.QuestGiver.IsNotable)
+                {
+                    return base.QuestGiver.CurrentSettlement.OwnerClan;
+                }
+                else if (base.QuestGiver.IsLord)
+                {
+                    return base.QuestGiver.Clan;
+                }
+                else
+                {
+                    throw new Exception("Mafia needs caravans extorted quest giver not notable or lord.");
+                }
             }
 
             public int QuestGiverExpectedGold
