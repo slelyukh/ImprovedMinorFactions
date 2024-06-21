@@ -186,7 +186,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
                 relationHero = null;
                 skill = null;
 
-                if ((issueGiver?.MapFaction ?? issueGiver?.Clan ?? Hero.MainHero?.MapFaction) == null
+                if ((issueGiver?.MapFaction ?? IssueClan() ?? Hero.MainHero?.MapFaction) == null
                     || !Helpers.IsMFHideout(issueGiver?.HomeSettlement))
                 {
                     return false;
@@ -198,7 +198,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
                     relationHero = issueGiver;
                 }
                 if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero!.MapFaction)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.Clan))
+                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, IssueClan()))
                 {
                     flag |= PreconditionFlags.AtWar;
                 }
@@ -303,7 +303,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
                 if (FactionManager.IsAtWarAgainstFaction(QuestGiver.MapFaction, Hero.MainHero.MapFaction))
                     base.CompleteQuestWithCancel(QuestCancelledDueToWarLog);
 
-                if (clan == QuestGiver.Clan)
+                if (clan == QuestClan())
                     _targetVillages.RemoveAll(village => village?.Settlement.MapFaction == QuestGiver.MapFaction);
             }
 

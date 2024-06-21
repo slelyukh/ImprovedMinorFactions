@@ -40,7 +40,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 return issueGiverClan != null
                 && issueGiverClan.IsMinorFaction
                 && !issueGiver.IsPrisoner
-                && (issueGiver.Clan.IsMafia || issueGiver.Clan.StringId == "jawwal")
+                && (issueGiverClan.IsMafia || issueGiverClan.StringId == "jawwal")
                 && issueGiver.Gold > 2000
                 && Helpers.IsMFHideout(issueGiver.CurrentSettlement)
                 && issueGiverClan.IsUnderMercenaryService;
@@ -179,7 +179,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 relationHero = null;
                 skill = null;
 
-                if ((issueGiver?.MapFaction ?? issueGiver?.Clan ?? Hero.MainHero?.MapFaction) == null 
+                if ((issueGiver?.MapFaction ?? IssueClan() ?? Hero.MainHero?.MapFaction) == null 
                     || !Helpers.IsMFHideout(issueGiver?.HomeSettlement))
                 {
                     return false;
@@ -191,7 +191,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                     relationHero = issueGiver;
                 }
                 if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero!.MapFaction)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.Clan))
+                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, IssueClan()))
                 {
                     flag |= PreconditionFlags.AtWar;
                 }
@@ -200,7 +200,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
 
             public override bool IssueStayAliveConditions()
             {
-                return base.IssueOwner.Clan.IsUnderMercenaryService && Helpers.IsMFHideout(base.IssueOwner.HomeSettlement)
+                return IssueClan().IsUnderMercenaryService && Helpers.IsMFHideout(base.IssueOwner.HomeSettlement)
                     && Helpers.GetMFHideout(base.IssueOwner.HomeSettlement)!.IsActive;
             }
 
@@ -346,7 +346,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 if (FactionManager.IsAtWarAgainstFaction(QuestGiver.MapFaction, Hero.MainHero.MapFaction))
                     base.CompleteQuestWithCancel(QuestCancelledDueToWarLog);
 
-                if (clan == QuestGiver.Clan)
+                if (clan == QuestClan())
                     _targetCaravans.RemoveAll(caravan => caravan?.MapFaction == QuestGiver.MapFaction);
             }
 
@@ -406,7 +406,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
 
             private bool caravan_extortion_on_condition()
             {
-                MBTextManager.SetTextVariable("EXTORTION_MINOR_FACTION", this.QuestGiver.Clan.Name);
+                MBTextManager.SetTextVariable("EXTORTION_MINOR_FACTION", QuestClan().Name);
                 return Hero.OneToOneConversationHero == null && MobileParty.ConversationParty != null 
                     && MobileParty.ConversationParty.IsCaravan 
                     && this._targetCaravans.Contains(MobileParty.ConversationParty);
