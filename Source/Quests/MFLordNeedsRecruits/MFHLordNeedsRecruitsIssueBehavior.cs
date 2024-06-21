@@ -16,6 +16,7 @@ using MathF = TaleWorlds.Library.MathF;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Party;
 using TaleWorlds.CampaignSystem.Encounters;
 using static TaleWorlds.CampaignSystem.Issues.ScoutEnemyGarrisonsIssueBehavior;
+using static ImprovedMinorFactions.IMFModels;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 {
@@ -61,6 +62,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
         }
 
         private const IssueBase.IssueFrequency _IssueFrequency = IssueBase.IssueFrequency.Common;
+
+        internal const MFRelation RelationLevelNeededForQuest = MFRelation.Neutral;
 
         public class MFHLordNeedsRecruitsIssue : IssueBase
         {
@@ -270,7 +273,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     return false;
                 }
 
-                if (issueGiver.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest)
+                if (issueGiver!.GetRelationWithPlayer() < MinRelationNeeded(RelationLevelNeededForQuest))
                 {
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;

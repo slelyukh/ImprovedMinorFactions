@@ -13,11 +13,9 @@ using TaleWorlds.CampaignSystem.Extensions;
 using MathF = TaleWorlds.Library.MathF;
 using TaleWorlds.CampaignSystem.Map;
 using TaleWorlds.CampaignSystem.Party;
-using HarmonyLib;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Library;
 using TaleWorlds.CampaignSystem.Encounters;
-using TaleWorlds.CampaignSystem.GameMenus;
 using static ImprovedMinorFactions.IMFModels;
 
 namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
@@ -226,10 +224,20 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, new Action<Hero, Hero, KillCharacterAction.KillCharacterActionDetail, bool>(this.OnHeroKilled));
                 CampaignEvents.WarDeclared.AddNonSerializedListener(this, new Action<IFaction, IFaction, DeclareWarAction.DeclareWarDetail>(this.OnWarDeclared));
                 CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, new Action<Clan, Kingdom, Kingdom, ChangeKingdomAction.ChangeKingdomActionDetail, bool>(this.OnClanChangedKingdom));
+                CampaignEvents.OnHideoutDeactivatedEvent.AddNonSerializedListener(this, new Action<Settlement>(this.OnHideoutCleared));
 
                 CampaignEvents.HourlyTickEvent.AddNonSerializedListener(this, new Action(this.OnHourlyTick));
                 CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(this.OnSessionLaunched));
                 CampaignEvents.MobilePartyDestroyed.AddNonSerializedListener(this, new Action<MobileParty, PartyBase>(this.OnMobilePartyDestroyed));
+            }
+
+            private void OnHideoutCleared(Settlement hideout)
+            {
+                if (this.QuestGiver.HomeSettlement == hideout)
+                {
+                    base.AddLog(this.QuestNPCClearedHideoutLog);
+                    base.CompleteQuestWithCancel();
+                }
             }
 
             private void AddCaravanToPotentialTargets(MobileParty caravan)
@@ -249,7 +257,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
             private void OnMobilePartyDestroyed(MobileParty mobileParty, PartyBase destroyerParty)
             {
                 if (destroyerParty == PartyBase.MainParty && mobileParty.IsCaravan && this._targetCaravans.Contains(mobileParty))
-                    this.AddDestroyedCaravan(mobileParty);
+                    this.AddExtortedCaravan(mobileParty);
             }
 
             public void OnSessionLaunched(CampaignGameStarter campaignGameStarter)
@@ -275,6 +283,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                             || mParty.IsMainParty || mParty.IsDisbanding || mParty.MapFaction == Hero.MainHero.MapFaction
                             || _extortedCaravans.Contains(mParty) || mParty.MapFaction == QuestGiver.MapFaction)
                             continue;
+
+                        if (mParty.Position2D.DistanceSquared(MobileParty.MainParty.Position2D) > _maxDistanceSquaredToHideoutForTargetCaravan)
+                            break;
 
                         AddCaravanToPotentialTargets(mParty);
                     }
@@ -393,7 +404,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
             {
                 GiveGoldAction.ApplyForPartyToCharacter(MobileParty.ConversationParty.Party, Hero.MainHero, SafePassagePrice);
                 BeHostileAction.ApplyMinorCoercionHostileAction(PartyBase.MainParty, MobileParty.ConversationParty.Party);
-                AddDestroyedCaravan(MobileParty.ConversationParty);
+                AddExtortedCaravan(MobileParty.ConversationParty);
 
                 if (PlayerEncounter.Current != null)
                 {
@@ -403,7 +414,6 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
 
             
 
-            // TODO: adapt
             protected override void SetDialogs()
             {
                 this.OfferDialogFlow = DialogFlow.CreateDialogFlow("issue_classic_quest_start")
@@ -472,12 +482,34 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 }
             }
 
-            private TextObject QuestSuccessLog
+            private TextObject QuestNPCClearedHideoutLog
+            {
+                get
+                {
+                    TextObject text = new TextObject("{=!}{HIDEOUT_NAME} was cleared by someone. Your agreement with {QUEST_GIVER.LINK} is canceled.")
+                        .SetTextVariable("{HIDEOUT_NAME}", this.QuestGiver.HomeSettlement?.Name);
+                    text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
+                    return text;
+                }
+            }
+
+            // TODO: is this success?
+            private TextObject QuestTaskCompletedLog
             {
                 get
                 {
                     TextObject text = new TextObject("{=N79TpDDI0n}You have extorted caravans for {QUEST_GIVER.LINK} as promised. Go to {?QUEST_GIVER.GENDER}her{?}him{\\?}" +
                         " to deliver the gold you have collected.");
+                    text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
+                    return text;
+                }
+            }
+
+            private TextObject QuestSuccessLog
+            {
+                get
+                {
+                    TextObject text = new TextObject("{=!}You have delivered the profits to {QUEST_GIVER.LINK}.");
                     text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
                     return text;
                 }
@@ -520,9 +552,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{=!}You have failed to extort enough caravans in time. {QUEST_GIVER.LINK} must be disappointed.");
-                    textObject.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
-                    return textObject;
+                    TextObject text = new TextObject("{=!}You have failed to extort enough caravans and deliver the profits to {QUEST_GIVER.LINK} in time." +
+                        "{?QUEST_GIVER.GENDER}She{?}He{\\?} must be disappointed.");
+                    text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
+                    return text;
                 }
             }
 
@@ -531,8 +564,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 base.AddLog(this.QuestSuccessLog, false);
                 TraitLevelingHelper.OnIssueSolvedThroughQuest(base.QuestGiver, new Tuple<TraitObject, int>[]
                 {
-                    new Tuple<TraitObject, int>(DefaultTraits.RogueSkills, PlayerRogueryBonusOnSuccess)
+                    new Tuple<TraitObject, int>(DefaultTraits.RogueSkills, QuestGiverRogueryOnSuccess)
                 });
+
+                Hero.MainHero.AddSkillXp(DefaultSkills.Roguery, PlayerRogueryXpOnQuestCompleted);
 
                 ChangeRelationAction.ApplyPlayerRelation(this.QuestGiver, ClanRelationBonusOnSuccess);
                 GiveGoldAction.ApplyBetweenCharacters(Hero.MainHero, this.QuestGiver, this.QuestGiverExpectedGold);
@@ -540,14 +575,6 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 this.RelationshipChangeWithQuestGiver = QuestGiverRelationBonusOnSuccess;
             }
 
-            protected override void OnBeforeTimedOut(ref bool completeWithSuccess, ref bool doNotResolveTheQuest)
-            {
-                if (this._extortedCaravanCount >= this._requestedCaravanCount)
-                {
-                    completeWithSuccess = true;
-                    this.ApplyQuestSuccessConsequences();
-                }
-            }
 
             protected override void OnTimedOut()
             {
@@ -578,19 +605,28 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 }
             }
 
-            private void AddDestroyedCaravan(MobileParty caravan)
+            private void AddExtortedCaravan(MobileParty caravan)
             {
                 this._extortedCaravanCount++;
-                this._rewardGold += MathF.Ceiling(SafePassagePrice * PlayerRewardPercentage);
-                MBTextManager.SetTextVariable("MAFIA_EXTORTION_REWARD", this._rewardGold);
-                this._questProgressLogTest!.UpdateCurrentProgress(this._extortedCaravanCount);
-                this._targetCaravans.Remove(caravan);
                 base.RemoveTrackedObject(caravan);
                 this._extortedCaravans.Add(caravan);
+
+                // Give 5 criminal rating for extorting/destroying caravan
+                ChangeCrimeRatingAction.Apply(caravan.MapFaction, PlayerCriminalRatingOnExtortion);
+
+                // give roguery xp for extorting carvan
+                Hero.MainHero.AddSkillXp(DefaultSkills.Roguery, PlayerRogueryXpForCaravan);
+
+                this._rewardGold += MathF.Ceiling(SafePassagePrice * PlayerRewardPercentage);
+                MBTextManager.SetTextVariable("MAFIA_EXTORTION_REWARD", this._rewardGold);
+
+                this._questProgressLogTest!.UpdateCurrentProgress(this._extortedCaravanCount);
+                this._targetCaravans.Remove(caravan);
+                
                 if (_extortedCaravanCount >= _requestedCaravanCount && this._playerReachedRequestedAmount == false)
                 {
                     this._playerReachedRequestedAmount = true;
-                    MBInformationManager.AddQuickInformation(new TextObject("{=!} "));
+                    base.AddLog(this.QuestTaskCompletedLog);
                     var description = new TextObject("{=!}You have extorted enough caravans for {QUEST_GIVER.LINK}. You can now deliver the earnings to {?QUEST_GIVER.GENDER}her{?}him{\\?}.");
                     description.SetCharacterProperties("QUEST_GIVER", this.QuestGiver.CharacterObject);
                     var title = new TextObject("{=!}{MINOR_FACTION} Extortion").SetTextVariable("MINOR_FACTION", this.QuestClan().Name);
@@ -610,11 +646,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 get => SafePassagePrice * MathF.Floor(_extortedCaravanCount * (1 - PlayerRewardPercentage));
             }
 
-            private int PlayerRogueryBonusOnSuccess
+            private int QuestGiverRogueryOnSuccess
             {
                 get => _requestedCaravanCount * 10;
             }
-
 
             private const int QuestGiverRelationBonusOnSuccess = 10;
 
@@ -629,6 +664,12 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
             public const float PlayerRewardPercentage = 0.2f;
 
             public const int SafePassagePrice = 2000;
+
+            private const float PlayerRogueryXpForCaravan = 2000f;
+
+            private const float PlayerRogueryXpOnQuestCompleted = 3000f;
+
+            private const float PlayerCriminalRatingOnExtortion = 5f;
 
             [SaveableField(1)]
             private int _requestedCaravanCount;
@@ -652,9 +693,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
             private List<MobileParty> _extortedCaravans;
         }
 
-        public class MFHLordNeedsRecruitsIssueBehaviorTypeDefiner : SaveableTypeDefiner
+        public class MFMafiaCaravanExtortionTypeDefiner : SaveableTypeDefiner
         {
-            public MFHLordNeedsRecruitsIssueBehaviorTypeDefiner() : base(163_837_932)
+            public MFMafiaCaravanExtortionTypeDefiner() : base(163_837_932)
             {
             }
 

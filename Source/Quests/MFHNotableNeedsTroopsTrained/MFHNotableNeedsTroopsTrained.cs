@@ -18,6 +18,7 @@ using TaleWorlds.ObjectSystem;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Library;
+using static ImprovedMinorFactions.IMFModels;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 {
@@ -59,6 +60,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
         }
 
         private const IssueBase.IssueFrequency _IssueFrequency = IssueBase.IssueFrequency.Common;
+
+        internal const MFRelation RelationLevelNeededForQuest = MFRelation.Neutral;
 
         public class MFHNotableNeedsTroopsTrainedIssue : IssueBase
         {
@@ -289,7 +292,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                     return false;
                 }
 
-                if (issueGiver!.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest)
+                if (issueGiver!.GetRelationWithPlayer() < MinRelationNeeded(RelationLevelNeededForQuest))
                 {
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;

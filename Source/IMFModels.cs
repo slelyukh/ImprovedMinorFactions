@@ -242,7 +242,7 @@ namespace ImprovedMinorFactions
         internal static CampaignTime NomadHideoutLifetime = CampaignTime.Days(45);
 
         internal static int MinRelationToBeMFHFriend = 15;
-        internal static float MinRelationToGetMFQuest = -30;
+        //internal static float MinRelationToGetMFQuest = -30;
 
         private static readonly TextObject BaseText = new TextObject("{=militarybase}Base");
         private static readonly TextObject RetiredText = new TextObject("{=gHnfFi1s}Retired");

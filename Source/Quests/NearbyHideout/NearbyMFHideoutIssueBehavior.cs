@@ -16,6 +16,7 @@ using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.SaveSystem;
+using static ImprovedMinorFactions.IMFModels;
 using MathF = TaleWorlds.Library.MathF;
 
 namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
@@ -317,7 +318,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                     return false;
                 }
                     
-                if (issueGiver!.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest
+                if (issueGiver!.GetRelationWithPlayer() < MinRelationNeeded(RelationLevelNeededForQuest)
                     || Helpers.IsRivalOfMinorFaction(Hero.MainHero!.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
                 {
                     flags |= PreconditionFlags.Relation;
@@ -668,6 +669,8 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
         private const int NearbyHideoutMaxDistance = 40;
 
         private const IssueBase.IssueFrequency NearbyHideoutIssueFrequency = IssueBase.IssueFrequency.Common;
+
+        internal const MFRelation RelationLevelNeededForQuest = MFRelation.Neutral;
         public class NearbyMFHideoutIssueTypeDefiner : SaveableTypeDefiner
         {
             public NearbyMFHideoutIssueTypeDefiner() : base(404_322_929)

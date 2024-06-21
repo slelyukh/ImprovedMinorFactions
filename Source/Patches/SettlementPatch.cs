@@ -44,11 +44,16 @@ namespace ImprovedMinorFactions.Patches
             if (mfHideout == null)
                 return true;
 
-            Helpers.removeMilitiaImposters(__instance);
-            __instance.MilitiaPartyComponent.MobileParty.MemberRoster.AddToCounts(Helpers.GetBasicTroop(mfHideout.OwnerClan), militiaToAdd);
-            //Helpers.callPrivateMethod(__instance, "AddTroopToMilitiaParty", 
-            //    new object[] { militaParty, Helpers.GetBasicTroop(mfHideout.OwnerClan), Helpers.GetBasicTroop(mfHideout.OwnerClan), 1f, militiaToAdd });
+            var troopToAdd = Helpers.GetBasicTroop(mfHideout.OwnerClan);
+            if (troopToAdd == null)
+            {
+                InformationManager.DisplayMessage(new InformationMessage($"{mfHideout} Owner Clan: {mfHideout.OwnerClan} has null BasicTroop!"));
+                return false;
+            }
 
+            Helpers.removeMilitiaImposters(__instance);
+            militaParty.MemberRoster.AddToCounts(troopToAdd, militiaToAdd);
+            
             return false;
         }
     }
