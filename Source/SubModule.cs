@@ -10,6 +10,7 @@ using ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits;
 using ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits;
 using ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained;
 using ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion;
+using ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBehavior.cs;
 using ImprovedMinorFactions.Source.Quests.NearbyHideout;
 using StoryMode;
 using TaleWorlds.CampaignSystem;
@@ -64,6 +65,7 @@ namespace ImprovedMinorFactions
             starter.AddBehavior(new MFHLordNeedsRecruitsIssueBehavior());
             starter.AddBehavior(new NearbyMFHideoutIssueBehavior());
             starter.AddBehavior(new MFMafiaCaravanExtortionIssueBehavior());
+            starter.AddBehavior(new MFNomadNeedsVillageRaidedIssueBehavior());
             starter.AddBehavior(new NomadMFsCampaignBehavior());
 
             var clanFinanceModel = GetGameModel<ClanFinanceModel>(starter);

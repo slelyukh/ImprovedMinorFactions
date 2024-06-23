@@ -105,7 +105,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
             public override TextObject IssueBriefByIssueGiver
             {
                 get => SetTextVariables(new TextObject("{=!}As you likely know the {MINOR_FACTION} are a nomadic people " +
-                    "and believe we have the right to graze our livestock wherever we please. However some villages near our " +
+                    "and we believe we have the right to graze our livestock wherever we please. However some villages near our " +
                     "camp have decided that they can fence off portions of the land and call it their \"property\". " +
                     "This practice is making it harder and harder for us to find proper grazing grounds for our herds." +
                     "[ib:hip][if:convo_undecided_closed]"));
@@ -333,7 +333,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
                     Helpers.GetMFHideout(QuestHideout())!.IsSpotted = true;
                     base.AddTrackedObject(QuestHideout());
                 }
-                this._questProgressLogTest = base.AddDiscreteLog(this.QuestStartedLogText, new TextObject("{=AJXiWK0TL1}Caravans Extorted"), this._raidedVillageCount, this._requestedVillageCount);
+                this._questProgressLogTest = base.AddDiscreteLog(this.QuestStartedLogText, new TextObject("{=!}Villages Raided"), this._raidedVillageCount, this._requestedVillageCount);
                 // add tracking for target villages
                 foreach (var village in _targetVillages)
                 {
