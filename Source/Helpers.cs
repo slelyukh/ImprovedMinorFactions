@@ -69,6 +69,7 @@ namespace ImprovedMinorFactions
         {
             return faction != null && minorFaction != null
                 && minorFaction.IsOutlaw 
+                && !faction.IsMinorFaction
                 && (faction.Culture == minorFaction.Culture 
                 || (minorFaction.Culture.GetCultureCode() == CultureCode.Vakken && faction.Culture.GetCultureCode() == CultureCode.Sturgia));
         }

@@ -118,7 +118,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
 
             public override TextObject IssueQuestSolutionExplanationByIssueGiver
             {
-                get => SetTextVariables(new TextObject("{=!}We need you to raid {NEEDED_VILLAGES_AMOUNT} {?PLURAL}village{?}villages{\\?} " +
+                get => SetTextVariables(new TextObject("{=!}We need you to raid {NEEDED_VILLAGES_AMOUNT} village{?PLURAL}s{?}{\\?} " +
                     "near our camp. Make sure to destroy all of their fences and kill most of their livestock so they think" +
                     " before getting greedy next time. They cannot know that you are doing this on our behalf."));
             }
@@ -354,7 +354,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
 
                 for (Settlement settlement = Settlement.FindNextLocatable(ref data); settlement != null; settlement = Settlement.FindNextLocatable(ref data))
                 {
-                    if (settlement.Position2D == null || !settlement.IsVillage || !settlement.IsActive || _targetVillages.Contains(settlement.Village))
+                    if (!settlement.IsVillage || !settlement.IsActive || _targetVillages.Contains(settlement.Village))
                         continue;
                     if (_targetVillages.Count > 4)
                         break;
@@ -371,7 +371,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
             protected override void SetDialogs()
             {
                 this.OfferDialogFlow = DialogFlow.CreateDialogFlow("issue_classic_quest_start")
-                    .NpcLine(new TextObject("{=0QuAZ8YO}I'll be waiting. Good luck.[if:convo_relaxed_happy][ib:confident]"))
+                    .NpcLine(new TextObject("{=!}Good! I'll mark the locations of the villages giving us trouble on your map.[if:convo_excited]"))
                     .Condition(() => Hero.OneToOneConversationHero == this.QuestGiver)
                     .Consequence(new ConversationSentence.OnConsequenceDelegate(this.QuestAcceptedConsequences))
                     .CloseDialog();
@@ -399,16 +399,39 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
                 get => false;
             }
 
+            private string VillageListString(List<Village> villages)
+            {
+                string result = "";
+                for (int i = 0; i < villages.Count; i++)
+                {
+                    var text = new TextObject("{village}").SetTextVariable("village", villages[i].Settlement.EncyclopediaLinkWithName);
+
+                    if (i == 0)
+                    {
+                        result += text.ToString();
+                    } else if (i == villages.Count - 1)
+                    {
+                        // ternary operator for comma before and
+                        result += i > 1 ? "," : "" + new TextObject("{=!} or ").ToString() + text.ToString();
+                    } else
+                    {
+                        result += ", " + text.ToString();
+                    }
+                }
+                return result;
+            }
+
             private TextObject QuestStartedLogText
             {
                 get => SetTextVariables(new TextObject("{=!}{QUEST_GIVER.LINK} told you that {?QUEST_GIVER.GENDER}her{?}his{\\?} people want " +
-                        "{?PLURAL}a village{?}villages{\\?} near their camp raided. {?QUEST_GIVER.GENDER}She{?}He{\\?} asked " +
-                        "you to raid {NEEDED_VILLAGES_AMOUNT} {?PLURAL}village{?}villages{\\?}."));
+                        "{NEEDED_VILLAGES_AMOUNT} village{?PLURAL}s{?}{\\?} near their camp raided. {?QUEST_GIVER.GENDER}She{?}He{\\?} asked " +
+                        "that the villages you raid be one of the following: {VILLAGE_LIST_TEXT}."))
+                        .SetTextVariable("VILLAGE_LIST_TEXT", VillageListString(_targetVillages));
             }
 
             private TextObject QuestSuccessLog
             {
-                get => SetTextVariables(new TextObject("{=!}You have raided {?PLURAL}a village{?}villages{\\?} for {QUEST_GIVER.LINK}" +
+                get => SetTextVariables(new TextObject("{=!}You have raided {?PLURAL}villages{?}a village{\\?} for {QUEST_GIVER.LINK}" +
                         " as promised."));
             }
 
@@ -433,7 +456,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
             private TextObject QuestFailedWithTimeOutLogText
             {
                 get => SetTextVariables(
-                    new TextObject("{=!}You have failed to raid the {?PLURAL}village{?}villages{\\?} in time. {QUEST_GIVER.LINK} must be disappointed."));
+                    new TextObject("{=!}You have failed to raid the village{?PLURAL}s{?}{\\?} in time. {QUEST_GIVER.LINK} must be disappointed."));
             }
 
             private TextObject SetTextVariables(TextObject text)
