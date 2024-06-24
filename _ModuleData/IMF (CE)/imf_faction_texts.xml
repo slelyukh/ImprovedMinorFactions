@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<IMFTexts>
+    <!-- Nearby Hideout Texts Start -->
+    <!-- <IMFText
+    faction_id="eleftheroi" 
+    text_id="NearbyMFHideoutQuest_IssueBrief"
+    text="{=!}"
+    />
+    <IMFText
+    faction_id="eleftheroi"
+    text_id="NearbyMFHideoutQuest_IssueSolution"
+    text=""
+    /> -->
+
+    <IMFText
+    faction_id="jawwal" 
+    text_id="NearbyMFHideoutQuest_IssueBrief"
+    text="{=!}Ah, traveler, lend me your ear for a moment. The Jawwal, nomads of the Nahasa desert, once respected as guardians of tradition, now vex us greatly. They demand tribute from anyone crossing their vast territories and have become a thorn in our side with their constant extortions.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="jawwal"
+    text_id="NearbyMFHideoutQuest_IssueSolution"
+    text="They have recently moved their camp near our village. If you could raid their camp and drive them away this would relieve us of their burdensome presence. Should you succeed, you will earn not only our gratitude but also a reward for your efforts.[ib:closed][if:convo_thinking]"
+    />
+    <!-- Nearby Hideout Texts End -->
+</IMFTexts>

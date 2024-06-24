@@ -409,7 +409,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             {
                 GameTexts.SetVariable("MF_HIDEOUT_ATTACK", "{=zxMOqlhs}Attack Hideout");
                 GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{=prcBBqMR}{HIDEOUT_DESCRIPTION} You see armed men moving about. As you listen quietly, you hear scraps" +
-                    " of conversation about raids, ransoms, and the best places to waylay travellers.");
+                    " of conversation about raids, ransoms, and the best places to waylay travelers.");
             }
 
 

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+  <!-- Settlements -->
+   <string id="ghilman_hideout" text="Gulam Sığınağı"/>
+   <string id="legion_hideout" text="İhanete Uğrayanların Lejyonu Sığınağı"/>
+   <string id="skolderbroda_hideout" text="Skolderbroda Sığınağı"/>
+   <string id="company_of_the_boar_hideout" text="Altın Domuz Kumpanyası Sığınağı"/>
+   <string id="wolfskin_hideout" text="Kurtpostlular Sığınağı"/>
+   <string id="beni_zilal_hideout" text="Beni Zilal Sığınağı"/>
+   <string id="brotherhood_of_the_woods_hideout" text="Ormanların Kardeşliği Sığınağı"/>
+   <string id="hidden_hane_hideout" text="Gizli El Sığınağı"/>
+   <string id="embers_of_the_flame_hideout" text="Alevin Közleri Sığınağı"/>
+   <string id="jawwal_hideout" text="Jawwal Sığınağı"/>
+   <string id="karakhergit_hideout" text="Karakergit Sığınağı"/>
+   <string id="forest_people_hideout" text="Orman Halkı Sığınağı"/>
+   <string id="Eleftheroi_hideout" text="Eleftheroi Sığınağı"/>
+   <string id="lake_rat_hideout" text="Göl Sıçanları Sığınağı"/>
+   <!-- complex -->
+   <string id="25pNV9E3" text="Sığınak Merkezi"/>
+
+ 
+  </strings>
+</base>

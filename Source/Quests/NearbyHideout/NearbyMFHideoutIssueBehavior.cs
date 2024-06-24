@@ -22,6 +22,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 {
     public class NearbyMFHideoutIssueBehavior : CampaignBehaviorBase
     {
+        // TODO: use locatablesearchdata instead
         private Settlement? FindSuitableHideout(Hero issueOwner)
         {
             Settlement? result = null;
@@ -111,13 +112,17 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             {
                 get
                 {
-                    if (_targetHideout.OwnerClan.IsNomad)
-                        return setCommonTextVariables(new TextObject("{=z2f39hbXns}Yes... There's this {HIDEOUT_NAME}, a place that offers a good view of the roads. " +
-                        "The {MINOR_FACTION} have moved in and they have been giving hell to the caravans and travellers passing by instead of minding their" +
-                        " own business.[ib:closed][if:convo_undecided_open]"));
-                    else 
-                        return setCommonTextVariables(new TextObject("{=kcKVjMawu}Yes... There's this old ruin, a place that offers a good view of the roads, and is yet hard to reach. " +
-                        "The {MINOR_FACTION} have moved in and they have been giving hell to the caravans and travellers passing by.[ib:closed][if:convo_undecided_open]"));
+                    var factionText = IMFTexts.GetFactionText("NearbyMFHideoutQuest_IssueBrief", _targetHideout.OwnerClan);
+                    return setCommonTextVariables(
+                        factionText ?? (_targetHideout.OwnerClan.IsNomad 
+
+                        ? new TextObject("{=z2f39hbXns}Yes... There's this {HIDEOUT_NAME}, a place that offers a good view of the roads. " +
+                        "The {MINOR_FACTION} have moved in and they have been giving hell to the caravans and travelers passing by instead of minding their" +
+                        " own business.[ib:closed][if:convo_undecided_open]") 
+
+                        : new TextObject("{=kcKVjMawu}Yes... There's this old ruin, a place that offers a good view of the roads, " +
+                        "and is yet hard to reach. The {MINOR_FACTION} have moved in and they have been giving hell to the " +
+                        "caravans and travelers passing by.[ib:closed][if:convo_undecided_open]")));
                 }
             }
 
@@ -130,12 +135,15 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             {
                 get
                 {
-                    if (_targetHideout.OwnerClan.IsNomad)
-                        return setCommonTextVariables(new TextObject("{=z7QOvsPNDf}There are likely significant number of defenders at the {HIDEOUT_NAME}. " +
-                            "Make sure to attack with plenty of capable men... [ib:closed][if:convo_thinking]"));
-                    else
-                        return setCommonTextVariables(new TextObject("{=8fLe6O58j}Any {MINOR_FACTION} bandits there can easily spot and evade a large army moving against them, " +
-                        "but if you can enter the hideout with a small group of determined warriors you can catch them unaware.[ib:closed][if:convo_thinking]"));
+                    var factionText = IMFTexts.GetFactionText("NearbyMFHideoutQuest_IssueSolution", _targetHideout.OwnerClan);
+                    return setCommonTextVariables(
+                        factionText ?? (_targetHideout.OwnerClan.IsNomad
+
+                        ? new TextObject("{=z7QOvsPNDf}There are likely significant number of defenders at the {HIDEOUT_NAME}. " +
+                            "Make sure to attack with plenty of capable men... [ib:closed][if:convo_thinking]")
+
+                        : new TextObject("{=8fLe6O58j}Any {MINOR_FACTION} bandits there can easily spot and evade a large army moving against them, " +
+                        "but if you can enter the hideout with a small group of determined warriors you can catch them unaware.[ib:closed][if:convo_thinking]")));
                 }
             }
 

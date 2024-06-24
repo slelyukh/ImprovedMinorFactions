@@ -38,7 +38,7 @@ namespace ImprovedMinorFactions
             //if (Harmony.HasAnyPatches("BannerKings"))
                 //harmony.PatchCategory(assembly, "BannerKingsPatches");
 
-            harmony.PatchAllUncategorized(assembly);        
+            harmony.PatchAllUncategorized(assembly);
         }
 
         protected override void OnSubModuleUnloaded()
@@ -53,6 +53,8 @@ namespace ImprovedMinorFactions
 
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
+            IMFTexts.InitIMFTexts();
+
             CampaignGameStarter? starter = gameStarterObject as CampaignGameStarter;
             if (starter == null)
             {

@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MFDatas>
+    <MFData id="skolderbrotva_data" 
+        minor_faction="Faction.skolderbrotva"
+        clan_gender="Male"
+    />
+
+    <!-- Default values Nomad
+    <MFData id="{unique id}" 
+        minor_faction="Faction.{MF string ID}" # Required
+        num_active_hideouts="1" # Optional: number of active hideouts at a time for the MF
+        num_militia_first_time="65" # Optional: Number of militia in Hideout/Camp at game start
+        num_militia_post_raid="40" # Optional: Number of militia in Hideout/Camp when a new one is spawned post raid
+        num_lvl2_militia="15" # Optional: Number of militia upgraded one tier above MF recruit unit.
+        num_lvl3_militia="10" # Optional: MUST BE greater than 1; Number of militia upgraded two tiers above MF recruit unit.
+        max_militia="120" # Optional
+        clan_gender="Any" # Optional MUST BE "Male", "Female", or "Any"; Gender for notables of MF
+    />
+
+    Default values Non-nomad
+    <MFData id="{unique id}" 
+        minor_faction="Faction.{MF string ID}"
+        num_active_hideouts="1"
+        num_militia_first_time="28"
+        num_militia_post_raid="20"
+        num_lvl2_militia="5"
+        num_lvl3_militia="3"
+        max_militia="40"
+        clan_gender="Any" 
+    /> -->
+</MFDatas>
