@@ -12,7 +12,6 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.CampaignSystem.AgentOrigins;
 using TaleWorlds.Core;
-using TaleWorlds.CampaignSystem.ViewModelCollection.CharacterDeveloper;
 
 namespace ImprovedMinorFactions.Source.CampaignBehaviors
 {

@@ -279,7 +279,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     relationHero = issueGiver;
                 }
                 if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero!.MapFaction)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.Clan))
+                    || Helpers.ConsidersMFOutlaw(Hero.MainHero.MapFaction, issueGiver.Clan))
                 {
                     flag |= PreconditionFlags.AtWar;
                 }

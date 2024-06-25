@@ -75,7 +75,12 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
         private bool ConditionsHold(Hero issueGiver)
         {
-            return issueGiver.IsNotable && issueGiver.IsHeadman && issueGiver.CurrentSettlement != null && issueGiver.CurrentSettlement.Village.Bound.Town.Security <= 50f;
+            return issueGiver.IsNotable 
+                && issueGiver.IsHeadman 
+                && issueGiver.CurrentSettlement != null 
+                && issueGiver.CurrentSettlement.Village.Bound.Town.Security <= 50f
+                && !issueGiver.CurrentSettlement.IsRaided
+                && !issueGiver.CurrentSettlement.IsUnderRaid;
         }
 
         private void OnIssueUpdated(IssueBase issue, IssueBase.IssueUpdateDetails details, Hero? issueSolver = null)
@@ -326,7 +331,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 }
                     
                 if (issueGiver!.GetRelationWithPlayer() < MinRelationNeeded(RelationLevelNeededForQuest)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero!.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
+                    || Helpers.ConsidersMFOutlaw(Hero.MainHero!.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
                 {
                     flags |= PreconditionFlags.Relation;
                     relationHero = issueGiver;

@@ -69,6 +69,7 @@ namespace ImprovedMinorFactions
             starter.AddBehavior(new MFMafiaCaravanExtortionIssueBehavior());
             starter.AddBehavior(new MFNomadNeedsVillageRaidedIssueBehavior());
             starter.AddBehavior(new NomadMFsCampaignBehavior());
+            starter.AddBehavior(new MFDescriptionDialogCampaignBehavior());
 
             var clanFinanceModel = GetGameModel<ClanFinanceModel>(starter);
             if (clanFinanceModel is null)

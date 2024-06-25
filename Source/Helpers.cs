@@ -65,7 +65,7 @@ namespace ImprovedMinorFactions
 
         // a minor faction is a rival of a Kingdom if it is an Outlaw faction and shares a culture with the Kingdom
         // these factions are always at war unless the Minor Faction is someone's mercenary
-        internal static bool IsRivalOfMinorFaction(IFaction faction, Clan minorFaction)
+        internal static bool ConsidersMFOutlaw(IFaction faction, Clan minorFaction)
         {
             return faction != null && minorFaction != null
                 && minorFaction.IsOutlaw 

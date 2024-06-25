@@ -104,7 +104,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
 
             public override TextObject IssueBriefByIssueGiver
             {
-                get => SetTextVariables(new TextObject("{=!}As you likely know the {MINOR_FACTION} are a nomadic people " +
+                get => SetTextVariables(
+                    IMFTexts.GetFactionText("NomadVillageRaidQuest_IssueBrief", IssueClan()) 
+                    ?? new TextObject("{=!}As you likely know the {MINOR_FACTION} are a nomadic people " +
                     "and we believe we have the right to graze our livestock wherever we please. However some villages near our " +
                     "camp have decided that they can fence off portions of the land and call it their \"property\". " +
                     "This practice is making it harder and harder for us to find proper grazing grounds for our herds." +
@@ -118,7 +120,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
 
             public override TextObject IssueQuestSolutionExplanationByIssueGiver
             {
-                get => SetTextVariables(new TextObject("{=!}We need you to raid {NEEDED_VILLAGES_AMOUNT} village{?PLURAL}s{?}{\\?} " +
+                get => SetTextVariables(
+                    IMFTexts.GetFactionText("NomadVillageRaidQuest_IssueSolution", IssueClan())
+                    ?? new TextObject("{=!}We need you to raid {NEEDED_VILLAGES_AMOUNT} village{?PLURAL}s{?}{\\?} " +
                     "near our camp. Make sure to destroy all of their fences and kill most of their livestock so they think" +
                     " before getting greedy next time. They cannot know that you are doing this on our behalf."));
             }
@@ -198,7 +202,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
                     relationHero = issueGiver;
                 }
                 if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero!.MapFaction)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, IssueClan()))
+                    || Helpers.ConsidersMFOutlaw(Hero.MainHero.MapFaction, IssueClan()))
                 {
                     flag |= PreconditionFlags.AtWar;
                 }
@@ -412,7 +416,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
                     } else if (i == villages.Count - 1)
                     {
                         // ternary operator for comma before and
-                        result += i > 1 ? "," : "" + new TextObject("{=!} or ").ToString() + text.ToString();
+                        result += (i > 1 ? "," : "") + new TextObject("{=!} or ").ToString() + text.ToString();
                     } else
                     {
                         result += ", " + text.ToString();

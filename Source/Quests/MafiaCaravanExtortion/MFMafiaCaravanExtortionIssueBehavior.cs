@@ -191,7 +191,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                     relationHero = issueGiver;
                 }
                 if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero!.MapFaction)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, IssueClan()))
+                    || Helpers.ConsidersMFOutlaw(Hero.MainHero.MapFaction, IssueClan()))
                 {
                     flag |= PreconditionFlags.AtWar;
                 }

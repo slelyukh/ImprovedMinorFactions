@@ -391,7 +391,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 {
                     GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{HIDEOUT_DESCRIPTION} You’re well-known and well-liked by the nomads, and they happily receive you into their camp.");
                 }
-                else if (Helpers.IsRivalOfMinorFaction(Clan.PlayerClan, mfHideout.OwnerClan))
+                else if (Helpers.ConsidersMFOutlaw(Clan.PlayerClan, mfHideout.OwnerClan))
                 {
                     GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{HIDEOUT_DESCRIPTION} You and the nomads are at odds as your people have marked them as outlaws.");
                 }

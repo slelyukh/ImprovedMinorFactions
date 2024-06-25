@@ -1,17 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
 <IMFTexts>
     <!-- Nearby Hideout Texts Start -->
-    <!-- <IMFText
+    <IMFText
+    faction_id="beni_zilal" 
+    text_id="NearbyMFHideoutQuest_IssueBrief"
+    text="{=!}Ah, traveler, heed my words, for our village is in need of your strength. The Beni Zilal, the elusive Sons of the Shadows, have established a hideout not far from here. These cunning marauders, with their whispered legends and shadowy origins, now use their secretive base to extort caravans and raid our humble homes.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="beni_zilal"
+    text_id="NearbyMFHideoutQuest_IssueSolution"
+    text="{=!}Their mastery of subterfuge and reliance on fear have made them a formidable presence in the Nahasa desert. While they cloak their deeds in tales of mystic preachers and ancient rites, we suffer the consequences of their greed and violence. Destroy their lair, and you will earn not only our gratitude but a reward fitting for such a brave endeavor. Their dark influence must be dispelled so our village can thrive in peace once more.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="brotherhood_of_woods" 
+    text_id="NearbyMFHideoutQuest_IssueBrief"
+    text="{=!}Ah, traveler, may I trouble you for a moment? The Brotherhood of the Woods, once champions of the common folk, have set up a hideout nearby. What began as a noble cause—robbing from the rich to give to the poor—has twisted into something darker. Now, they turn their blades against the very people they once swore to protect, extorting and terrorizing commoners to sustain their dwindling supplies.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="brotherhood_of_woods"
+    text_id="NearbyMFHideoutQuest_IssueSolution"
+    text="{=!}Their presence disrupts our village's peace, as they have become no better than the bandits they once opposed. We need someone to remind them of their lost purpose or drive them away entirely. Help us, and there will be a reward for your efforts.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
     faction_id="eleftheroi" 
     text_id="NearbyMFHideoutQuest_IssueBrief"
-    text="{=!}"
+    text="{=!}Ah, good traveler, hear the woes of our small village. The Eleftheroi, or 'the free people', as they call themselves, dwell just beyond the reach of imperial law, on the fringe of the steppelands. They are descendants of those who once fled bondage, finding their strength in the freedom of these open lands. Their raids on our stores and their attacks on our people have brought us much grief.[ib:closed][if:convo_undecided_open]"
     />
     <IMFText
     faction_id="eleftheroi"
     text_id="NearbyMFHideoutQuest_IssueSolution"
-    text=""
-    /> -->
-
+    text="{=!}Their knowledge of the frontier makes them formidable, and their ties to the empire do not temper their hostility towards its rule—or towards us. I beseech you to help protect our village, to push back against their encroachments. Should you manage to curb their aggressions and secure our safety, you will be richly rewarded by our grateful community.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="embers_of_flame" 
+    text_id="NearbyMFHideoutQuest_IssueBrief"
+    text="{=!}Ah, traveler, spare a moment for our troubles. The Embers of the Flame, descendants of a long-dead rebellion, have taken root near our village. They claim to be paving the way for the return of Emperor Darusos, a ridiculous notion as if they could raise him from the dead like some campfire ghost story. Their raids and extortions have become an unbearable burden on our people.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="embers_of_flame"
+    text_id="NearbyMFHideoutQuest_IssueSolution"
+    text="{=!}Yes, go to their hideout and give them steel and the flames they worship. Their so-called religion isn't just childish; it's outright heretical and idiotic. These fools hide behind their lunatic beliefs while they terrorize honest folk. We need someone to snuff out their nonsense and drive them away. Should you succeed, our village will reward you well.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="forest_people" 
+    text_id="NearbyMFHideoutQuest_IssueBrief"
+    text="{=!}Ah, good traveler, spare a moment for our plight. The Forest People, those dwellers of the deep woods, have been a source of unease for our village. Their practice of swidden agriculture, slashing and burning vast swathes of our shared forest, leaves the land barren and our huntsmen with fewer game. Their ways, though ancient and clever for evading the boyars' tax, threaten the balance we strive to maintain with the land.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="forest_people"
+    text_id="NearbyMFHideoutQuest_IssueSolution"
+    text="{=!}We seek not to alter their traditions, but their proximity has brought hardship upon us. We need you to convince them to move their fields further into the wilderness by raiding their camp. Should you aid us in this matter, our village will not forget your service, rewarding you both in coin and goodwill.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="hidden_hand" 
+    text_id="NearbyMFHideoutQuest_IssueBrief"
+    text="{=!}Ah, traveler, may I have a word? Our village has been plagued by the Hidden Hand, a mafia that has taken root in these parts. These scoundrels, with one foot in the town and the other in the hills, have made a mockery of justice. By day, they pose as respectable traders, but by night, they revert to their true nature—bandits, silencing dissenters and robbing honest merchants.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="hidden_hand"
+    text_id="NearbyMFHideoutQuest_IssueSolution"
+    text="{=!}Their hideout nearby has become a festering wound on our land, and their influence spreads like a shadow over our lives. We need someone with the strength and resolve to clear them out, to bring back peace and order to our community. If you can drive them away, our village will reward you handsomely.[ib:closed][if:convo_undecided_open]"
+    />
     <IMFText
     faction_id="jawwal" 
     text_id="NearbyMFHideoutQuest_IssueBrief"
@@ -22,5 +71,48 @@
     text_id="NearbyMFHideoutQuest_IssueSolution"
     text="{=!}They have recently moved their camp near our village. If you could raid their camp and drive them away this would relieve us of their burdensome presence. Should you succeed, you will earn not only our gratitude but also a reward for your efforts.[ib:closed][if:convo_thinking]"
     />
+    <IMFText
+    faction_id="karakhuzaits" 
+    text_id="NearbyMFHideoutQuest_IssueBrief"
+    text="{=!}Ah, good traveler, I find myself in need of your courage. Our village suffers from the raids of the Karakhuzaits, a nomadic clan known for their fierce independence and resistance to the Khan's decrees. They dwell not far from here, moving with the seasons throughout the steppe, perpetually eluding the grasp of central authority.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="karakhuzaits"
+    text_id="NearbyMFHideoutQuest_IssueSolution"
+    text="{=!}While they sometimes serve as mercenaries for us, their penchant for kidnapping and raiding our livestock under the guise of preserving the 'heroic old ways' has strained our patience. They live off the land in ways we cannot, and their raids disrupt our attempts to cultivate peace and prosperity. Drive them away, ensure they respect our boundaries, and our village will reward you handsomely.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="lakepike" 
+    text_id="NearbyMFHideoutQuest_IssueBrief"
+    text="{=!}Ah, good traveler, I find myself in need of your aid. Our village lives in the shadow of the Lake Rats, those marauders who dwell on the shores of the great northern lake. They are a wretched band, known for their cunning and cruel trickery, luring Sturgian ships to their doom with false lights and beacons. They currently reside in a nearby sea cave, nearly unreachable and shielded by the treacherous marshlands.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="lakepike"
+    text_id="NearbyMFHideoutQuest_IssueSolution"
+    text="{=!}These plunderers are despised across Calradia, and with good reason. Their assaults on our trade routes have left many a family here bereft and our village poorer for it. We seek not just relief but retribution—someone to ensure they no longer threaten our waters or livelihoods. Drive them from their lair, and you shall find both gold and gratitude in our village.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="wolfskins" 
+    text_id="NearbyMFHideoutQuest_IssueBrief"
+    text="{=!}Ah, wanderer, a moment of your time. The Wolfskins, who once honored the ways of the wild, have forsaken their traditions. No longer do they adhere to the austere Code of the Wolf; instead, they've taken to wearing woven garb like common brigands. This betrayal of their heritage has turned them into mere thieves, preying on those who travel through our woods and stealing from us.[ib:closed][if:convo_undecided_open]"
+    />
+    <IMFText
+    faction_id="wolfskins"
+    text_id="NearbyMFHideoutQuest_IssueSolution"
+    text="{=!}Their hideout, not far from here, has become a den of common crime, not the noble test of youth it once was. If you could clear this nest of pretenders, it would restore safety to our paths and bring relief to our community. Your bravery would not go unrewarded, for both gold and respect await those who aid us in these troubling times.[ib:closed][if:convo_undecided_open]"
+    />
     <!-- Nearby Hideout Texts End -->
+
+    <!-- Nomad Village Raid Texts Begin -->
+    <IMFText
+    faction_id="forest_people" 
+    text_id="NomadVillageRaidQuest_IssueBrief"
+    text="{=!}As you likely know the Forest People are nomads and we believe we have the ancient right to use the forests as we please. However some villages near our camp have decided that they can deem massive sections of the forest their &quot;hunting grounds&quot; They hope to prevent us from practicing our ancient farming method where we burn sections of the forest and use the fertile ground left behind to grow crops.[ib:hip][if:convo_undecided_closed]"
+    />
+    <IMFText
+    faction_id="forest_people"
+    text_id="NomadVillageRaidQuest_IssueSolution"
+    text="{=!}We need you to raid {NEEDED_VILLAGES_AMOUNT} village{?PLURAL}s{?}{\?} near our camp. The villagers will be too busy rebuilding to hunt or be interested in our forest activities. They cannot know that you are doing this on our behalf."
+    />
+    <!-- Nomad Village Raid Texts End -->
 </IMFTexts>
