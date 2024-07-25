@@ -15,7 +15,7 @@ namespace ImprovedMinorFactions
     {
         public static float GetDailyVolunteerProductionProbability(Hero hero, int index, Settlement settlement)
         {
-            float num = 0.7f * (Helpers.GetMFHideout(settlement).Hearth / 400);
+            float num = 0.7f * (Helpers.GetMFHideout(settlement)!.Hearth / 400);
             return 0.75f * MathF.Clamp(MathF.Pow(num, (float)(index + 1)), 0f, 1f);
         }
 
@@ -24,7 +24,7 @@ namespace ImprovedMinorFactions
         {
             var mfHideout = Helpers.GetMFHideout(settlement);
             var eNum = new ExplainedNumber(0f, includeDescriptions, null);
-            eNum.Add((mfHideout.Hearth < 300f) ? 0.6f : ((mfHideout.Hearth < 600f) ? 0.4f : 0.2f), BaseText);
+            eNum.Add((mfHideout!.Hearth < 300f) ? 0.6f : ((mfHideout.Hearth < 600f) ? 0.4f : 0.2f), BaseText);
             return eNum;
 
         }
@@ -40,7 +40,7 @@ namespace ImprovedMinorFactions
             else
                 eNum.Add(0.05f, BaseText);
 
-            eNum.Add((Helpers.GetMFHideout(settlement)).Hearth * 0.0005f, FromHearthsText);
+            eNum.Add((Helpers.GetMFHideout(settlement)!).Hearth * 0.0005f, FromHearthsText);
             return eNum;
         }
 
