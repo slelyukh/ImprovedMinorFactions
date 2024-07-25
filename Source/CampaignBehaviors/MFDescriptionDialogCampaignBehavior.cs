@@ -28,7 +28,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                     this.player_intro_on_condition,
                     this.player_intro_consequence);
             starter.AddDialogLine("mf_intro_continue", "mf_intro_continue", "hero_main_options",
-                    "{=!}The {IMF_INTRO_CLAN} are a {IMF_INTRO_CLAN_DESC}.{OUTLAW_KINGDOMS_TEXT} You can hire us as mercenaries," +
+                    "{=!}The {IMF_INTRO_CLAN} are {IMF_INTRO_CLAN_DESC}{OUTLAW_KINGDOMS_TEXT} You can hire us as mercenaries," +
                     " or you can let your enemies hire us first.",
                     () => true,
                     null);
@@ -63,14 +63,21 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             {
                 var mfClan = conversationHero.Clan;
                 MBTextManager.SetTextVariable("IMF_INTRO_CLAN", mfClan.Name);
-                if (mfClan.IsNomad) {
-                    MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "traditional nomadic tribe");
+
+                var factionDesc = IMFTexts.GetFactionText("MFDescription_ClanDescription", mfClan);
+                if (factionDesc != null) {
+                    MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", factionDesc);
+                } else if (mfClan.IsNomad) {
+                    MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "a traditional nomadic tribe.");
                 } else if (mfClan.IsSect) {
-                    MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "zealous religious movement");
+                    MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "a zealous religious movement.");
                 } else if (mfClan.IsMafia) {
-                    MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "influential mafia clan");
+                    MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "a influential mafia clan.");
                 } else if (mfClan.IsClanTypeMercenary) {
-                    MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "powerful mercenary company");
+                    MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "a powerful mercenary company.");
+                } else
+                {
+                    MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "a minor faction.");
                 }
                 List<Kingdom> rivalKingdoms = ( from kingdom in Kingdom.All
                                                 where Helpers.ConsidersMFOutlaw(kingdom, mfClan)

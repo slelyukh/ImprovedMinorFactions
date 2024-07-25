@@ -495,7 +495,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 base.StartQuest();
                 base.AddTrackedObject(base.QuestGiver.CurrentSettlement);
-                this._questProgressLogTest = base.AddDiscreteLog(this.QuestStartedLogText, new TextObject("{=r8rwl9ZS}Delivered Recruits"), this._deliveredRecruitCount, this._requestedRecruitCount);
+                this._questProgressLog = base.AddDiscreteLog(this.QuestStartedLogText, new TextObject("{=r8rwl9ZS}Delivered Recruits"), this._deliveredRecruitCount, this._requestedRecruitCount);
             }
 
             protected override void SetDialogs()
@@ -608,8 +608,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     this._rewardGold += this.RewardForEachRecruit(troopRosterElement.Character) * troopRosterElement.Number;
                     this._deliveredRecruitCount += troopRosterElement.Number;
                 }
-                this._questProgressLogTest.UpdateCurrentProgress(this._deliveredRecruitCount);
-                this._questProgressLogTest.TaskName.SetTextVariable("TOTAL_REWARD", this._rewardGold);
+                this._questProgressLog.UpdateCurrentProgress(this._deliveredRecruitCount);
+                this._questProgressLog.TaskName.SetTextVariable("TOTAL_REWARD", this._rewardGold);
                 if (this._deliveredRecruitCount == this._requestedRecruitCount)
                 {
                     this._playerReachedRequestedAmount = true;
@@ -727,7 +727,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             private bool _playerReachedRequestedAmount;
 
             [SaveableField(7)]
-            private JournalLog _questProgressLogTest;
+            private JournalLog _questProgressLog;
         }
 
         public class MFHNotableNeedsRecruitsIssueBehaviorTypeDefiner : SaveableTypeDefiner

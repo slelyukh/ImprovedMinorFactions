@@ -17,6 +17,7 @@ using TaleWorlds.CampaignSystem.ViewModelCollection.Party;
 using TaleWorlds.CampaignSystem.Encounters;
 using static TaleWorlds.CampaignSystem.Issues.ScoutEnemyGarrisonsIssueBehavior;
 using static ImprovedMinorFactions.IMFModels;
+using TaleWorlds.MountAndBlade;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 {
@@ -481,6 +482,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                 base.StartQuest();
                 base.AddTrackedObject(base.QuestGiver);
                 this._questProgressLogTest = base.AddDiscreteLog(this.QuestStartedLogText, new TextObject("{=r8rwl9ZS}Delivered Recruits"), this._deliveredRecruitCount, this._requestedRecruitCount);
+                Mission.Current?.EndMission();
             }
 
             protected override void SetDialogs()
@@ -544,16 +546,18 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                                     Campaign.Current.ConversationManager.ContinueConversation();
                                 }
                             })
-                    .GotoDialogState("quest_discuss")
+                        .GotoDialogState("quest_discuss")
                     .PlayerOption(new TextObject("{=PZqGagXt}No, not yet. I'm still looking for them."))
                         .Condition(() => !this._playerReachedRequestedAmount & changeDialogAfterTransfer)
                         .Consequence(delegate {
                             changeDialogAfterTransfer = false;
                         })
                         .NpcLine(new TextObject("{=L1JyetPq}I am glad to hear that.[ib:closed2]"))
+                        .GotoDialogState("hero_main_options")
                         .CloseDialog()
                     .PlayerOption(new TextObject("{=OlOhuO7X}No thank you. Good day to you."))
                         .Condition(() => !this._playerReachedRequestedAmount && !changeDialogAfterTransfer)
+                        .GotoDialogState("hero_main_options")
                         .CloseDialog()
                         .EndPlayerOptions()
                         .CloseDialog()

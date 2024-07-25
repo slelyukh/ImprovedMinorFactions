@@ -66,6 +66,7 @@ namespace ImprovedMinorFactions.Source.Patches
             var gender = IMFModels.ClanGender(forcedHomeSettlement.OwnerClan);
             Settlement settlement = forcedHomeSettlement ?? SettlementHelper.GetRandomTown(null);
             IEnumerable<CharacterObject> enumerable;
+                
 
             // NOT COPY/PASTED
             if (gender == IMFModels.Gender.Male)
@@ -105,6 +106,7 @@ namespace ImprovedMinorFactions.Source.Patches
 
             Hero hero = HeroCreator.CreateSpecialHero(template, settlement, null, null, -1);
             CultureObject hideoutCulture = forcedHomeSettlement!.Culture;
+
             // Give Darshi, Nord, and Vakken MFs correct notable names (their templates have incorrect names)
             // NOT copy/pasted
             if (Helpers.IsMinorCulture(hideoutCulture))
@@ -134,7 +136,8 @@ namespace ImprovedMinorFactions.Source.Patches
                 GiveGoldAction.ApplyBetweenCharacters(null, hero, amount, true);
             }
             CharacterObject template2 = hero.Template;
-            if (((template2 != null) ? template2.HeroObject : null) != null && hero.Template.HeroObject.Clan != null && hero.Template.HeroObject.Clan.IsMinorFaction)
+
+            if (template2?.HeroObject != null && hero?.Template?.HeroObject?.Clan != null && hero.Template.HeroObject.Clan.IsMinorFaction)
                 hero.SupporterOf = hero.Template.HeroObject.Clan;
             else
                 hero.SupporterOf = HeroHelper.GetRandomClanForNotable(hero);

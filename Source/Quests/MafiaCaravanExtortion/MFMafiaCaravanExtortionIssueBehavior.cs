@@ -17,6 +17,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Library;
 using TaleWorlds.CampaignSystem.Encounters;
 using static ImprovedMinorFactions.IMFModels;
+using TaleWorlds.MountAndBlade;
 
 namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
 {
@@ -313,9 +314,6 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                             || _extortedCaravans.Contains(mParty) || mParty.MapFaction == QuestGiver.MapFaction)
                             continue;
 
-                        if (mParty.Position2D.DistanceSquared(MobileParty.MainParty.Position2D) > _maxDistanceSquaredToHideoutForTargetCaravan)
-                            break;
-
                         AddCaravanToPotentialTargets(mParty);
                     }
 
@@ -443,6 +441,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 {
                     PlayerEncounter.LeaveEncounter = true;
                 }
+                Mission.Current?.EndMission();
             }
 
             
@@ -484,7 +483,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                         .BeginPlayerOptions()
                         .PlayerOption(new TextObject("{=!}I am still working on it."))
                             .NpcLine(new TextObject("{=!}Why are you wasting time talking to me then?"))
-                            .CloseDialog()
+                            .GotoDialogState("hero_main_options")
                         .EndPlayerOptions()
                     .CloseDialog()
                     .EndNpcOptions();

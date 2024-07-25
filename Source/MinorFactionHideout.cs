@@ -13,6 +13,8 @@ using TaleWorlds.Localization;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
+using System;
+using MathF = TaleWorlds.Library.MathF;
 
 namespace ImprovedMinorFactions
 {
@@ -64,11 +66,10 @@ namespace ImprovedMinorFactions
                 InformationManager.DisplayMessage(new InformationMessage($"{this.Name} Double Activated!!!!", Color.Black));
                 throw new System.Exception("double clan activation");
             }
-
             var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
-            if (notable1 == null)
-                return;
             var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
+            if (notable1 == null || notable2 == null)
+                return;
             notable1.IsMinorFactionHero = true;
             notable2.IsMinorFactionHero = true;
 
