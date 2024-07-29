@@ -63,16 +63,29 @@ namespace ImprovedMinorFactions
 
         public void ActivateHideoutFirstTime()
         {
+            if (this.OwnerClan == null)
+            {
+                InformationManager.DisplayMessage(new InformationMessage($"{this.Name} Attempting to be activated with no owner clan!!!", Color.Black));
+                return;
+            }
+
             if (IMFManager.Current.GetActiveHideoutsOfClan(this.OwnerClan).Contains(this))
             {
                 InformationManager.DisplayMessage(new InformationMessage($"{this.Name} Double Activated!!!!", Color.Black));
-                throw new System.Exception("double clan activation");
+                return;
+                // throw new System.Exception("double clan activation");
             }
 
             var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
             var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
-            notable1.IsMinorFactionHero = true;
-            notable2.IsMinorFactionHero = true;
+            if (notable1 == null || notable2 == null)
+            {
+                InformationManager.DisplayMessage(new InformationMessage($"{this.Name} notable creation has failed!!! Please report this on Nexus mod page", Color.Black));
+            } else
+            {
+                notable1!.IsMinorFactionHero = true;
+                notable2!.IsMinorFactionHero = true;
+            }
 
             ActivateHideout();
             base.Settlement.Militia = IMFModels.NumMilitiaFirstTime(this.OwnerClan);
@@ -192,6 +205,7 @@ namespace ImprovedMinorFactions
             this.Settlement.IsVisible = false;
             base.Settlement.Militia = 0;
             this.Hearth = 0;
+            this._activationScheduled = false;
         }
 
         public void UpgradeMilitia(int count)

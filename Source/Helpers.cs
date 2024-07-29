@@ -80,6 +80,9 @@ namespace ImprovedMinorFactions
 
         internal static MinorFactionHideout? GetMFHideout(Settlement s)
         {
+            var setComp = s?.SettlementComponent;
+            if (setComp == null || setComp is Town || setComp is Village || setComp is RetirementSettlementComponent)
+                return null;
             return s?.SettlementComponent as MinorFactionHideout;
         }
 

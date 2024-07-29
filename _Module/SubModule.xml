@@ -10,21 +10,21 @@
   <Url value="$moduleurl$" />
   <DependedModules>
     <DependedModule Id="Bannerlord.Harmony" DependentVersion="v2.3.3" />
-    <DependedModule Id="Native" DependentVersion="v1.2.9" />
-    <DependedModule Id="SandBoxCore" DependentVersion="v1.2.9" />
-    <DependedModule Id="Sandbox" DependentVersion="v1.2.9" />
-    <DependedModule Id="StoryMode" DependentVersion="v1.2.9" />
-    <DependedModule Id="CustomBattle" DependentVersion="v1.2.9" />
+    <DependedModule Id="Native" DependentVersion="v1.2.10" />
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.2.10" />
+    <DependedModule Id="Sandbox" DependentVersion="v1.2.10" />
+    <DependedModule Id="StoryMode" DependentVersion="v1.2.10" />
+    <DependedModule Id="CustomBattle" DependentVersion="v1.2.10" />
   </DependedModules>
   <!-- Community Dependency Metadata -->
   <!-- https://github.com/BUTR/Bannerlord.BLSE#community-dependency-metadata -->
   <DependedModuleMetadatas>
     <DependedModuleMetadata id="Bannerlord.Harmony" order="LoadBeforeThis" version="v2.3.3" />
-    <DependedModuleMetadata id="Native" order="LoadBeforeThis" version="v1.2.9" />
-    <DependedModuleMetadata id="SandBoxCore" order="LoadBeforeThis" version="v1.2.9" />
-    <DependedModuleMetadata id="Sandbox" order="LoadBeforeThis" version="v1.2.9" />
-    <DependedModuleMetadata id="StoryMode" order="LoadBeforeThis" version="v1.2.9" />
-    <DependedModuleMetadata id="CustomBattle" order="LoadBeforeThis" version="v1.2.9" />
+    <DependedModuleMetadata id="Native" order="LoadBeforeThis" version="v1.2.10" />
+    <DependedModuleMetadata id="SandBoxCore" order="LoadBeforeThis" version="v1.2.10" />
+    <DependedModuleMetadata id="Sandbox" order="LoadBeforeThis" version="v1.2.10" />
+    <DependedModuleMetadata id="StoryMode" order="LoadBeforeThis" version="v1.2.10" />
+    <DependedModuleMetadata id="CustomBattle" order="LoadBeforeThis" version="v1.2.10" />
   </DependedModuleMetadatas>
   <!-- Community Dependency Metadata -->
   <SubModules>

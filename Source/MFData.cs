@@ -36,6 +36,10 @@ namespace ImprovedMinorFactions
             NumLvl2Militia = IMFModels.NumLvl2Militia(c);
             MaxMilitia = IMFModels.MaxMilitia(c);
             ClanGender = IMFModels.ClanGender(c);
+
+            // make sure clans that shouldn't have hideouts don't
+            if (mfClan.IsEliminated || mfClan.MapFaction == null || mfClan == Clan.PlayerClan)
+                NumActiveHideouts = 0;
         }
 
         public override void Deserialize(MBObjectManager objectManager, XmlNode node)
@@ -91,7 +95,7 @@ namespace ImprovedMinorFactions
             if (IMFManager.Current?.GetClanMFData(mfClan) != null)
             {
                 // set values for current data
-                MFData existingData = IMFManager.Current.GetClanMFData(mfClan);
+                MFData existingData = IMFManager.Current.GetClanMFData(mfClan)!;
                 existingData.NumActiveHideouts = this.NumActiveHideouts;
                 existingData.NumMilitiaFirstTime = this.NumMilitiaFirstTime;
                 existingData.NumMilitiaPostRaid = this.NumMilitiaPostRaid;
@@ -116,7 +120,7 @@ namespace ImprovedMinorFactions
         {
             if (!Helpers.IsMFHideout(s))
                 throw new Exception("Error 3242: trying to add non mfh settlement to MF hideouts list.");
-            Hideouts.Add(Helpers.GetMFHideout(s));
+            Hideouts.Add(Helpers.GetMFHideout(s)!);
         }
 
 

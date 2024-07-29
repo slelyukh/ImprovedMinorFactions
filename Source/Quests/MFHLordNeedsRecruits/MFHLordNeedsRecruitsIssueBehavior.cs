@@ -306,7 +306,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     new Tuple<TraitObject, int>(DefaultTraits.Honor, AlternativeSolutionPlayerHonorBonus)
                 });
                 this.RelationshipChangeWithIssueOwner = AlternativeSolutionRelationBonus;
-                this.IssueOwner.PartyBelongedTo.AddElementToMemberRoster(base.IssueOwner.Clan.BasicTroop, this.RequestedRecruitCount);
+                this.IssueOwner.PartyBelongedTo.AddElementToMemberRoster(Helpers.GetBasicTroop(base.IssueOwner.Clan), this.RequestedRecruitCount);
                 GiveGoldAction.ApplyBetweenCharacters(this.IssueOwner, Hero.MainHero, this.RewardGold, false);
 
             }
@@ -593,7 +593,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     this._rewardGold += this.RewardForEachRecruit(donatedTroop.Character) * donatedTroop.Number;
                    
                     // if giving higher tier troops upgrade MF troop
-                    CharacterObject troopToAdd = QuestGiver.Clan.BasicTroop;
+                    CharacterObject troopToAdd = Helpers.GetBasicTroop(QuestGiver.Clan);
                     while (troopToAdd.Tier < donatedTroop.Character.Tier && troopToAdd.UpgradeTargets.Length > 0)
                     {
                         troopToAdd = troopToAdd.UpgradeTargets[MBRandom.RandomInt(troopToAdd.UpgradeTargets.Length)];

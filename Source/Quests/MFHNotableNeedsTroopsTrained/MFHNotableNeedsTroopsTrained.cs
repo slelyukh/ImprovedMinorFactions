@@ -37,7 +37,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
         {
             return Helpers.IsMFHideout(issueGiver.CurrentSettlement) 
                 && issueGiver.IsNotable 
-                && Helpers.GetMFHideout(issueGiver.CurrentSettlement).Hearth > 300;
+                && Helpers.GetMFHideout(issueGiver.CurrentSettlement)!.Hearth > 300
+                && Helpers.GetBasicTroop(issueGiver.CurrentSettlement.OwnerClan).UpgradeTargets.Length > 0;
         }
 
         public void OnCheckForIssue(Hero hero)
