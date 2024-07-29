@@ -36,6 +36,10 @@ namespace ImprovedMinorFactions
             NumLvl2Militia = IMFModels.NumLvl2Militia(c);
             MaxMilitia = IMFModels.MaxMilitia(c);
             ClanGender = IMFModels.ClanGender(c);
+
+            // make sure clans that shouldn't have hideouts don't
+            if (mfClan.IsEliminated || mfClan.MapFaction == null || mfClan == Clan.PlayerClan)
+                NumActiveHideouts = 0;
         }
 
         public override void Deserialize(MBObjectManager objectManager, XmlNode node)

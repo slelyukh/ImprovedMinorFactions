@@ -127,7 +127,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             if (victim.IsNotable && Helpers.IsMFHideout(victim.CurrentSettlement))
             {
                 InformationManager.DisplayMessage(new InformationMessage($"{victim} died in {victim.CurrentSettlement}"));
-                if (victim.CurrentSettlement != null && victim.CurrentSettlement.OwnerClan.Heroes.Count > 0)
+                if (victim.CurrentSettlement != null && !victim.CurrentSettlement.OwnerClan.IsEliminated)
                 {
                     Hero hero = HeroCreator.CreateRelativeNotableHero(victim);
                     ChangeDeadNotable(victim, hero, victim.CurrentSettlement);
@@ -139,7 +139,6 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         {
             if (!Helpers.IsMFHideout(settlement))
                 return;
-
             if (party != null && party.IsMainParty)
             {
                 foreach (Hero notable in settlement.Notables)

@@ -41,14 +41,31 @@ namespace ImprovedMinorFactions
             IMFManager.Current = null;
         }
 
+        // true if mfh1 should replace mfh2.
+        private bool ShouldReplaceHideout(MinorFactionHideout mfh1, MinorFactionHideout mfh2)
+        {
+            if (mfh1.IsActiveOrScheduled && mfh1.Settlement.Notables.Count > 0)
+            {
+                return true;
+            } else
+            {
+                return false;
+            }
+        }
+
         public void AddLoadedMFHideout(MinorFactionHideout mfh)
         {
             if (_LoadedMFHideouts.ContainsKey(mfh.StringId))
+            {
                 InformationManager.DisplayMessage(new InformationMessage($"{mfh.StringId} duplicate hideout saves! Please send your save file to modders on Nexus Mods.", Colors.Red));
+                if (ShouldReplaceHideout(mfh, _LoadedMFHideouts[mfh.StringId]))
+                    _LoadedMFHideouts[mfh.StringId] = mfh;
+                return;
+            }
             
             if (mfh.OwnerClan == null || mfh.OwnerClan.Leader == null)
                 return;
-            
+
             _LoadedMFHideouts[mfh.StringId] = mfh;
         }
 
@@ -87,8 +104,7 @@ namespace ImprovedMinorFactions
                 {
                     // TODO: store ownerless hideouts somewhere
                     var mfClan = settlement.OwnerClan;
-                    if (!_mfData.ContainsKey(mfClan))
-                        _mfData[mfClan] = new MFData(mfClan);
+                    CreateMFDataIfNone(mfClan);
                     _mfData[mfClan].AddMFHideout(settlement);
                 }
             }
@@ -164,12 +180,12 @@ namespace ImprovedMinorFactions
                 numFreeHideouts -= numToGive;
             }
 
-            // remove hideoutless clans from list and MFData
+            // remove hideoutless clans from list and set numActiveHideouts to 0
             List<Clan> clansToRemove = NonNomadMFClans.Where(c => !numHideoutsToGive.ContainsKey(c)).ToList();
             foreach (Clan clan in clansToRemove)
             {
                 NonNomadMFClans.Remove(clan);
-                _mfData.Remove(clan);
+                _mfData[clan].NumActiveHideouts = 0;
             }
 
             // distribute remaining numbers evenly
@@ -237,7 +253,7 @@ namespace ImprovedMinorFactions
                     foreach (var mfh in priorityList!)
                     {
                         mfhsToRemoveFromPriorityList.Add(mfh);
-                        if (hideoutPool.Contains(mfh))
+                        if (hideoutPool.Contains(mfh) && (!mfh.IsActiveOrScheduled || mfh.OwnerClan == mfClan))
                         {
                             AssignHideoutToClan(mfClan, mfh);
                             hideoutPool.Remove(mfh);
@@ -267,7 +283,7 @@ namespace ImprovedMinorFactions
             // add MFs with assigned hideouts to clan list first to give them priority later
             foreach (Clan c in Clan.All)
             {
-                if (c.IsMinorFaction && c != Clan.PlayerClan && !c.IsRebelClan && !c.IsNomad && HasFaction(c) && GetClanMFData(c)!.Hideouts.Count > 0)
+                if (c.IsMinorFaction && c != Clan.PlayerClan && !c.IsRebelClan && !c.IsNomad && !c.IsEliminated && HasFaction(c) && GetClanMFData(c)!.Hideouts.Count > 0)
                 {
                     hideoutAssignedNonNomadClans.Add(c);
                     NonNomadMFClans.Add(c);
@@ -277,17 +293,18 @@ namespace ImprovedMinorFactions
             // add MFs without assigned hideouts to clan list second to give them less priority
             foreach (Clan c in Clan.All)
             {
-                if (c.IsMinorFaction && c != Clan.PlayerClan && !c.IsRebelClan && !c.IsNomad)
+                if (c.IsMinorFaction && c != Clan.PlayerClan && !c.IsRebelClan && !c.IsNomad && !c.IsEliminated && !NonNomadMFClans.Contains(c))
                 {
                     NonNomadMFClans.Add(c);
                     CreateMFDataIfNone(c);
                 }
             }
 
+            // Make pool of all non-nomad MF hideouts.
             HashSet<MinorFactionHideout> hideoutPool = new HashSet<MinorFactionHideout>();
             foreach (MinorFactionHideout mfh in _hideouts)
             {
-                if (mfh.OwnerClan?.IsNomad == false)
+                if (mfh.OwnerClan?.IsNomad == false || (mfh.OwnerClan?.IsEliminated ?? false))
                 {
                     hideoutPool.Add(mfh);
                 }
@@ -446,27 +463,25 @@ namespace ImprovedMinorFactions
                 throw new Exception("can't initialize hideouts list in Hideout Manager");
             return _mfData.ContainsKey(minorFaction);
         }
-
+        // Removes clan from MF data and other shit if its destroyed... DONT do this anymore, just give it activeHideouts of 0
+        // TODO: remove owner of clans
         internal void RemoveClan(Clan destroyedClan)
         {
             if (!this.HasFaction(destroyedClan))
                 return;
             foreach (var mfHideout in _mfData[destroyedClan].Hideouts)
             {
-                if (mfHideout.IsActive)
+                // need to do this because can't kill notables and iterate over Notables list simultaneously.
+                var notablesToKill = new List<Hero>();
+                notablesToKill.AddRange(mfHideout.Settlement.Notables);
+                foreach (Hero notable in notablesToKill)
                 {
-                    // need to do this because can't kill notables and iterate over Notables list simultaneously.
-                    var notablesToKill = new List<Hero>();
-                    notablesToKill.AddRange(mfHideout.Settlement.Notables);
-                    foreach (Hero notable in notablesToKill)
-                    {
-                        KillCharacterAction.ApplyByRemove(notable, true, true);
-                    }
-                    mfHideout.DeactivateHideout(false);
+                    KillCharacterAction.ApplyByRemove(notable, true, true);
                 }
+                mfHideout.DeactivateHideout(false);
             }
-                
-            _mfData.Remove(destroyedClan);
+
+            _mfData[destroyedClan].NumActiveHideouts = 0;
             ReassignHideouts();
         }
 

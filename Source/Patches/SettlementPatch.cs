@@ -43,6 +43,9 @@ namespace ImprovedMinorFactions.Patches
             MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
             if (mfHideout == null)
                 return true;
+            var basicTroop = Helpers.GetBasicTroop(mfHideout.OwnerClan);
+            if (basicTroop == null)
+                return false;
 
             var troopToAdd = Helpers.GetBasicTroop(mfHideout.OwnerClan);
             if (troopToAdd == null)
