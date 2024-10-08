@@ -5,6 +5,7 @@
     <TargetFrameworks>net472;net6</TargetFrameworks>
     <Platforms>x64</Platforms>
     <LangVersion>10.0</LangVersion>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <Nullable>enable</Nullable>
     <BuildForWindows>false</BuildForWindows>
     <BuildForWindowsStore>false</BuildForWindowsStore>
@@ -21,8 +22,7 @@
     <BuildForWindows>true</BuildForWindows>
   </PropertyGroup>
   <PropertyGroup Condition="$(TargetFramework) == 'net6'">
-    <BuildForWindowsStore>false</BuildForWindowsStore>
-    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <BuildForWindowsStore>true</BuildForWindowsStore>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
   </PropertyGroup>
 
@@ -62,7 +62,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Bannerlord.Lib.Harmony" Version="2.3.0" />
+    <PackageReference Include="Lib.Harmony" Version="2.3.0" />
     <PackageReference Include="Harmony.Extensions" Version="3.2.0.77">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
