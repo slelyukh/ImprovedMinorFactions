@@ -13,7 +13,7 @@ namespace ImprovedMinorFactions.Patches
         static void Postfix(Settlement settlement)
         {
             var mfHideout = Helpers.GetMFHideout(settlement);
-            if (mfHideout == null)
+            if (mfHideout == null || !mfHideout.IsActive)
                 return;
 
             foreach (Hero notable in settlement.Notables)
@@ -22,11 +22,11 @@ namespace ImprovedMinorFactions.Patches
                     continue;
 
                 var volunteerTypes = notable.VolunteerTypes;
-                var basicVolunteer = Helpers.GetBasicTroop(mfHideout.OwnerClan);
+                var basicVolunteer = Helpers.GetBasicTroop(mfHideout!.OwnerClan!);
 
                 for (int i = 0; i < notable.VolunteerTypes.Length; i++)
                 {
-                    if (MBRandom.RandomFloat < IMFModels.GetDailyVolunteerProductionProbability(notable, i, settlement))
+                    if (MBRandom.RandomFloat < IMFModels.GetDailyVolunteerProductionProbability(notable, i, mfHideout))
                     {
                         var upgradeLen = volunteerTypes[i]?.UpgradeTargets.Length ?? 0;
                         if (volunteerTypes[i] == null)

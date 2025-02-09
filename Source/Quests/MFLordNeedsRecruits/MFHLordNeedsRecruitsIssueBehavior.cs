@@ -16,6 +16,8 @@ using MathF = TaleWorlds.Library.MathF;
 using TaleWorlds.CampaignSystem.ViewModelCollection.Party;
 using TaleWorlds.CampaignSystem.Encounters;
 using static TaleWorlds.CampaignSystem.Issues.ScoutEnemyGarrisonsIssueBehavior;
+using static ImprovedMinorFactions.IMFModels;
+using TaleWorlds.MountAndBlade;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 {
@@ -61,6 +63,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
         }
 
         private const IssueBase.IssueFrequency _IssueFrequency = IssueBase.IssueFrequency.Common;
+
+        internal const MFRelation RelationLevelNeededForQuest = MFRelation.Neutral;
 
         public class MFHLordNeedsRecruitsIssue : IssueBase
         {
@@ -167,14 +171,14 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{=R3fkc5wSH}You asked {COMPANION.LINK} to deliver at least {WANTED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} to " +
+                    TextObject text = new TextObject("{=R3fkc5wSH}You asked {COMPANION.LINK} to deliver at least {WANTED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} to " +
                         "{ISSUE_GIVER.LINK}. They should rejoin your party in {RETURN_DAYS} days.");
-                    setTextTroopDescriptions(textObject);
-                    textObject.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject);
-                    textObject.SetCharacterProperties("COMPANION", base.AlternativeSolutionHero.CharacterObject);
-                    textObject.SetTextVariable("WANTED_RECRUIT_AMOUNT", this.RequestedRecruitCount);
-                    textObject.SetTextVariable("RETURN_DAYS", base.GetTotalAlternativeSolutionDurationInDays());
-                    return textObject;
+                    setTextTroopDescriptions(text);
+                    text.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject);
+                    text.SetCharacterProperties("COMPANION", base.AlternativeSolutionHero.CharacterObject);
+                    text.SetTextVariable("WANTED_RECRUIT_AMOUNT", this.RequestedRecruitCount);
+                    text.SetTextVariable("RETURN_DAYS", base.GetTotalAlternativeSolutionDurationInDays());
+                    return text;
                 }
             }
 
@@ -259,7 +263,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                 return _IssueFrequency;
             }
 
-            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero relationHero, out SkillObject skill)
+            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero? relationHero, out SkillObject? skill)
             {
                 flag = PreconditionFlags.None;
                 relationHero = null;
@@ -270,13 +274,13 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     return false;
                 }
 
-                if (issueGiver.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest)
+                if (issueGiver!.GetRelationWithPlayer() < MinRelationNeeded(RelationLevelNeededForQuest))
                 {
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
                 }
-                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.Clan))
+                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero!.MapFaction)
+                    || Helpers.ConsidersMFOutlaw(Hero.MainHero.MapFaction, issueGiver.Clan))
                 {
                     flag |= PreconditionFlags.AtWar;
                 }
@@ -478,6 +482,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                 base.StartQuest();
                 base.AddTrackedObject(base.QuestGiver);
                 this._questProgressLogTest = base.AddDiscreteLog(this.QuestStartedLogText, new TextObject("{=r8rwl9ZS}Delivered Recruits"), this._deliveredRecruitCount, this._requestedRecruitCount);
+                Mission.Current?.EndMission();
             }
 
             protected override void SetDialogs()
@@ -541,16 +546,18 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                                     Campaign.Current.ConversationManager.ContinueConversation();
                                 }
                             })
-                    .GotoDialogState("quest_discuss")
+                        .GotoDialogState("quest_discuss")
                     .PlayerOption(new TextObject("{=PZqGagXt}No, not yet. I'm still looking for them."))
                         .Condition(() => !this._playerReachedRequestedAmount & changeDialogAfterTransfer)
                         .Consequence(delegate {
                             changeDialogAfterTransfer = false;
                         })
                         .NpcLine(new TextObject("{=L1JyetPq}I am glad to hear that.[ib:closed2]"))
+                        .GotoDialogState("hero_main_options")
                         .CloseDialog()
                     .PlayerOption(new TextObject("{=OlOhuO7X}No thank you. Good day to you."))
                         .Condition(() => !this._playerReachedRequestedAmount && !changeDialogAfterTransfer)
+                        .GotoDialogState("hero_main_options")
                         .CloseDialog()
                         .EndPlayerOptions()
                         .CloseDialog()

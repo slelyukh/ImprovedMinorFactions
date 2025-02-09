@@ -18,6 +18,7 @@ using TaleWorlds.ObjectSystem;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Library;
+using static ImprovedMinorFactions.IMFModels;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 {
@@ -60,6 +61,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
         }
 
         private const IssueBase.IssueFrequency _IssueFrequency = IssueBase.IssueFrequency.Common;
+
+        internal const MFRelation RelationLevelNeededForQuest = MFRelation.Neutral;
 
         public class MFHNotableNeedsTroopsTrainedIssue : IssueBase
         {
@@ -108,11 +111,11 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{=5ORyuslE2}{ISSUE_GIVER.NAME} needs some of his {MINOR_FACTION} recruits to gain some real war experience " +
+                    TextObject text = new TextObject("{=5ORyuslE2}{ISSUE_GIVER.NAME} needs some of his {MINOR_FACTION} recruits to gain some real war experience " +
                         "{?ISSUE_GIVER.GENDER}She{?}He{\\?} wants you to take them with you on some fairly safe expeditions, such as hunting some bandits.")
                         .SetTextVariable("MINOR_FACTION", IssueClan().Name);
-                    textObject.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject, false);
-                    return textObject;
+                    text.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject, false);
+                    return text;
                 }
             }
             
@@ -278,7 +281,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 return new MFHNotableNeedsTroopsTrainedIssueQuest(questId, base.IssueOwner, CampaignTime.DaysFromNow(QuestDuration), base.IssueDifficultyMultiplier, this.RewardGold);
             }
 
-            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero relationHero, out SkillObject skill)
+            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero? relationHero, out SkillObject? skill)
             {
                 flag = PreconditionFlags.None;
                 relationHero = null;
@@ -290,13 +293,13 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                     return false;
                 }
 
-                if (issueGiver.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest)
+                if (issueGiver!.GetRelationWithPlayer() < MinRelationNeeded(RelationLevelNeededForQuest))
                 {
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
                 }
-                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
+                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero!.MapFaction)
+                    || Helpers.ConsidersMFOutlaw(Hero.MainHero.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
                 {
                     flag |= PreconditionFlags.AtWar;
                 }
@@ -500,7 +503,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero, this.RewardGold);
                 base.QuestGiver.AddPower(QuestGiverPowerBonusOnSuccess);
                 ChangeRelationAction.ApplyPlayerRelation(QuestClan().Leader, ClanRelationBonusOnSuccess);
-                Helpers.GetMFHideout(base.QuestGiver.CurrentSettlement).UpgradeMilitia(MilitiaToUpgradeOnSuccess);
+                Helpers.GetMFHideout(base.QuestGiver.CurrentSettlement)!.UpgradeMilitia(MilitiaToUpgradeOnSuccess);
                 base.AddLog(this._totalSuccessLog);
                 base.CompleteQuestWithSuccess();
             }
@@ -516,7 +519,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero, this.RewardGold);
                 base.QuestGiver.AddPower(QuestGiverPowerBonusOnSuccess);
                 ChangeRelationAction.ApplyPlayerRelation(QuestClan().Leader, ClanRelationBonusOnSuccess);
-                Helpers.GetMFHideout(base.QuestGiver.CurrentSettlement).UpgradeMilitia((int) (MilitiaToUpgradeOnSuccess * 0.6));
+                Helpers.GetMFHideout(base.QuestGiver.CurrentSettlement)!.UpgradeMilitia((int) (MilitiaToUpgradeOnSuccess * 0.6));
                 base.AddLog(this._partialSuccessLog);
                 base.CompleteQuestWithSuccess();
             }
@@ -532,7 +535,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero, this.RewardGold);
                 base.QuestGiver.AddPower(QuestGiverPowerBonusOnSuccess);
                 ChangeRelationAction.ApplyPlayerRelation(QuestClan().Leader, (int) (ClanRelationBonusOnSuccess * 0.6));
-                Helpers.GetMFHideout(base.QuestGiver.CurrentSettlement).UpgradeMilitia((int)(MilitiaToUpgradeOnSuccess * 0.2));
+                Helpers.GetMFHideout(base.QuestGiver.CurrentSettlement)!.UpgradeMilitia((int)(MilitiaToUpgradeOnSuccess * 0.2));
                 base.AddLog(this._partialSuccessLog);
                 base.CompleteQuestWithSuccess();
             }
@@ -589,9 +592,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             {
                 get
                 {
-                    TextObject textObject = new TextObject("{=q2aed7tv}Train troops for {ISSUE_OWNER.NAME}");
-                    textObject.SetCharacterProperties("ISSUE_OWNER", base.QuestGiver.CharacterObject);
-                    return textObject;
+                    TextObject text = new TextObject("{=q2aed7tv}Train troops for {ISSUE_OWNER.NAME}");
+                    text.SetCharacterProperties("ISSUE_OWNER", base.QuestGiver.CharacterObject);
+                    return text;
                 }
             }
 
@@ -797,9 +800,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 
             private bool _popUpOpened;
 
-            private CharacterObject _questGivenChar;
+            private CharacterObject? _questGivenChar;
 
-            private CharacterObject _questTargetChar;
+            private CharacterObject? _questTargetChar;
 
             private const int PlayerHonorBonusOnSuccess = 50;
 
@@ -825,7 +828,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             private CampaignTimeControlMode _campaignTimeControlModeCacheForDecisionPopUp;
 
             [SaveableField(2)]
-            private JournalLog _playerStartsQuestLog;
+            private JournalLog? _playerStartsQuestLog;
 
             [SaveableField(3)]
             private int _upgradedTroopsCount;

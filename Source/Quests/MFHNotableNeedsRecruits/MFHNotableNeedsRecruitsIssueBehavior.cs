@@ -17,6 +17,7 @@ using TaleWorlds.CampaignSystem.GameMenus;
 using TaleWorlds.CampaignSystem.Settlements;
 using System.Linq;
 using TaleWorlds.CampaignSystem.MapEvents;
+using static ImprovedMinorFactions.IMFModels;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 {
@@ -56,6 +57,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
         }
 
         private const IssueBase.IssueFrequency _IssueFrequency = IssueBase.IssueFrequency.Common;
+
+        internal const MFRelation RelationLevelNeededForQuest = MFRelation.Neutral;
 
         public class MFHNotableNeedsRecruitsIssue : IssueBase
         {
@@ -265,7 +268,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                 return _IssueFrequency;
             }
 
-            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero relationHero, out SkillObject skill)
+            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero? relationHero, out SkillObject? skill)
             {
                 flag = PreconditionFlags.None;
                 relationHero = null;
@@ -277,13 +280,13 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     return false;
                 }
 
-                if (issueGiver.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest)
+                if (issueGiver!.GetRelationWithPlayer() < IMFModels.MinRelationNeeded(RelationLevelNeededForQuest))
                 {
                     flag |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
                 }
-                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction)
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
+                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero!.MapFaction)
+                    || Helpers.ConsidersMFOutlaw(Hero.MainHero.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
                 {
                     flag |= PreconditionFlags.AtWar;
                 }
@@ -492,7 +495,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             {
                 base.StartQuest();
                 base.AddTrackedObject(base.QuestGiver.CurrentSettlement);
-                this._questProgressLogTest = base.AddDiscreteLog(this.QuestStartedLogText, new TextObject("{=r8rwl9ZS}Delivered Recruits"), this._deliveredRecruitCount, this._requestedRecruitCount);
+                this._questProgressLog = base.AddDiscreteLog(this.QuestStartedLogText, new TextObject("{=r8rwl9ZS}Delivered Recruits"), this._deliveredRecruitCount, this._requestedRecruitCount);
             }
 
             protected override void SetDialogs()
@@ -605,8 +608,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     this._rewardGold += this.RewardForEachRecruit(troopRosterElement.Character) * troopRosterElement.Number;
                     this._deliveredRecruitCount += troopRosterElement.Number;
                 }
-                this._questProgressLogTest.UpdateCurrentProgress(this._deliveredRecruitCount);
-                this._questProgressLogTest.TaskName.SetTextVariable("TOTAL_REWARD", this._rewardGold);
+                this._questProgressLog.UpdateCurrentProgress(this._deliveredRecruitCount);
+                this._questProgressLog.TaskName.SetTextVariable("TOTAL_REWARD", this._rewardGold);
                 if (this._deliveredRecruitCount == this._requestedRecruitCount)
                 {
                     this._playerReachedRequestedAmount = true;
@@ -662,8 +665,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     new Tuple<TraitObject, int>(DefaultTraits.Honor, PlayerHonorBonusOnSuccess)
                 });
                 var mfHideout = Helpers.GetMFHideout(base.QuestGiver.CurrentSettlement);
-                mfHideout.Hearth += QuestSettlementHearthBonusOnSuccess;
-                mfHideout.Settlement.Militia += QuestSettlementMilitiaBonusOnSuccess;
+                mfHideout!.Hearth += QuestSettlementHearthBonusOnSuccess;
+                mfHideout!.Settlement.Militia += QuestSettlementMilitiaBonusOnSuccess;
                 ChangeRelationAction.ApplyPlayerRelation(QuestClan().Leader, ClanRelationBonusOnSuccess);
                 GiveGoldAction.ApplyBetweenCharacters(null, Hero.MainHero, this._rewardGold, false);
                 base.QuestGiver.AddPower(QuestGiverNotablePowerBonusOnSuccess);
@@ -724,7 +727,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             private bool _playerReachedRequestedAmount;
 
             [SaveableField(7)]
-            private JournalLog _questProgressLogTest;
+            private JournalLog _questProgressLog;
         }
 
         public class MFHNotableNeedsRecruitsIssueBehaviorTypeDefiner : SaveableTypeDefiner

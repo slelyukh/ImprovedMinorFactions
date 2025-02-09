@@ -10,14 +10,11 @@ using TaleWorlds.SaveSystem;
 using TaleWorlds.Library;
 using System.Linq;
 using TaleWorlds.Localization;
-using static TaleWorlds.CampaignSystem.CampaignTime;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
-using Helpers;
-using TaleWorlds.CampaignSystem.Actions;
-using TaleWorlds.CampaignSystem.CharacterDevelopment;
-using TaleWorlds.MountAndBlade.GauntletUI.Widgets.Mission.NameMarker;
+using System;
+using MathF = TaleWorlds.Library.MathF;
 
 namespace ImprovedMinorFactions
 {
@@ -58,7 +55,7 @@ namespace ImprovedMinorFactions
         private void OnLoad()
         {
             IMFManager.InitManagerIfNone();
-            IMFManager.Current.AddLoadedMFHideout(this);
+            IMFManager.Current!.AddLoadedMFHideout(this);
         }
 
         public void ActivateHideoutFirstTime()
@@ -75,7 +72,6 @@ namespace ImprovedMinorFactions
                 return;
                 // throw new System.Exception("double clan activation");
             }
-
             var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
             var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
             if (notable1 == null || notable2 == null)
@@ -216,7 +212,7 @@ namespace ImprovedMinorFactions
             int loopCounter = 0;
             while (count > 0 && loopCounter < 20)
             {
-                CharacterObject troopToUpgrade = null;
+                CharacterObject? troopToUpgrade = null;
                 loopCounter++;
 
                 // TODO: randomly choose troop to upgrade
@@ -238,8 +234,6 @@ namespace ImprovedMinorFactions
                     break;
                 }
             }
-            // if (loopCounter >= 20)
-            // InformationManager.DisplayMessage(new InformationMessage("UPGRADE MILITIA INFINITE LOOP"));
 
         }
 
@@ -305,8 +299,16 @@ namespace ImprovedMinorFactions
             yield break;
         }
 
-        // Hideout copypasta
-        public PartyBase GetNextDefenderParty(ref int partyIndex, MapEvent.BattleTypes battleType)
+        // makes sure nomad camp does not migrate before this time
+        public void ExtendNomadCampMigrationTimePastTime(CampaignTime time)
+        {
+            if (this.ActivationTime + IMFModels.NomadHideoutLifetime < time)
+            {
+                this.ActivationTime = time - IMFModels.NomadHideoutLifetime + CampaignTime.Days(3);
+            }
+        }
+
+        public PartyBase? GetNextDefenderParty(ref int partyIndex, MapEvent.BattleTypes battleType)
         {
             partyIndex++;
             if (partyIndex == 0)
@@ -330,7 +332,7 @@ namespace ImprovedMinorFactions
 
         public IFaction MapFaction
         {
-            get => _ownerclan.MapFaction;
+            get => _ownerclan!.MapFaction;
         }
 
         public bool IsSpotted
@@ -372,13 +374,13 @@ namespace ImprovedMinorFactions
 
         public override void Deserialize(MBObjectManager objectManager, XmlNode node)
         {
-            base.BackgroundCropPosition = float.Parse(node.Attributes.GetNamedItem("background_crop_position").Value);
-            base.BackgroundMeshName = node.Attributes.GetNamedItem("background_mesh").Value;
-            base.WaitMeshName = node.Attributes.GetNamedItem("wait_mesh").Value;
+            base.BackgroundCropPosition = float.Parse(node!.Attributes!.GetNamedItem("background_crop_position")!.Value!);
+            base.BackgroundMeshName = node!.Attributes!.GetNamedItem("background_mesh")!.Value;
+            base.WaitMeshName = node!.Attributes!.GetNamedItem("wait_mesh")!.Value;
             base.Deserialize(objectManager, node);
-            if (node.Attributes.GetNamedItem("scene_name") != null)
+            if (node!.Attributes!.GetNamedItem("scene_name") != null)
             {
-                this.SceneName = node.Attributes.GetNamedItem("scene_name").InnerText;
+                this.SceneName = node!.Attributes!.GetNamedItem("scene_name")!.InnerText;
             }
         }
 
@@ -386,7 +388,7 @@ namespace ImprovedMinorFactions
         {
             get
             {
-                return IMFModels.GetMilitiaChange(this.Settlement);
+                return IMFModels.GetMilitiaChange(this);
             }
         }
 
@@ -425,7 +427,7 @@ namespace ImprovedMinorFactions
         {
             get
             {
-                return IMFModels.GetHearthChange(this.Settlement, true);
+                return IMFModels.GetHearthChange(this, true);
             }
         }
 

@@ -9,6 +9,8 @@ using ImprovedMinorFactions.Source.Patches;
 using ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits;
 using ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits;
 using ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained;
+using ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion;
+using ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBehavior.cs;
 using ImprovedMinorFactions.Source.Quests.NearbyHideout;
 using StoryMode;
 using TaleWorlds.CampaignSystem;
@@ -36,7 +38,7 @@ namespace ImprovedMinorFactions
             //if (Harmony.HasAnyPatches("BannerKings"))
                 //harmony.PatchCategory(assembly, "BannerKingsPatches");
 
-            harmony.PatchAllUncategorized(assembly);        
+            harmony.PatchAllUncategorized(assembly);
         }
 
         protected override void OnSubModuleUnloaded()
@@ -51,6 +53,8 @@ namespace ImprovedMinorFactions
 
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
+            IMFTexts.InitIMFTexts();
+
             CampaignGameStarter? starter = gameStarterObject as CampaignGameStarter;
             if (starter == null)
             {
@@ -62,7 +66,10 @@ namespace ImprovedMinorFactions
             starter.AddBehavior(new MFHNotableNeedsTroopsTrainedIssueBehavior());
             starter.AddBehavior(new MFHLordNeedsRecruitsIssueBehavior());
             starter.AddBehavior(new NearbyMFHideoutIssueBehavior());
+            starter.AddBehavior(new MFMafiaCaravanExtortionIssueBehavior());
+            starter.AddBehavior(new MFNomadNeedsVillageRaidedIssueBehavior());
             starter.AddBehavior(new NomadMFsCampaignBehavior());
+            starter.AddBehavior(new MFDescriptionDialogCampaignBehavior());
 
             var clanFinanceModel = GetGameModel<ClanFinanceModel>(starter);
             if (clanFinanceModel is null)

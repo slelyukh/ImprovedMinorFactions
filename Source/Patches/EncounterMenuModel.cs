@@ -14,16 +14,16 @@ namespace ImprovedMinorFactions.Patches
             _previousModel = previousModel;
         }
 
-        public override string GetEncounterMenu(PartyBase attackerParty, PartyBase defenderParty, out bool startBattle, out bool joinBattle)
+        public override string? GetEncounterMenu(PartyBase attackerParty, PartyBase defenderParty, out bool startBattle, out bool joinBattle)
         {
             string result = _previousModel.GetEncounterMenu(attackerParty, defenderParty, out startBattle, out joinBattle);
 
             if (result == null)
             {
-                PartyBase? encounteredParty = Helpers.CallPrivateMethod(null, 
+                PartyBase encounteredParty = (Helpers.CallPrivateMethod(null, 
                     "GetEncounteredPartyBase", 
                     new object[] { attackerParty, defenderParty }, 
-                    typeof(DefaultEncounterGameMenuModel)) as PartyBase;
+                    typeof(DefaultEncounterGameMenuModel)) as PartyBase)!;
                 if (encounteredParty.IsSettlement && Helpers.IsMFHideout(encounteredParty.Settlement))
                     result = "mf_hideout_place";
             }
