@@ -66,8 +66,8 @@ namespace ImprovedMinorFactions
             starter.AddBehavior(new MFHNotableNeedsTroopsTrainedIssueBehavior());
             starter.AddBehavior(new MFHLordNeedsRecruitsIssueBehavior());
             starter.AddBehavior(new NearbyMFHideoutIssueBehavior());
-            starter.AddBehavior(new MFMafiaCaravanExtortionIssueBehavior());
-            starter.AddBehavior(new MFNomadNeedsVillageRaidedIssueBehavior());
+            // starter.AddBehavior(new MFMafiaCaravanExtortionIssueBehavior()); //TODO: finish quest
+            // starter.AddBehavior(new MFNomadNeedsVillageRaidedIssueBehavior()); //TODO: finish quest
             starter.AddBehavior(new NomadMFsCampaignBehavior());
             starter.AddBehavior(new MFDescriptionDialogCampaignBehavior());
 

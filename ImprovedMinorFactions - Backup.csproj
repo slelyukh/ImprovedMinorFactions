@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>0.3.3</Version>
+    <Version>0.3.2</Version>
     <TargetFrameworks>net472;net6</TargetFrameworks>
     <Platforms>x64</Platforms>
     <LangVersion>10.0</LangVersion>
@@ -80,7 +80,7 @@
   </ItemGroup>
 
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
-    <Exec Command="xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Improved Minor Factions (AD1259)\bin\Win64_Shipping_Client&quot; /Y&#xD;&#xA;xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\ImprovedMinorFactions (CE)\bin\Win64_Shipping_Client&quot; /Y&#xD;&#xA;xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Improved Minor Factions (No Map)\bin\Win64_Shipping_Client&quot; /Y&#xD;&#xA;xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\ImprovedMinorFactions (Realm Divided)\bin\Win64_Shipping_Client&quot; /Y" />
+    <Exec Command="xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Improved Minor Factions (AD1259)\bin\Win64_Shipping_Client&quot; /Y&#xD;&#xA;xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\ImprovedMinorFactions (CE)\bin\Win64_Shipping_Client&quot; /Y&#xD;&#xA;xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Improved Minor Factions (No Map)\bin\Win64_Shipping_Client&quot; /Y&#xD;&#xA;xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Improved Minor Factions (Realm Divided)\bin\Win64_Shipping_Client&quot; /Y" />
   </Target>
 
 </Project>
