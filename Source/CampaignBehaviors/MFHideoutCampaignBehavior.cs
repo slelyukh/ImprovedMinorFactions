@@ -32,8 +32,32 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             // debug listeners
             CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, new Action(OnDailyTick));
             CampaignEvents.OnQuarterDailyPartyTick.AddNonSerializedListener(this, new Action<MobileParty>(DEBUGMFPartyTick));
+            // CampaignEvents.MissionTickEvent.AddNonSerializedListener(this, new Action<float>(OnMissionTick));
         }
 
+        // DEBUG FUNCs
+        public void OnMissionTick(float dt)
+        {
+            InformationManager.DisplayMessage(new InformationMessage("Is MFHideout = " + curSettlementIsMFHideout()));
+        }
+
+        private bool curSettlementIsMFHideout()
+        {
+            var ownerClan = Settlement.CurrentSettlement?.OwnerClan;
+            var setl = Settlement.CurrentSettlement;
+
+            return setl != null
+                && ownerClan != null
+                && !setl.IsHideout
+                && !setl.IsCastle
+                && !setl.IsVillage
+                && !setl.IsTown
+                && ownerClan.IsMinorFaction
+                && !ownerClan.IsNomad
+                && ownerClan != Clan.PlayerClan;
+        }
+
+        // DEBUG FUNCs
         public void OnDailyTick()
         {
 
