@@ -7,6 +7,8 @@ using HarmonyLib;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
+using TaleWorlds.CampaignSystem.Issues;
+using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
@@ -26,8 +28,27 @@ namespace ImprovedMinorFactions.Source.Patches
     {
         static void Postfix(Hero __instance, ref bool __result)
         {
-            if (__result == false && Helpers.IsMFGangLeader(__instance))
+            if (__result == false && Helpers.IsMFNotable(__instance))
                 __result = true;
+        }
+    }
+
+    // TODO: remove debug
+    [HarmonyPatch(typeof(GangLeaderNeedsToOffloadStolenGoodsIssueBehavior), "ConditionsHold")]
+    public class debugConditionsHoldPatch
+    {
+        static void Prefix(Hero issueGiver)
+        {
+            var occupation = issueGiver.Occupation == Occupation.Preacher ? "Preacher" : "Gang Leader";
+            if (Helpers.IsMFNotable(issueGiver))
+            {
+                InformationManager.DisplayMessage(new InformationMessage("Checking GangLeaderNeedsToOffloadStolenGoods for :"));
+                InformationManager.DisplayMessage(
+                    new InformationMessage(issueGiver.Name + " Is gang leader: " + issueGiver.IsGangLeader + " Is notable: " + issueGiver.IsNotable + " occupation: " + occupation)
+                    );
+                if (issueGiver.IsGangLeader)
+                    InformationManager.DisplayMessage(new InformationMessage("ERROR BROKEN NOTABLE", Color.Black));
+            }
         }
     }
 

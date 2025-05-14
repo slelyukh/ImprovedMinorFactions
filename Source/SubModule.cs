@@ -54,6 +54,7 @@ namespace ImprovedMinorFactions
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
             IMFTexts.InitIMFTexts();
+            IMFManager.ConvertGangLeaderMFNotablesToPreachers();
 
             CampaignGameStarter? starter = gameStarterObject as CampaignGameStarter;
             if (starter == null)

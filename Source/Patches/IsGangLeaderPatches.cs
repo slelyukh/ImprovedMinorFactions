@@ -20,7 +20,7 @@ namespace ImprovedMinorFactions.Source.Patches
     {
         static void Postfix(CharacterObject character, ref string __result)
         {
-            if (Helpers.IsMFGangLeader(character.HeroObject))
+            if (Helpers.IsMFNotable(character.HeroObject))
             {
                 if (character.HeroObject.GetTraitLevel(DefaultTraits.Mercy) <= 0 && character.HeroObject.GetTraitLevel(DefaultTraits.Calculating) < 0)
                 {
@@ -37,7 +37,7 @@ namespace ImprovedMinorFactions.Source.Patches
     {
         static void Postfix(CharacterObject character, ref string __result)
         {
-            if (Helpers.IsMFGangLeader(character.HeroObject))
+            if (Helpers.IsMFNotable(character.HeroObject))
             {
                 __result = "aggressive";
             }
@@ -49,7 +49,7 @@ namespace ImprovedMinorFactions.Source.Patches
     {
         static void Postfix(Hero hero, ref TextObject __result)
         {
-            if (Helpers.IsMFGangLeader(hero))
+            if (Helpers.IsMFNotable(hero))
             {
                 __result = GameTexts.FindText("str_charactertype_gangleader");
             }
@@ -61,7 +61,7 @@ namespace ImprovedMinorFactions.Source.Patches
     {
         static void Postfix(CharacterObject character, ref bool __result)
         {
-            if (Helpers.IsMFGangLeader(character.HeroObject))
+            if (Helpers.IsMFNotable(character.HeroObject))
             {
                 __result = false;
             }
@@ -73,7 +73,7 @@ namespace ImprovedMinorFactions.Source.Patches
     {
         static void Postfix(CharacterObject character, ref bool __result)
         {
-            if (character.IsHero && Helpers.IsMFGangLeader(character.HeroObject))
+            if (character.IsHero && Helpers.IsMFNotable(character.HeroObject))
             {
                 int heroRelation = CharacterRelationManager.GetHeroRelation(character.HeroObject, Hero.MainHero);
                 __result = Clan.PlayerClan.Renown < 100f
@@ -89,7 +89,7 @@ namespace ImprovedMinorFactions.Source.Patches
         static void Postfix(ref bool __result)
         {
             if (Campaign.Current.ConversationManager.CurrentConversationIsFirst 
-                && Helpers.IsMFGangLeader(Hero.OneToOneConversationHero) 
+                && Helpers.IsMFNotable(Hero.OneToOneConversationHero) 
                 && Hero.OneToOneConversationHero.CharacterObject.GetTraitLevel(DefaultTraits.Calculating) == 1)
             {
                 StringHelpers.SetCharacterProperties("CONVERSATION_HERO", Hero.OneToOneConversationHero.CharacterObject);
@@ -105,7 +105,7 @@ namespace ImprovedMinorFactions.Source.Patches
         static void Postfix(ref bool __result)
         {
             if (Campaign.Current.ConversationManager.CurrentConversationIsFirst 
-                && Helpers.IsMFGangLeader(Hero.OneToOneConversationHero) 
+                && Helpers.IsMFNotable(Hero.OneToOneConversationHero) 
                 && Hero.OneToOneConversationHero.GetTraitLevel(DefaultTraits.Mercy) < 0)
             {
                 StringHelpers.SetCharacterProperties("CONVERSATION_HERO", Hero.OneToOneConversationHero.CharacterObject);
@@ -121,7 +121,7 @@ namespace ImprovedMinorFactions.Source.Patches
         static void Postfix(ref bool __result)
         {
             if (Campaign.Current.ConversationManager.CurrentConversationIsFirst
-                && Helpers.IsMFGangLeader(Hero.OneToOneConversationHero))
+                && Helpers.IsMFNotable(Hero.OneToOneConversationHero))
             {
                 StringHelpers.SetCharacterProperties("CONVERSATION_HERO", Hero.OneToOneConversationHero.CharacterObject);
                 __result = true;
@@ -136,7 +136,7 @@ namespace ImprovedMinorFactions.Source.Patches
         static void Postfix(ref bool __result)
         {
             if (Campaign.Current.ConversationManager.CurrentConversationIsFirst 
-                && Helpers.IsMFGangLeader(Hero.OneToOneConversationHero)
+                && Helpers.IsMFNotable(Hero.OneToOneConversationHero)
                 && Hero.OneToOneConversationHero.CharacterObject.GetPersona() == DefaultTraits.PersonaIronic)
             {
                 StringHelpers.SetCharacterProperties("CONVERSATION_HERO", Hero.OneToOneConversationHero.CharacterObject);
@@ -151,7 +151,7 @@ namespace ImprovedMinorFactions.Source.Patches
     {
         static void Postfix(Hero hero, ref bool __result)
         {
-            if (Helpers.IsMFGangLeader(hero))
+            if (Helpers.IsMFNotable(hero))
             {
                 __result = true;
             }

@@ -259,7 +259,7 @@ namespace ImprovedMinorFactions.Source.Patches
 
         public static bool Prefix(Hero notable, ref int __result)
         {
-            if (Helpers.IsMFGangLeader(notable))
+            if (Helpers.IsMFNotable(notable))
             {
                 __result = 0;
                 return false;

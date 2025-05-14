@@ -44,6 +44,7 @@ namespace ImprovedMinorFactions
         // true if mfh1 should replace mfh2.
         private bool ShouldReplaceHideout(MinorFactionHideout mfh1, MinorFactionHideout mfh2)
         {
+            if (mfh1?.Settlement?.Notables == null) return false;
             if (mfh1.IsActiveOrScheduled && mfh1.Settlement.Notables.Count > 0)
             {
                 return true;
@@ -510,6 +511,20 @@ namespace ImprovedMinorFactions
         internal MBReadOnlyList<MinorFactionHideout> AllMFHideouts
         {
             get => this._hideouts;
+        }
+
+        public static void ConvertGangLeaderMFNotablesToPreachers()
+        {
+            foreach (Hero h in Hero.AllAliveHeroes)
+            {
+                if (h != null && Helpers.IsMFHideout(h.CurrentSettlement) && h.Occupation == Occupation.GangLeader)
+                {
+                    h.SetNewOccupation(Occupation.Preacher);
+                    // TODO: remove debug
+                    InformationManager.DisplayMessage(new InformationMessage(h.Name + " Is gang leader: " + h.IsGangLeader + " Is notable: " + h.IsNotable));
+                }
+                    
+            }
         }
 
         public static IMFManager? Current { get; set; }

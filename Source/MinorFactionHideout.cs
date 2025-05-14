@@ -72,8 +72,8 @@ namespace ImprovedMinorFactions
                 return;
                 // throw new System.Exception("double clan activation");
             }
-            var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
-            var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.GangLeader, this.Settlement);
+            var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.Preacher, this.Settlement);
+            var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.Preacher, this.Settlement);
             if (notable1 == null || notable2 == null)
             {
                 InformationManager.DisplayMessage(new InformationMessage($"{this.Name} notable creation has failed!!! Please report this on Nexus mod page", Color.Black));
