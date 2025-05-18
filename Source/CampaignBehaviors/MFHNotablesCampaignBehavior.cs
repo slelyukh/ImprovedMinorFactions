@@ -145,7 +145,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 {
                     notable.SetHasMet();
                     // TODO REMOVE DEBUG
-                    InformationManager.DisplayMessage(new InformationMessage(notable.Name + " Is gang leader: " + notable.IsGangLeader + " Is notable: " + notable.IsNotable));
+                    //InformationManager.DisplayMessage(new InformationMessage(notable.Name + " Is gang leader: " + notable.IsGangLeader + " Is notable: " + notable.IsNotable));
 
                     foreach (Hero h in Hero.AllAliveHeroes)
                     {
@@ -153,7 +153,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                         {
                             h.SetNewOccupation(Occupation.Preacher);
                             // TODO: remove debug
-                            InformationManager.DisplayMessage(new InformationMessage(h.Name + " Is gang leader: " + h.IsGangLeader + " Is notable: " + h.IsNotable));
+                            //InformationManager.DisplayMessage(new InformationMessage(h.Name + " Is gang leader: " + h.IsGangLeader + " Is notable: " + h.IsNotable));
                         }
 
                     }

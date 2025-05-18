@@ -34,7 +34,7 @@ namespace ImprovedMinorFactions.Source.Patches
     }
 
     // TODO: remove debug
-    [HarmonyPatch(typeof(GangLeaderNeedsToOffloadStolenGoodsIssueBehavior), "ConditionsHold")]
+    /*[HarmonyPatch(typeof(GangLeaderNeedsToOffloadStolenGoodsIssueBehavior), "ConditionsHold")]
     public class debugConditionsHoldPatch
     {
         static void Prefix(Hero issueGiver)
@@ -42,7 +42,7 @@ namespace ImprovedMinorFactions.Source.Patches
             var occupation = issueGiver.Occupation == Occupation.Preacher ? "Preacher" : "Gang Leader";
             if (Helpers.IsMFNotable(issueGiver))
             {
-                InformationManager.DisplayMessage(new InformationMessage("Checking GangLeaderNeedsToOffloadStolenGoods for :"));
+                //InformationManager.DisplayMessage(new InformationMessage("Checking GangLeaderNeedsToOffloadStolenGoods for :"));
                 InformationManager.DisplayMessage(
                     new InformationMessage(issueGiver.Name + " Is gang leader: " + issueGiver.IsGangLeader + " Is notable: " + issueGiver.IsNotable + " occupation: " + occupation)
                     );
@@ -50,7 +50,7 @@ namespace ImprovedMinorFactions.Source.Patches
                     InformationManager.DisplayMessage(new InformationMessage("ERROR BROKEN NOTABLE", Color.Black));
             }
         }
-    }
+    }*/
 
     [HarmonyPatch(typeof(Hero), "SetTraitLevel")]
     public class HeroSetTraitLevelPatch

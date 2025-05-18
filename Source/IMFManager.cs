@@ -44,7 +44,7 @@ namespace ImprovedMinorFactions
         // true if mfh1 should replace mfh2.
         private bool ShouldReplaceHideout(MinorFactionHideout mfh1, MinorFactionHideout mfh2)
         {
-            if (mfh1?.Settlement?.Notables == null) return false;
+            if (mfh1?.Owner == null || mfh1?.Settlement?.Notables == null) return false;
             if (mfh1.IsActiveOrScheduled && mfh1.Settlement.Notables.Count > 0)
             {
                 return true;
@@ -58,9 +58,10 @@ namespace ImprovedMinorFactions
         {
             if (_LoadedMFHideouts.ContainsKey(mfh.StringId))
             {
-                InformationManager.DisplayMessage(new InformationMessage($"{mfh.StringId} duplicate hideout saves! Please send your save file to modders on Nexus Mods.", Colors.Red));
-                if (ShouldReplaceHideout(mfh, _LoadedMFHideouts[mfh.StringId]))
-                    _LoadedMFHideouts[mfh.StringId] = mfh;
+                InformationManager.DisplayMessage(new InformationMessage($"{mfh.StringId} duplicate hideout saves! If you see any strange behavior please send your savefiles to Improved Minor Factions mod author.", Colors.Red));
+                // if (ShouldReplaceHideout(mfh, _LoadedMFHideouts[mfh.StringId]))
+                //    _LoadedMFHideouts[mfh.StringId] = mfh;
+                // When looking at save with duplicates the existing mfhideout seems to be consistently the one we want.
                 return;
             }
             
@@ -217,7 +218,6 @@ namespace ImprovedMinorFactions
             if (mfh.IsActiveOrScheduled)
                 throw new Exception("Trying to reassign active hideout to another clan!");
 
-            // TODO: update Name
             mfh.OwnerClan = newOwner;
             mfh.Settlement.Name = new TextObject("{=dt9393yju}{MINOR_FACTION} Hideout")
                 .SetTextVariable("MINOR_FACTION", newOwner.Name);
@@ -521,7 +521,7 @@ namespace ImprovedMinorFactions
                 {
                     h.SetNewOccupation(Occupation.Preacher);
                     // TODO: remove debug
-                    InformationManager.DisplayMessage(new InformationMessage(h.Name + " Is gang leader: " + h.IsGangLeader + " Is notable: " + h.IsNotable));
+                    //InformationManager.DisplayMessage(new InformationMessage(h.Name + " Is gang leader: " + h.IsGangLeader + " Is notable: " + h.IsNotable));
                 }
                     
             }
