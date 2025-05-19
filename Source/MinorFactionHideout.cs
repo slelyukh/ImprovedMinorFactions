@@ -113,7 +113,13 @@ namespace ImprovedMinorFactions
         private void ActivateHideout()
         {
             this._isActive = true;
-            this._isSpotted = false;
+            if (Clan.PlayerClan == this.OwnerClan)
+            {
+                this.PlayerSpotHideout();
+            } else
+            {
+                this._isSpotted = false;
+            }
             this._activationTime = CampaignTime.Now;
 
             // add lvl 3 militias
@@ -215,7 +221,6 @@ namespace ImprovedMinorFactions
                 CharacterObject? troopToUpgrade = null;
                 loopCounter++;
 
-                // TODO: randomly choose troop to upgrade
                 foreach (var troop in militiaRoster.GetTroopRoster())
                 {
                     if (troop.Character.UpgradeTargets.Length != 0)
@@ -235,6 +240,13 @@ namespace ImprovedMinorFactions
                 }
             }
 
+        }
+
+        public void PlayerSpotHideout()
+        {
+            this.IsSpotted = true;
+            this.Settlement.IsVisible = true;
+            CampaignEventDispatcher.Instance.OnHideoutSpotted(MobileParty.MainParty.Party, this.Settlement.Party);
         }
 
         public void DailyTick()

@@ -71,6 +71,7 @@ namespace ImprovedMinorFactions
             // starter.AddBehavior(new MFNomadNeedsVillageRaidedIssueBehavior()); //TODO: finish quest
             starter.AddBehavior(new NomadMFsCampaignBehavior());
             starter.AddBehavior(new MFDescriptionDialogCampaignBehavior());
+            starter.AddBehavior(new PlayAsMFBehavior());
 
             var clanFinanceModel = GetGameModel<ClanFinanceModel>(starter);
             if (clanFinanceModel is null)

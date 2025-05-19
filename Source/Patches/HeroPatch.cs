@@ -62,4 +62,37 @@ namespace ImprovedMinorFactions.Source.Patches
             return true;
         }
     }
+
+    [HarmonyPatch(typeof(Hero), "GetRelation")]
+    public class HeroGetRelationPatch
+    {
+        // If player clan IS the minor faction then the notables have 100 relation with them
+        static void Postfix(ref int __result, Hero __instance, Hero otherHero)
+        {
+            if (otherHero != Hero.MainHero && __instance != Hero.MainHero) return;
+            // else someone is the main hero
+            if (otherHero == __instance) __result = 100;
+            if (otherHero == Hero.MainHero && Helpers.IsMFNotable(__instance) &&  __instance?.CurrentSettlement?.OwnerClan == Clan.PlayerClan)
+            {
+                __result = 100;
+            }
+            if (__instance == Hero.MainHero && Helpers.IsMFNotable(otherHero) && otherHero?.CurrentSettlement?.OwnerClan == Clan.PlayerClan)
+            {
+                __result = 100;
+            }
+        }
+    }
+
+    [HarmonyPatch(typeof(Hero), "GetRelationWithPlayer")]
+    public class HeroGetRelationWithPlayerPatch
+    {
+        // If player clan IS the minor faction, then they have 100 relation with each other.
+        static void Postfix(ref float __result, Hero __instance)
+        {
+            if (Helpers.IsMFNotable(__instance) && __instance.Clan == Clan.PlayerClan)
+            {
+                __result = 100;
+            }
+        }
+    }
 }

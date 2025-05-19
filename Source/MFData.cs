@@ -38,7 +38,7 @@ namespace ImprovedMinorFactions
             ClanGender = IMFModels.ClanGender(c);
 
             // make sure clans that shouldn't have hideouts don't
-            if (mfClan.IsEliminated || mfClan.MapFaction == null || mfClan == Clan.PlayerClan)
+            if (mfClan.IsEliminated || mfClan.MapFaction == null)
                 NumActiveHideouts = 0;
         }
 

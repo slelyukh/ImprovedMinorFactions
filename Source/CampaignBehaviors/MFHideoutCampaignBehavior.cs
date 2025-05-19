@@ -30,9 +30,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, new Action<Clan>(OnClanDestroyed));
             CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, new Action<Clan, Kingdom, Kingdom, ChangeKingdomAction.ChangeKingdomActionDetail, bool>(OnClanChangedKingdom));
             // debug listeners
-            CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, new Action(OnDailyTick));
-            CampaignEvents.OnQuarterDailyPartyTick.AddNonSerializedListener(this, new Action<MobileParty>(DEBUGMFPartyTick));
-            // CampaignEvents.MissionTickEvent.AddNonSerializedListener(this, new Action<float>(OnMissionTick));
+            //CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, new Action(OnDailyTick));
+            //CampaignEvents.OnQuarterDailyPartyTick.AddNonSerializedListener(this, new Action<MobileParty>(DEBUGMFPartyTick));
+            //CampaignEvents.MissionTickEvent.AddNonSerializedListener(this, new Action<float>(OnMissionTick));
         }
 
         // DEBUG FUNCs
@@ -105,9 +105,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 float num2 = 1f - num / (hideoutSpottingDistance * hideoutSpottingDistance);
                 if (num2 > 0f && MBRandom.RandomFloat < num2 && !mfHideout.IsSpotted)
                 {
-                    mfHideout.IsSpotted = true;
-                    settlement.IsVisible = true;
-                    CampaignEventDispatcher.Instance.OnHideoutSpotted(MobileParty.MainParty.Party, settlement.Party);
+                    mfHideout.PlayerSpotHideout();
                 }
             }
         }
@@ -244,7 +242,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         {
             args.optionLeaveType = Options.LeaveType.Submenu;
             args.Tooltip = new TextObject("{=1PM860Jco}Taking hostile action will start a war between you and this Clan or whoever hired them.");
-            return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction) && Settlement.CurrentSettlement.IsActive;
+            return Clan.PlayerClan != Settlement.CurrentSettlement.OwnerClan
+                && !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction) 
+                && Settlement.CurrentSettlement.IsActive;
         }
 
         public void menu_hostile_action_on_consequence(MenuCallbackArgs args)
