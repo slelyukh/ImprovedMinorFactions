@@ -9,4 +9,5 @@
               under_development="false">
   <LanguageFile xml_path="EN/imf_module_strings_xml.xml" />
   <LanguageFile xml_path="EN/imf_settlements_xml.xml" />
+  <LanguageFile xml_path="EN/imf_npv_names_xml.xml" />
 </LanguageData>
