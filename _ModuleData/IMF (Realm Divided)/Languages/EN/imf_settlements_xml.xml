@@ -19,7 +19,13 @@
    <string id="forest_people_hideout" text="Forest People Camp"/>
    <string id="Eleftheroi_hideout" text="Eleftheroi Camp"/>
    <string id="lake_rat_hideout" text="Lake Rat Hideout"/>
-   <string id="IMF7c316a3b" text="Unassigned Hideout" />
+   <string id="IMFRD7c316a3b" text="Unassigned Hideout"/>
+   <string id="balion_hideout" text="Knights of Balion Hideout"/>
+   <string id="iltanlar_hideout" text="Iltanlar Hideout"/>
+   <string id="wayfarers_hideout" text="Wayfarers Hideout"/>
+   <string id="vaegs_hideout" text="Vaegir Guard Hideout"/>
+   <string id="auxilia_hideout" text="Auxilia Hideout"/>
+   <string id="beduins_hideout" text="Bedouins Hideout"/>
    <!-- complex -->
    <string id="25pNV9E3" text="Hideout Center"/>
 

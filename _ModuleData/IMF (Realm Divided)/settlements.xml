@@ -1,0 +1,820 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Settlements>
+   <!-- IMF -->
+  <Settlement id="hideout_ghilman_1" name="{=ghilman_hideout}Ghilman Hideout" owner="Faction.ghilman" posX="718.28" posY="72.684" culture="Culture.darshi">
+    <Components>
+      <MinorFactionHideout id="hideout_ghilman_1" map_icon="bandit_hideout_a" scene_name="desert_hideout_002" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_desert" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="desert_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_ghilman_2" name="{=ghilman_hideout}Ghilman Hideout" owner="Faction.ghilman" posX="712.2" posY="117.021" culture="Culture.darshi">
+    <Components>
+      <MinorFactionHideout id="hideout_ghilman_2" map_icon="bandit_hideout_a" scene_name="desert_hideout_002" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_desert" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="desert_hideout_003" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_ghilman_3" name="{=ghilman_hideout}Ghilman Hideout" owner="Faction.ghilman" posX="611.051" posY="74.261" culture="Culture.darshi">
+    <Components>
+      <MinorFactionHideout id="hideout_ghilman_3" map_icon="bandit_hideout_a" scene_name="desert_hideout_002" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_desert" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="desert_hideout_003" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_ghilman_4" name="{=ghilman_hideout}Ghilman Hideout" owner="Faction.ghilman" posX="643.251" posY="157.43" culture="Culture.darshi">
+    <Components>
+      <MinorFactionHideout id="hideout_ghilman_4" map_icon="bandit_hideout_a" scene_name="desert_hideout_004" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_desert" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="desert_hideout_004" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_ghilman_5" name="{=ghilman_hideout}Ghilman Hideout" owner="Faction.ghilman" posX="540.662" posY="77.46" culture="Culture.darshi">
+    <Components>
+      <MinorFactionHideout id="hideout_ghilman_5" map_icon="bandit_hideout_a" scene_name="desert_hideout_002" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_desert" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="desert_hideout_004" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_legion_1" name="{=legion_hideout}Legion Hideout" owner="Faction.legion_of_the_betrayed" posX="524.824" posY="303.939" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_legion_1" map_icon="bandit_hideout_b" scene_name="forest_hideout_003" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_legion_2" name="{=legion_hideout}Legion Hideout" owner="Faction.legion_of_the_betrayed" posX="578.735" posY="311.836" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_legion_2" map_icon="bandit_hideout_b" scene_name="forest_hideout_003" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_legion_3" name="{=legion_hideout}Legion Hideout" owner="Faction.legion_of_the_betrayed" posX="558.162" posY="379.201" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_legion_3" map_icon="bandit_hideout_b" scene_name="mountain_hideout_001" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_legion_4" name="{=legion_hideout}Legion Hideout" owner="Faction.legion_of_the_betrayed" posX="551.582" posY="481.548" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_legion_4" map_icon="bandit_hideout_b" scene_name="mountain_hideout_002" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_legion_5" name="{=legion_hideout}Legion Hideout" owner="Faction.legion_of_the_betrayed" posX="304.661" posY="377.495" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_legion_5" map_icon="bandit_hideout_b" scene_name="Canyon" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_skolderbrotva_1" name="{=skolderbroda_hideout}Skolderbroda Hideout" owner="Faction.skolderbrotva" posX="282.518" posY="553.649" culture="Culture.nord">
+    <Components>
+      <MinorFactionHideout id="hideout_skolderbrotva_1" map_icon="bandit_hideout_b" scene_name="mountain_hideout_001" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_skolderbrotva_2" name="{=skolderbroda_hideout}Skolderbroda Hideout" owner="Faction.skolderbrotva" posX="351.086" posY="567.503" culture="Culture.nord">
+    <Components>
+      <MinorFactionHideout id="hideout_skolderbrotva_2" map_icon="bandit_hideout_b" scene_name="mountain_hideout_001" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_skolderbrotva_3" name="{=skolderbroda_hideout}Skolderbroda Hideout" owner="Faction.skolderbrotva" posX="443.196" posY="502.706" culture="Culture.nord">
+    <Components>
+      <MinorFactionHideout id="hideout_skolderbrotva_3" map_icon="bandit_hideout_b" scene_name="Scene_Ceftadzime" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_skolderbrotva_4" name="{=skolderbroda_hideout}Skolderbroda Hideout" owner="Faction.skolderbrotva" posX="523.346" posY="549.653" culture="Culture.nord">
+    <Components>
+      <MinorFactionHideout id="hideout_skolderbrotva_4" map_icon="bandit_hideout_b" scene_name="Scene_Ceftadzime" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_skolderbrotva_5" name="{=skolderbroda_hideout}Skolderbroda Hideout" owner="Faction.skolderbrotva" posX="653.377" posY="622.519" culture="Culture.nord">
+    <Components>
+      <MinorFactionHideout id="hideout_skolderbrotva_5" map_icon="bandit_hideout_b" scene_name="mountain_hideout_001" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_boar_1" name="{=company_of_the_boar_hideout}Company of the Boar Hideout" owner="Faction.company_of_the_boar" posX="95.526" posY="517.762" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_boar_1" map_icon="bandit_hideout_c" scene_name="mountain_hideout_001" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_boar_2" name="{=company_of_the_boar_hideout}Company of the Boar Hideout" owner="Faction.company_of_the_boar" posX="144.054" posY="538.426" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_boar_2" map_icon="bandit_hideout_c" scene_name="mountain_hideout_001" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_boar_3" name="{=company_of_the_boar_hideout}Company of the Boar Hideout" owner="Faction.company_of_the_boar" posX="193.101" posY="478.978" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_boar_3" map_icon="bandit_hideout_c" scene_name="mountain_hideout_002" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_boar_4" name="{=company_of_the_boar_hideout}Company of the Boar Hideout" owner="Faction.company_of_the_boar" posX="157.346" posY="420.385" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_boar_4" map_icon="bandit_hideout_c" scene_name="scn_smugglersdescent1" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_boar_5" name="{=company_of_the_boar_hideout}Company of the Boar Hideout" owner="Faction.company_of_the_boar" posX="115.627" posY="483.446" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_boar_5" map_icon="bandit_hideout_c" scene_name="mountain_hideout_004" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_wolfskin_1" name="{=wolfskin_hideout}Wolfskin Hideout" owner="Faction.wolfskins" posX="208.035" posY="427.198" culture="Culture.battania">
+    <Components>
+      <MinorFactionHideout id="hideout_wolfskin_1" map_icon="bandit_hideout_b" scene_name="Canyon" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_wolfskin_2" name="{=wolfskin_hideout}Wolfskin Hideout" owner="Faction.wolfskins" posX="259.994" posY="445.483" culture="Culture.battania">
+    <Components>
+      <MinorFactionHideout id="hideout_wolfskin_2" map_icon="bandit_hideout_b" scene_name="Canyon" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_wolfskin_3" name="{=wolfskin_hideout}Wolfskin Hideout" owner="Faction.wolfskins" posX="267.549" posY="508.385" culture="Culture.battania">
+    <Components>
+      <MinorFactionHideout id="hideout_wolfskin_3" map_icon="bandit_hideout_b" scene_name="battanian_burial_mound" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_wolfskin_4" name="{=wolfskin_hideout}Wolfskin Hideout" owner="Faction.wolfskins" posX="318.046" posY="509.628" culture="Culture.battania">
+    <Components>
+      <MinorFactionHideout id="hideout_wolfskin_4" map_icon="bandit_hideout_b" scene_name="battanian_burial_mound" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_wolfskin_5" name="{=wolfskin_hideout}Wolfskin Hideout" owner="Faction.wolfskins" posX="344.289" posY="438.633" culture="Culture.battania">
+    <Components>
+      <MinorFactionHideout id="hideout_wolfskin_5" map_icon="bandit_hideout_b" scene_name="bandit_forest" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_beni_zilal_1" name="{=beni_zilal_hideout}Beni Zilal Hideout" owner="Faction.beni_zilal" posX="301.036" posY="196.025" culture="Culture.aserai">
+    <Components>
+      <MinorFactionHideout id="hideout_beni_zilal_1" map_icon="bandit_hideout_a" scene_name="desert_hideout_003" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_desert" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="desert_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_beni_zilal_2" name="{=beni_zilal_hideout}Beni Zilal Hideout" owner="Faction.beni_zilal" posX="266.952" posY="105.804" culture="Culture.aserai">
+    <Components>
+      <MinorFactionHideout id="hideout_beni_zilal_2" map_icon="bandit_hideout_a" scene_name="desert_hideout_003" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_desert" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="desert_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_beni_zilal_3" name="{=beni_zilal_hideout}Beni Zilal Hideout" owner="Faction.beni_zilal" posX="434.38" posY="91.73201" culture="Culture.aserai">
+    <Components>
+      <MinorFactionHideout id="hideout_beni_zilal_3" map_icon="bandit_hideout_a" scene_name="desert_hideout_004" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_desert" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="desert_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_beni_zilal_4" name="{=beni_zilal_hideout}Beni Zilal Hideout" owner="Faction.beni_zilal" posX="666.327" posY="229.918" culture="Culture.aserai">
+    <Components>
+      <MinorFactionHideout id="hideout_beni_zilal_4" map_icon="bandit_hideout_a" scene_name="desert_hideout_004" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_desert" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="desert_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_brotherhood_woods_1" name="{=brotherhood_of_the_woods_hideout}Brotherhood of the Woods Hideout" owner="Faction.brotherhood_of_woods" posX="85.45499" posY="431.861" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_brotherhood_woods_1" map_icon="bandit_hideout_b" scene_name="bandit_forest" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_brotherhood_woods_3" name="{=brotherhood_of_the_woods_hideout}Brotherhood of the Woods Hideout" owner="Faction.brotherhood_of_woods" posX="170.232" posY="454.291" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_brotherhood_woods_3" map_icon="bandit_hideout_b" scene_name="mountain_hideout_001" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_brotherhood_woods_4" name="{=brotherhood_of_the_woods_hideout}Brotherhood of the Woods Hideout" owner="Faction.brotherhood_of_woods" posX="194.171" posY="461.683" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_brotherhood_woods_4" map_icon="bandit_hideout_b" scene_name="mountain_hideout_001" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_brotherhood_woods_5" name="{=brotherhood_of_the_woods_hideout}Brotherhood of the Woods Hideout" owner="Faction.brotherhood_of_woods" posX="176.625" posY="526.375" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_brotherhood_woods_5" map_icon="bandit_hideout_b" scene_name="battanian_burial_mound" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_brotherhood_woods_6" name="{=brotherhood_of_the_woods_hideout}Brotherhood of the Woods Hideout" owner="Faction.brotherhood_of_woods" posX="145.779" posY="584.576" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_brotherhood_woods_6" map_icon="bandit_hideout_b" scene_name="Canyon" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_brotherhood_woods_7" name="{=brotherhood_of_the_woods_hideout}Brotherhood of the Woods Hideout" owner="Faction.brotherhood_of_woods" posX="211.887" posY="524.595" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_brotherhood_woods_7" map_icon="bandit_hideout_b" scene_name="bandit_forest" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_hidden_hand_1" name="{=hidden_hane_hideout}Hidden Hand Hideout" owner="Faction.hidden_hand" posX="358.061" posY="434.372" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_hidden_hand_1" map_icon="bandit_hideout_c" scene_name="Scene_Levente" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_hidden_hand_2" name="{=hidden_hane_hideout}Hidden Hand Hideout" owner="Faction.hidden_hand" posX="406.778" posY="404.582" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_hidden_hand_2" map_icon="bandit_hideout_c" scene_name="Scene_Levente" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_hidden_hand_3" name="{=hidden_hane_hideout}Hidden Hand Hideout" owner="Faction.hidden_hand" posX="458.546" posY="381.047" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_hidden_hand_3" map_icon="bandit_hideout_c" scene_name="mountain_hideout_002" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_hidden_hand_4" name="{=hidden_hane_hideout}Hidden Hand Hideout" owner="Faction.hidden_hand" posX="587.389" posY="395.258" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_hidden_hand_4" map_icon="bandit_hideout_c" scene_name="mountain_hideout_001" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_hidden_hand_5" name="{=hidden_hane_hideout}Hidden Hand Hideout" owner="Faction.hidden_hand" posX="584.654" posY="291.18" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_hidden_hand_5" map_icon="bandit_hideout_c" scene_name="mountain_hideout_004" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_004" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_hidden_hand_6" name="{=hidden_hane_hideout}Hidden Hand Hideout" owner="Faction.hidden_hand" posX="279.963" posY="348.088" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_hidden_hand_6" map_icon="bandit_hideout_b" scene_name="bandit_forest" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_embers_of_flame_1" name="{=embers_of_the_flame_hideout}Embers Of The Flame Hideout" owner="Faction.embers_of_flame" posX="297.173" posY="406.112" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_embers_of_flame_1" map_icon="bandit_hideout_c" scene_name="mountain_hideout_001" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_embers_of_flame_2" name="{=embers_of_the_flame_hideout}Embers Of The Flame Hideout" owner="Faction.embers_of_flame" posX="385.61" posY="414.486" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_embers_of_flame_2" map_icon="bandit_hideout_c" scene_name="mountain_hideout_002" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_embers_of_flame_3" name="{=embers_of_the_flame_hideout}Embers Of The Flame Hideout" owner="Faction.embers_of_flame" posX="592.035" posY="268.976" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_embers_of_flame_3" map_icon="bandit_hideout_c" scene_name="mountain_hideout_002" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_embers_of_flame_4" name="{=embers_of_the_flame_hideout}Embers Of The Flame Hideout" owner="Faction.embers_of_flame" posX="675.582" posY="313.405" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_embers_of_flame_4" map_icon="bandit_hideout_c" scene_name="mountain_hideout_004" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_embers_of_flame_5" name="{=embers_of_the_flame_hideout}Embers Of The Flame Hideout" owner="Faction.embers_of_flame" posX="622.325" posY="427.11" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_embers_of_flame_5" map_icon="bandit_hideout_c" scene_name="Scene_Levente" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_mountain" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="mountain_hideout_002" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_embers_of_flame_6" name="{=embers_of_the_flame_hideout}Embers Of The Flame Hideout" owner="Faction.embers_of_flame" posX="568.931" posY="460.995" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_embers_of_flame_6" map_icon="bandit_hideout_c" scene_name="sea_bandit_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_embers_of_flame_7" name="{=embers_of_the_flame_hideout}Embers Of The Flame Hideout" owner="Faction.embers_of_flame" posX="441.888" posY="430.874" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_embers_of_flame_7" map_icon="bandit_hideout_c" scene_name="sea_bandit_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_jawwal_1" name="{=jawwal_hideout}Jawwal Camp" owner="Faction.jawwal" posX="490.738" posY="61.99801" culture="Culture.aserai">
+    <Components>
+      <MinorFactionHideout id="hideout_jawwal_1" map_icon="bandit_hideout_a" scene_name="aserai_village_j" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_aserai_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="aserai_village_j" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_jawwal_2" name="{=jawwal_hideout}Jawwal Camp" owner="Faction.jawwal" posX="391.366" posY="54.90101" culture="Culture.aserai">
+    <Components>
+      <MinorFactionHideout id="hideout_jawwal_2" map_icon="bandit_hideout_a" scene_name="aserai_village_j" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_aserai_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="aserai_village_j" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_jawwal_3" name="{=jawwal_hideout}Jawwal Camp" owner="Faction.jawwal" posX="271.803" posY="194.764" culture="Culture.aserai">
+    <Components>
+      <MinorFactionHideout id="hideout_jawwal_3" map_icon="bandit_hideout_a" scene_name="aserai_village_k" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_aserai_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="aserai_village_k" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_jawwal_4" name="{=jawwal_hideout}Jawwal Camp" owner="Faction.jawwal" posX="315.269" posY="238.901" culture="Culture.aserai">
+    <Components>
+      <MinorFactionHideout id="hideout_jawwal_4" map_icon="bandit_hideout_a" scene_name="aserai_village_k" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_aserai_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="aserai_village_k" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_jawwal_5" name="{=jawwal_hideout}Jawwal Camp" owner="Faction.jawwal" posX="591.279" posY="110.816" culture="Culture.aserai">
+    <Components>
+      <MinorFactionHideout id="hideout_jawwal_5" map_icon="bandit_hideout_a" scene_name="aserai_village_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_aserai_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="aserai_village_b" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_karakhuzait_1" name="{=karakhergit_hideout}Karakhergit Camp" owner="Faction.karakhuzaits" posX="748.149" posY="288.393" culture="Culture.khuzait">
+    <Components>
+      <MinorFactionHideout id="hideout_karakhuzait_1" map_icon="bandit_hideout_a" scene_name="khuzait_village_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_khuzait_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="khuzait_village_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_karakhuzait_2" name="{=karakhergit_hideout}Karakhergit Camp" owner="Faction.karakhuzaits" posX="765.804" posY="349.386" culture="Culture.khuzait">
+    <Components>
+      <MinorFactionHideout id="hideout_karakhuzait_2" map_icon="bandit_hideout_a" scene_name="khuzait_village_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_khuzait_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="khuzait_village_b" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_karakhuzait_3" name="{=karakhergit_hideout}Karakhergit Camp" owner="Faction.karakhuzaits" posX="726.227" posY="421.633" culture="Culture.khuzait">
+    <Components>
+      <MinorFactionHideout id="hideout_karakhuzait_3" map_icon="bandit_hideout_a" scene_name="bagavi" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_khuzait_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bagavi" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_karakhuzait_4" name="{=karakhergit_hideout}Karakhergit Camp" owner="Faction.karakhuzaits" posX="710.591" posY="464.805" culture="Culture.khuzait">
+    <Components>
+      <MinorFactionHideout id="hideout_karakhuzait_4" map_icon="bandit_hideout_a" scene_name="khuzait_village_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_khuzait_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="khuzait_village_b" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_karakhuzait_5" name="{=karakhergit_hideout}Karakhergit Camp" owner="Faction.karakhuzaits" posX="766.766" posY="495.177" culture="Culture.khuzait">
+    <Components>
+      <MinorFactionHideout id="hideout_karakhuzait_5" map_icon="bandit_hideout_a" scene_name="khuzait_village_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_khuzait_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="khuzait_village_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_karakhuzait_6" name="{=karakhergit_hideout}Karakhergit Camp" owner="Faction.karakhuzaits" posX="702.61" posY="513.738" culture="Culture.khuzait">
+    <Components>
+      <MinorFactionHideout id="hideout_karakhuzait_6" map_icon="bandit_hideout_a" scene_name="bagavi" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_khuzait_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bagavi" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_forest_people_1" name="{=forest_people_hideout}Forest People Camp" owner="Faction.forest_people" posX="507.232" posY="448.421" culture="Culture.vakken">
+    <Components>
+      <MinorFactionHideout id="hideout_forest_people_1" map_icon="bandit_hideout_b" scene_name="battania_village_g" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_battania_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="battania_village_g" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_forest_people_2" name="{=forest_people_hideout}Forest People Camp" owner="Faction.forest_people" posX="575.663" posY="489.48" culture="Culture.vakken">
+    <Components>
+      <MinorFactionHideout id="hideout_forest_people_2" map_icon="bandit_hideout_b" scene_name="battania_village_h" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_battania_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="battania_village_h" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_forest_people_3" name="{=forest_people_hideout}Forest People Camp" owner="Faction.forest_people" posX="629.839" posY="560.452" culture="Culture.vakken">
+    <Components>
+      <MinorFactionHideout id="hideout_forest_people_3" map_icon="bandit_hideout_b" scene_name="sturgia_village_h" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_battania_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sturgia_village_h" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_forest_people_4" name="{=forest_people_hideout}Forest People Camp" owner="Faction.forest_people" posX="406.683" posY="542.197" culture="Culture.vakken">
+    <Components>
+      <MinorFactionHideout id="hideout_forest_people_4" map_icon="bandit_hideout_b" scene_name="sturgia_village_j" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_battania_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sturgia_village_j" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_eleftheroi_1" name="{=Eleftheroi_hideout}Eleftheroi Camp" owner="Faction.eleftheroi" posX="442.613" posY="378.207" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_eleftheroi_1" map_icon="bandit_hideout_a" scene_name="bagavi" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_khuzait_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bagavi" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_eleftheroi_2" name="{=Eleftheroi_hideout}Eleftheroi Camp" owner="Faction.eleftheroi" posX="509.11" posY="378.761" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_eleftheroi_2" map_icon="bandit_hideout_a" scene_name="khuzait_village_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_khuzait_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="khuzait_village_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_eleftheroi_3" name="{=Eleftheroi_hideout}Eleftheroi Camp" owner="Faction.eleftheroi" posX="561.559" posY="391.6" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_eleftheroi_3" map_icon="bandit_hideout_a" scene_name="khuzait_village_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_khuzait_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bagavi" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_eleftheroi_4" name="{=Eleftheroi_hideout}Eleftheroi Camp" owner="Faction.eleftheroi" posX="654.165" posY="302.413" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_eleftheroi_4" map_icon="bandit_hideout_a" scene_name="khuzait_village_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_khuzait_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="khuzait_village_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_eleftheroi_5" name="{=Eleftheroi_hideout}Eleftheroi Camp" owner="Faction.eleftheroi" posX="568.214" posY="274.898" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_eleftheroi_5" map_icon="bandit_hideout_a" scene_name="bagavi" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_khuzait_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bagavi" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_eleftheroi_6" name="{=Eleftheroi_hideout}Eleftheroi Camp" owner="Faction.eleftheroi" posX="262.236" posY="362.863" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_eleftheroi_6" map_icon="bandit_hideout_c" scene_name="bagavi" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_khuzait_village" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="khuzait_village_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_lakepike_1" name="{=lake_rat_hideout}Lake Rat Hideout" owner="Faction.lakepike" posX="215.859" posY="556.025" culture="Culture.sturgia">
+    <Components>
+      <MinorFactionHideout id="hideout_lakepike_1" map_icon="bandit_hideout_c" scene_name="sea_bandit_a" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_lakepike_2" name="{=lake_rat_hideout}Lake Rat Hideout" owner="Faction.lakepike" posX="213.334" posY="602.447" culture="Culture.sturgia">
+    <Components>
+      <MinorFactionHideout id="hideout_lakepike_2" map_icon="bandit_hideout_c" scene_name="forest_hideout_004" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_lakepike_3" name="{=lake_rat_hideout}Lake Rat Hideout" owner="Faction.lakepike" posX="458.201" posY="581.554" culture="Culture.sturgia">
+    <Components>
+      <MinorFactionHideout id="hideout_lakepike_3" map_icon="bandit_hideout_c" scene_name="sea_bandit_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_lakepike_4" name="{=lake_rat_hideout}Lake Rat Hideout" owner="Faction.lakepike" posX="642.845" posY="640.614" culture="Culture.sturgia">
+    <Components>
+      <MinorFactionHideout id="hideout_lakepike_4" map_icon="bandit_hideout_c" scene_name="sea_bandit_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_unassigned_1" name="{=IMFRD7c316a3b}Unassigned Hideout" owner="Faction.none" posX="584.809" posY="584.331" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_unassigned_1" map_icon="bandit_hideout_c" scene_name="sea_bandit_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_unassigned_2" name="{=IMFRD7c316a3b}Unassigned Hideout" owner="Faction.none" posX="454.13" posY="427.047" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_unassigned_2" map_icon="bandit_hideout_c" scene_name="sea_bandit_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_unassigned_3" name="{=IMFRD7c316a3b}Unassigned Hideout" owner="Faction.none" posX="234.427" posY="340.804" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_unassigned_3" map_icon="bandit_hideout_b" scene_name="bandit_forest" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_unassigned_4" name="{=IMFRD7c316a3b}Unassigned Hideout" owner="Faction.none" posX="97.66501" posY="96.616" culture="Culture.battania">
+    <Components>
+      <MinorFactionHideout id="hideout_unassigned_4" map_icon="bandit_hideout_b" scene_name="bandit_forest" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_unassigned_5" name="{=IMFRD7c316a3b}Unassigned Hideout" owner="Faction.none" posX="729.243" posY="132.484" culture="Culture.khuzait">
+    <Components>
+      <MinorFactionHideout id="hideout_unassigned_5" map_icon="bandit_hideout_b" scene_name="bandit_forest" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_unassigned_6" name="{=IMFRD7c316a3b}Unassigned Hideout" owner="Faction.none" posX="726.579" posY="260.554" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_unassigned_6" map_icon="bandit_hideout_b" scene_name="bandit_forest" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="bandit_forest" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_balion_1" name="{=balion_hideout}Knights of Balion Hideout" owner="Faction.knights_of_balion" posX="76.716" posY="452.425" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_balion_1" map_icon="bandit_hideout_c" scene_name="sea_bandit_a" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_balion_2" name="{=balion_hideout}Knights of Balion Hideout" owner="Faction.knights_of_balion" posX="116.231" posY="495.518" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_balion_2" map_icon="bandit_hideout_c" scene_name="forest_hideout_004" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_balion_3" name="{=balion_hideout}Knights of Balion Hideout" owner="Faction.knights_of_balion" posX="136.83" posY="566.639" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_balion_3" map_icon="bandit_hideout_c" scene_name="sea_bandit_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_balion_4" name="{=balion_hideout}Knights of Balion Hideout" owner="Faction.knights_of_balion" posX="196.454" posY="370.586" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_balion_4" map_icon="bandit_hideout_c" scene_name="sea_bandit_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_iltanlar_1" name="{=iltanlar_hideout}Iltanlar Hideout" owner="Faction.iltanlar" posX="771.092" posY="524.977" culture="Culture.khuzait">
+    <Components>
+      <MinorFactionHideout id="hideout_iltanlar_1" map_icon="bandit_hideout_c" scene_name="khuzait_village_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="khuzait_village_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_iltanlar_2" name="{=iltanlar_hideout}Iltanlar Hideout" owner="Faction.iltanlar" posX="735.573" posY="560.585" culture="Culture.khuzait">
+    <Components>
+      <MinorFactionHideout id="hideout_iltanlar_2" map_icon="bandit_hideout_c" scene_name="khuzait_village_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="khuzait_village_b" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_iltanlar_3" name="{=iltanlar_hideout}Iltanlar Hideout" owner="Faction.iltanlar" posX="737.851" posY="627.748" culture="Culture.khuzait">
+    <Components>
+      <MinorFactionHideout id="hideout_iltanlar_3" map_icon="bandit_hideout_c" scene_name="khuzait_village_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="khuzait_village_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_iltanlar_4" name="{=iltanlar_hideout}Iltanlar Hideout" owner="Faction.iltanlar" posX="720.042" posY="573.551" culture="Culture.khuzait">
+    <Components>
+      <MinorFactionHideout id="hideout_iltanlar_4" map_icon="bandit_hideout_c" scene_name="khuzait_village_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="khuzait_village_b" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_wayfarers_1" name="{=wayfarers_hideout}Wayfarers Hideout" owner="Faction.wayfarers" posX="226.543" posY="313.092" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_wayfarers_1" map_icon="bandit_hideout_c" scene_name="sea_bandit_a" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_wayfarers_2" name="{=wayfarers_hideout}Wayfarers Hideout" owner="Faction.wayfarers" posX="153.985" posY="344.268" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_wayfarers_2" map_icon="bandit_hideout_c" scene_name="forest_hideout_004" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_wayfarers_3" name="{=wayfarers_hideout}Wayfarers Hideout" owner="Faction.wayfarers" posX="268.028" posY="332.994" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_wayfarers_3" map_icon="bandit_hideout_c" scene_name="sea_bandit_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_wayfarers_4" name="{=wayfarers_hideout}Wayfarers Hideout" owner="Faction.wayfarers" posX="123.381" posY="385.569" culture="Culture.vlandia">
+    <Components>
+      <MinorFactionHideout id="hideout_wayfarers_4" map_icon="bandit_hideout_c" scene_name="sea_bandit_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_b" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_vaegs_1" name="{=vaegs_hideout}Vaegir Guard Hideout" owner="Faction.vaegirguard" posX="435.068" posY="237.486" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_vaegs_1" map_icon="bandit_hideout_c" scene_name="sea_bandit_a" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_a" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_vaegs_2" name="{=vaegs_hideout}Vaegir Guard Hideout" owner="Faction.vaegirguard" posX="531.7" posY="349.983" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_vaegs_2" map_icon="bandit_hideout_c" scene_name="forest_hideout_004" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="forest_hideout_004" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_vaegs_3" name="{=vaegs_hideout}Vaegir Guard Hideout" owner="Faction.vaegirguard" posX="588.336" posY="473.634" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_vaegs_3" map_icon="bandit_hideout_c" scene_name="sea_bandit_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_vaegs_4" name="{=vaegs_hideout}Vaegir Guard Hideout" owner="Faction.vaegirguard" posX="406.176" posY="347.59" culture="Culture.empire">
+    <Components>
+      <MinorFactionHideout id="hideout_vaegs_4" map_icon="bandit_hideout_c" scene_name="sea_bandit_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_b" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_auxilia_1" name="{=auxilia_hideout}Auxilia Hideout" owner="Faction.black_shields" posX="219.606" posY="173.447" culture="Culture.geroia">
+    <Components>
+      <MinorFactionHideout id="hideout_auxilia_1" map_icon="bandit_hideout_c" scene_name="sea_bandit_a" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_a" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_auxilia_2" name="{=auxilia_hideout}Auxilia Hideout" owner="Faction.black_shields" posX="173.377" posY="182.557" culture="Culture.geroia">
+    <Components>
+      <MinorFactionHideout id="hideout_auxilia_2" map_icon="bandit_hideout_c" scene_name="forest_hideout_004" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="forest_hideout_004" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_auxilia_3" name="{=auxilia_hideout}Auxilia Hideout" owner="Faction.black_shields" posX="170.843" posY="91.117" culture="Culture.geroia">
+    <Components>
+      <MinorFactionHideout id="hideout_auxilia_3" map_icon="bandit_hideout_c" scene_name="sea_bandit_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_auxilia_4" name="{=auxilia_hideout}Auxilia Hideout" owner="Faction.black_shields" posX="86.242" posY="87.68698" culture="Culture.geroia">
+    <Components>
+      <MinorFactionHideout id="hideout_auxilia_4" map_icon="bandit_hideout_c" scene_name="sea_bandit_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="sea_bandit_b" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_beduins_1" name="{=beduins_hideout}Bedouins Hideout" owner="Faction.beduins" posX="610.463" posY="88.34801" culture="Culture.aserai">
+    <Components>
+      <MinorFactionHideout id="hideout_beduins_1" map_icon="bandit_hideout_a" scene_name="aserai_village_j" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_desert" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="aserai_village_j" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_beduins_2" name="{=beduins_hideout}Bedouins Hideout" owner="Faction.beduins" posX="520.1219" posY="91.164" culture="Culture.aserai">
+    <Components>
+      <MinorFactionHideout id="hideout_beduins_2" map_icon="bandit_hideout_a" scene_name="aserai_village_k" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_desert" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="aserai_village_k" />
+    </Locations>
+  </Settlement>
+  <Settlement id="hideout_beduins_3" name="{=beduins_hideout}Bedouins Hideout" owner="Faction.beduins" posX="332.333" posY="181.542" culture="Culture.aserai">
+    <Components>
+      <MinorFactionHideout id="hideout_beduins_3" map_icon="bandit_hideout_a" scene_name="aserai_village_b" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_desert" gate_rotation="0.0" />
+    </Components>
+    <Locations complex_template="LocationComplexTemplate.mf_hideout_complex">
+      <Location id="mf_hideout_center" scene_name="aserai_village_b" />
+    </Locations>
+  </Settlement>
+</Settlements>

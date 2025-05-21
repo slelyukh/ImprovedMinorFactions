@@ -14,7 +14,8 @@
     <IMFText
     faction_id="brotherhood_of_woods"
     text_id="NearbyMFHideoutQuest_IssueBrief"
-    text="{=IMF55E74123}Ah, traveler, may I trouble you for a moment? The Brotherhood of the Woods, once champions of the common folk, have set up a hideout nearby. What began as a noble cause—robbing from the rich to give to the poor—has twisted into something darker. Now, they turn their blades against the very people they once swore to protect, extorting and terrorizing commoners to sustain their dwindling supplies.[ib:closed][if:convo_undecided_open]"/>
+    text="{=IMF55E74123}Ah, traveler, may I trouble you for a moment? The Brotherhood of the Woods, once champions of the common folk, have set up a hideout nearby. What began as a noble cause—robbing from the rich to give to the poor—has twisted into something darker. Now, they turn their blades against the very people they once swore to protect, extorting and terrorizing commoners to sustain their dwindling supplies.[ib:closed][if:convo_undecided_open]"
+    />
     <IMFText
     faction_id="brotherhood_of_woods"
     text_id="NearbyMFHideoutQuest_IssueSolution"
@@ -101,7 +102,6 @@
     text="{=IMFf83bDF06}Their hideout, not far from here, has become a den of common crime, not the noble test of youth it once was. If you could clear this nest of pretenders, it would restore safety to our paths and bring relief to our community. Your bravery would not go unrewarded, for both gold and respect await those who aid us in these troubling times.[ib:closed][if:convo_undecided_open]"
     />
     <!-- Nearby Hideout Texts End -->
-
     <!-- Nomad Village Raid Texts Begin -->
     <IMFText
     faction_id="forest_people"
@@ -114,7 +114,6 @@
     text="{=IMFc6D202e4}We need you to raid {NEEDED_VILLAGES_AMOUNT} village{?PLURAL}s{?}{\?} near our camp. The villagers will be too busy rebuilding to hunt or be interested in our forest activities. They cannot know that you are doing this on our behalf."
     />
     <!-- Nomad Village Raid Texts End -->
-
     <!-- MF Description Dialog Texts Begin -->
     <IMFText
     faction_id="forest_people"
