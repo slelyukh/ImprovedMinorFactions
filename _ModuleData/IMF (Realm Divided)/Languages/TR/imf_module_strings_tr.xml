@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="Türkçe" />
+  </tags>
+  <strings>
+    <!--#region MF Notable Needs Recruits Quest-->
+    <string id="3mADItXNb" text="Evet... Şüphesiz bildiğiniz gibi, bu zor bir iş ve son zamanlarda birçok iyi adamımı kaybettim. Yerlerini doldurma konusunda pek şansım olmadı. İşimizde işlerin nasıl yürüdüğünü anlayan adamlara ihtiyacım var ve bunu bulmak her zaman kolay olmuyor. Bana yetenekli {MOUNTED}{TROOP_TYPE} [ib:hip][if:convo_undecided_closed] lazım..."/>
+    <string id="kolxPW10J" text="Bakın, sizin gibi savaşçıların bazen{MOUNTED}{TROOP_TYPE} i partinize katabildiğini biliyorum. Bu adamlardan bazıları şanslarını benim için çalışarak denemek isteyebilir. Bir lord{\?} için çalışıp durmadan kırlarda dolaşmaktansa{?IS_OUTLAW}, her daim içki ve kadınların olduğu bizim yanımızda daha rahat olurlar, değil mi? Bana kaydolan her bir kişi için sana bir ödül vereceğim, biraz deneyimleri varsa daha fazlasını da. [if:convo_innocent_smile][ib:hip]"/>
+    <string id="FtHAENedg" text="Bana bir asker toplayıcı da gönderebilirsiniz: adam yönetmekte iyi olan ve aynı zamanda asker toplayabilecek kadar lider olan güvenilir bir yoldaş... [if:convo_undecided_open][ib:confident]"/>
+    <string id="R3fkc5wSH" text="{COMPANION.LINK} ten {SETTLEMENT} içinde {ISSUE_GIVER.LINK} e en az {WANTED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} teslim etmesini istediniz. Partinize {RETURN_DAYS} gün içinde yeniden katılmaları gerekir."/>
+    <string id="awjQeYiRo" text="{MINOR_FACTION} Önemli ihtiyaçlar için işe alım lazım {?ISSUE_GIVER.GENDER}her{?}his{\?} ın klanı için."/>
+    <string id="Exa8gzGlC" text="{MINOR_FACTION} Sığınağın Elemanlara İhtiyacı Var"/>
+    <string id="lpc6tS3bs" text="{MINOR_FACTION} Önemli ihtiyaçlar için işe alım lazım {?ISSUE_GIVER.GENDER}her{?}his{\?} ın klanı için."/>
+    <string id="kYU0MOSP1" text="{QUEST_GIVER.LINK} önemli bir {MINOR_FACTION} sana demiştim {?QUEST_GIVER.GENDER}she{?}he{\?} klanı için için elemanlara ihtiyacı var. {?QUEST_GIVER.GENDER}her{?}his{\?} {?QUEST_GIVER.GENDER}She{?}He{\?} şu kadar kişi ordunuza almanızı {NEEDED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} , sonrasında askerleri {?QUEST_GIVER.GENDER}her{?}him{\?}e vermenizi istedi. Askerlerin deneyimlerine bağlı olarak işe alımlar için ödeme alacaksınız."/>
+    <string id="gOEIZ30vl" text="{QUEST_GIVER.LINK} öldü... {?QUEST_GIVER.GENDER}She{?}He{\?} ın artık sizden istediği bir şey yok."/>
+    <string id="5oIRMI8cL" text="Arkadaşınızın yerel gençlerle arası iyi gibi görünüyor. Duyduğuma göre bir sürü iyi çocuk kaydolmuş bile [if:convo_relaxed_happy][ib:hip2]"/>
+    <!--#endRegion MF Notable Needs Recruits Quest-->
+
+    <!--#region MF Lord Needs Recruits Quest-->
+    <string id="6mXBgnywX" text="{ISSUE_GIVER} ın acemilere ihtiyacı var"/>
+    <string id="A3tTkd2BM" text="{QUEST_GIVER.LINK} sana söylemişti {?QUEST_GIVER.GENDER}she{?}he{\?} şunun için elemanlara ihtiyacı var {?QUEST_GIVER.GENDER}her{?}his{\?} klanı için. {?QUEST_GIVER.GENDER}She{?}He{\?} şu kadar kişi ordunuza almanızı {NEEDED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} sonrasında askerleri {?QUEST_GIVER.GENDER}her{?}him{\?} e vermenizi istedi. Askerlerin deneyimlerine bağlı olarak işe alımlar için ödeme alacaksınız."/>
+    <!--#endRegion MF Lord Needs Recruits Quest-->
+
+    <!--#region MF Notable Needs Troops Trained Quest-->
+    <string id="npV743inQ" text="Acemileri {MINOR_FACTION} sığınağı için eğit"/>
+    <string id="5ORyuslE2" text="{ISSUE_GIVER.NAME} biraz klanı {MINOR_FACTION} için acemilerinin gerçek savaş deneyimini kazanmasını istiyor. {?ISSUE_GIVER.GENDER}She{?}He{\?} haydutları avlamak gibi oldukça güvenli bazı keşif gezilerinde onları yanınıza almanızı istiyor."/>
+    <string id="oCbu6eG6F" text="Kısa bir süre önce ekibimize yeni katılımlar oldu {MINOR_FACTION} klanından. Genç ve savaşa girmeye hevesliler ama korkarım gerçek savaşçılara karşı fazla dayanamayacaklar.. Belki onlardan bazılarını partinize alabilir ve onlara savaşta kendilerini nasıl göstereceklerini gösterebilirsiniz. Karşılığında onlar da seninle {MINOR_FACTION} klanı ile belki gelecekte bir ortaklık kurabiliriz. [if:convo_focused_happy][ib:hip]"/>
+    <string id="NNIqnPU40" text="{ISSUE_GIVER.LINK} {MINOR_FACTION} klanından biri, şuna karşılık acemi eğitmen için soru sordu: {?QUEST_GIVER.GENDER}her{?}him{\?} {?QUEST_GIVER.GENDER}She{?}He{\?} sana verdi {NUMBER_OF_MEN} sayıda birlik, gelişmiş olduklarında onları geri almayı umarak {newline}Onları arkadaşlarından biriyle {COMPANION.LINK} ile gönderdin bazı kolay hedefleri avlamak için. Onlarla {RETURN_DAYS} gün sonra buluşmayı ayarladınız."/>
+    <string id="1QEr8eYap" text="{MINOR_FACTION} klanının üyesi olan {QUEST_GIVER.LINK}, şuna karşılık acemi eğitmen için soru sordu: {?QUEST_GIVER.GENDER}her{?}him{\?} {?QUEST_GIVER.GENDER}She{?}He{\?} sana verdi {NUMBER_OF_MEN} sayıda birlik, gelişmiş olduklarında onları geri almayı umarak.\nOnları çok fazla tehlikeye atmadan eğitmenin en kolay yolu zayıf birliklere saldırmaktır."/>
+    <!--#endRegion MF Notable Needs Troops Trained Quest-->
+
+    <!--#region Notable Wants MF Hideout Cleared Quest-->
+    <string id="o1H6QqaW2" text="{MINOR_FACTION} klanının sığınağı {ISSUE_SETTLEMENT} yakınında"/>
+    <string id="951elMchg" text="{ISSUE_GIVER.LINK} senden {MINOR_FACTION} sığınağını temizlemeni istiyor bölgede {?ISSUE_GIVER.GENDER}her{?}his{\?} sorunlara neden oluyor."/>
+    <string id="kcKVjMawu" text="Evet... Bu eski harabe, yolların güzel manzarasını sunan ve ulaşılması zor bir yer. {MINOR_FACTION} taşınmışlar ve yoldan geçen karavanlara ve yolculara cehennemi yaşatıyorlar.. [ib:closed][if:convo_undecided_open]"/>
+    <string id="8fLe6O58j" text="Herhangi bir {MINOR_FACTION} daki haydutlar kendilerine karşı harekete geçen büyük bir orduyu kolayca fark edip kaçabilirler, ancak küçük bir grup kararlı savaşçıyla saklandıkları yere girebilirseniz, onları gafil avlayabilirsiniz. [ib:closed][if:convo_thinking]"/>
+    <string id="B9tqOUtoI" text="Ben kendim {MINOR_FACTION} sığınağına gideceğim ve haydutları bastıracağım."/>
+    <string id="bYdnhFrJ2" text="{ISSUE_GIVER.LINK} , {ISSUE_SETTLEMENT} den bir köy yaşlısı, sana anlatmıştı {MINOR_FACTION} ın yerel köylülere saldırdığını ve sizden haydutların saklandığı yeri temizlemenizi istedi.. {COMPANION.LINK} ten en iyi adamlarınızdan {TROOP_COUNT} kadar adam alıp gidip ilgilenmelerini istediniz. Size {RETURN_DAYS} gün içinde geri rapor vermeliler."/>
+    <string id="HxKTKBo5h" text="{ISSUE_GIVER.LINK} ten bir mesaj aldınız. &#10;&quot;O haydut yuvasını temizlediğiniz için teşekkür ederiz. Lütfen bu {REWARD}{GOLD_ICON} dinarlarını minnettarlığımızla kabul edin. &quot;"/>
+    <string id="EIjCKoXaP" text="{MINOR_FACTION} klanının sığınağı {SETTLEMENT_NAME} yakınında."/>
+    <string id="svLtMGrhv" text="{QUEST_GIVER.LINK} , {QUEST_SETTLEMENT} den bir köy yaşlısı, sana anlatmıştı {MINOR_FACTION} ın son zamanlarda yerel köylülere saldıran üyelerini.Sen {?QUEST_GIVER.GENDER}her{?}him{\?} a durumu kendi başınıza halledeceğinizi söylediniz. Ayrıca {QUEST_GIVER.LINK} sığınağın yerini haritanızda işaretledi."/>
+    <string id="oe0TUx9bg" text="{MINOR_FACTION} Sığınağı başkası tarafından temizlendi, {QUEST_GIVER.LINK} ile olan anlaşmanız iptal oldu."/>
+    <string id="pJj2R5gnG" text="{SETTLEMENT_FACTION} artık {MINOR_FACTION} ile savaşta değil, {QUEST_GIVER.LINK} ile olan anlaşman iptal oldu."/>
+    <string id="s4Wev86aQ" text="{MINOR_FACTION} artık yok {QUEST_GIVER.LINK} ile olan anlaşman iptal oldu."/>
+    <!--#endRegion Notable Wants MF Hideout Cleared Quest-->
+
+    <!--#region MFHideout-->
+    <string id="Fv1F13jxM" text="Yaralıyken saldıramazsınız"/>
+    <string id="cl7GYHwgi" text="Bu sığınağa saldırmak bu Klanla olan ilişkinizi önemli ölçüde azaltacaktır"/>
+    <string id="1PM860Jco" text="Düşmanca bir eylemde bulunmak sizinle bu Klan ya da onları kiralayan kişi arasında bir savaş başlatacaktır."/>
+    <string id="92PPJNVSa" text="Bu sığınakta kalmak için yeterli ilişkiniz yok."/>
+    <string id="pzEj8yvXS" text="Asker toplamak için bu klanla ilişkiniz en az {MIN_RELATION} olmalıdır."/>
+    <!--#endRegion MFHideout-->
+
+    <!--#region misc-->
+    <string id="dtwUqRyju" text="Haydutlar"/>
+    <string id="Mcp21ip8V" text="Askerler"/>
+    <string id="kDeZI8FIZ" text="Atlı"/>
+    <!--#endRegion misc-->
+  </strings>
+</base>

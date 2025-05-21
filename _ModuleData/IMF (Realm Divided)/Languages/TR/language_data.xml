@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-16"?>
+<LanguageData id="Türkçe" name="Türkçe" subtitle_extension="tr-TR" supported_iso="tr,tur,tr-tr" under_development="false">
+ <LanguageFile xml_path="TR/imf_module_strings_tr.xml"/>
+ <LanguageFile xml_path="TR/imf_settlements_tr.xml"/>
+
+</LanguageData>
