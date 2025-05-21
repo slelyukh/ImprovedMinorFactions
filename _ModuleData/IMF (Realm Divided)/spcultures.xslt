@@ -11,72 +11,72 @@
   <xsl:template match="Culture[@id='nord']/male_names">
     <xsl:copy>
       <xsl:apply-templates select="@*|node()"/>
-      <name>
-        <xsl:attribute name="name">{=IMFRDC76966f3}Aksel</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD359FaFED}Bjorn</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDBf075cfd}Olafr</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDe00ca140}Helgerad</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDBd7CBDc7}Ole</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD5b486511}Gundar</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD4d0276f3}Haraldr</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD95774021}Hjalmar</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD765a2560}Njal</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD058dC9DC}Leif</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD1f95d2aF}Lethwyn</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDBb3e156E}Guthric</xsl:attribute>
-      </name>
+            <name>
+                <xsl:attribute name="name">{=IMFd80d7bfC}Aksel</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFB5Bb8433}Bjorn</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF3C7AaB01}Olafr</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF0938bde5}Helgerad</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF68EC51BF}Ole</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFAdB34D63}Gundar</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFb2293132}Haraldr</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF1D603799}Hjalmar</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF43283e52}Njal</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFE12069b7}Leif</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFB1A40b3e}Lethwyn</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF4139BcB4}Guthric</xsl:attribute>
+            </name>
     </xsl:copy>
   </xsl:template>
   <!-- Template to match the female_names element and add new names -->
   <xsl:template match="Culture[@id='nord']/female_names">
     <xsl:copy>
       <xsl:apply-templates select="@*|node()"/>
-      <name>
-        <xsl:attribute name="name">{=IMFRDc6F65C8b}Astrith</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDca142107}Kara</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD8b34F8c1}Elsa</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD8279B0e8}Kelsea</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDE70c0873}Freja</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD0353c396}Annika</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD8cD6e136}Ulla</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD5a2C1aC6}Kay</xsl:attribute>
-      </name>
+            <name>
+                <xsl:attribute name="name">{=IMF2F4d167d}Astrith</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFEbCA644A}Kara</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFEd3678ad}Elsa</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF4211Bc0a}Kelsea</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFA1C53c7c}Freja</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFe4148Afd}Annika</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF27Ad6C3c}Ulla</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF2C69eA61}Kay</xsl:attribute>
+            </name>
     </xsl:copy>
   </xsl:template>
   <!-- Template to add notable_and_wanderer_templates element within the nord culture if it doesn't already exist -->
@@ -86,89 +86,89 @@
       <xsl:if test="not(notable_and_wanderer_templates)">
         <notable_and_wanderer_templates>
           <template>
-            <xsl:attribute name="name">{=IMFRD969e7427}NPCCharacter.spc_wanderer_sturgia_0</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDF728E8eE}NPCCharacter.spc_wanderer_sturgia_1</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD10165B18}NPCCharacter.spc_wanderer_sturgia_2</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDd8B64833}NPCCharacter.spc_wanderer_sturgia_3</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD5C8b6c40}NPCCharacter.spc_wanderer_sturgia_4</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD949e2016}NPCCharacter.spc_wanderer_sturgia_5</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD5094Ae13}NPCCharacter.spc_wanderer_sturgia_6</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD469e7102}NPCCharacter.spc_wanderer_sturgia_7</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD5951F891}NPCCharacter.spc_wanderer_sturgia_8</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDFdC9e507}NPCCharacter.spc_wanderer_sturgia_9</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDEf35B4f4}NPCCharacter.spc_notable_sturgia_0</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD73b4Aaa9}NPCCharacter.spc_notable_sturgia_0b</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD76C3822d}NPCCharacter.spc_notable_sturgia_1</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDAf0242c1}NPCCharacter.spc_notable_sturgia_2</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD77EB773a}NPCCharacter.spc_notable_sturgia_2b</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD58E85dAc}NPCCharacter.spc_notable_sturgia_3</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD0682ccE9}NPCCharacter.spc_notable_sturgia_3b</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD8a603957}NPCCharacter.spc_notable_sturgia_3c</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD4EC1e9da}NPCCharacter.spc_notable_sturgia_4</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD41655f4D}NPCCharacter.spc_notable_sturgia_5</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD16B829c2}NPCCharacter.spc_notable_sturgia_6</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDeeAa5682}NPCCharacter.spc_notable_sturgia_7</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD872132ca}NPCCharacter.spc_notable_sturgia_8</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD202f29C8}NPCCharacter.spc_notable_sturgia_9</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD14Fa45E7}NPCCharacter.spc_notable_sturgia_10</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD72827f26}NPCCharacter.spc_sturgia_headman_1</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDE1662ba8}NPCCharacter.spc_sturgia_headman_2</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD33A610C3}NPCCharacter.spc_sturgia_headman_3</xsl:attribute>
-          </template>
+                <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_0</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_1</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_2</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_3</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_4</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_5</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_6</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_7</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_8</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_9</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_0</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_0b</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_1</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_2</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_2b</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_3</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_3b</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_3c</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_4</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_5</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_6</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_7</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_8</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_9</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_10</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_sturgia_headman_1</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_sturgia_headman_2</xsl:attribute>
+            </template>
+            <template>
+                <xsl:attribute name="name">NPCCharacter.spc_sturgia_headman_3</xsl:attribute>
+            </template>
         </notable_and_wanderer_templates>
       </xsl:if>
       <xsl:apply-templates select="node()"/>
@@ -177,126 +177,126 @@
   <xsl:template match="Culture[@id='vakken']/male_names">
     <xsl:copy>
       <xsl:apply-templates select="@*|node()"/>
-      <name>
-        <xsl:attribute name="name">{=IMFRD01919276}Tapio</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD15c11cd5}Tuisko</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD6E958d65}Aamu</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD2Dc11236}Aarre</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDa4DF8E30}Aimo</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD5D9bD15f}Airi</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDD53bA851}Arvo</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD6BDd2fD0}Eero</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD1e0aA70d}Heino</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDD57BBE05}Hanno</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD692F4f17}Liro</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDc2Bc2A94}Jalo</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDfeEB7498}Iskko</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD553E87A8}Joukko</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD1022de37}Kaapo</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD6a504995}Keijo</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD2eB5768d}Kauko</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDD76CE56C}Lari</xsl:attribute>
-      </name>
+            <name>
+                <xsl:attribute name="name">{=IMF6b4669c5}Tapio</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF566C5e62}Tuisko</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFbc2b32d3}Aamu</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFBb15eB06}Aarre</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF40D1Bf1b}Aimo</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF24196309}Airi</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF6933Bdca}Arvo</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF30c7bf4B}Eero</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF3523f125}Heino</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF91D9dD56}Hanno</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFAfDAd7eD}Liro</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF960df7b5}Jalo</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF93D200a8}Iskko</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF61F4E76C}Joukko</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF19B4c30f}Kaapo</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFe4E97f37}Keijo</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF455e292A}Kauko</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFa8DC200C}Lari</xsl:attribute>
+            </name>
     </xsl:copy>
   </xsl:template>
   <!-- Template to match the female_names element and add new names -->
   <xsl:template match="Culture[@id='vakken']/female_names">
     <xsl:copy>
       <xsl:apply-templates select="@*|node()"/>
-      <name>
-        <xsl:attribute name="name">{=IMFRD339845db}Laila</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD4a7D0b9E}Aira</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD26726c33}Alli</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDcc00e6e0}Ella</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD39B6c393}Elina</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD8b34F8c1}Elsa</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDe00d75bE}Fanni</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD3cBB745A}Hanna</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD239A50a5}Heidi</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD26726c33}Alli</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDcc00e6e0}Ella</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD39B6c393}Elina</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD8b34F8c1}Elsa</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDe00d75bE}Fanni</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD872eAba9}Likka</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD8651b4f9}Lina</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD27303e85}Liris</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRD75E2c8b3}Lahja</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDbe75DBf5}Kukka</xsl:attribute>
-      </name>
-      <name>
-        <xsl:attribute name="name">{=IMFRDf2C01cc0}Lauri</xsl:attribute>
-      </name>
+            <name>
+                <xsl:attribute name="name">{=IMF7d7CF2C8}Laila</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF7FaB8042}Aira</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF1b5b29C0}Alli</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF95628465}Ella</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF3637fb94}Elina</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFEd3678ad}Elsa</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF4b78E23a}Fanni</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF722E35F7}Hanna</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFe80b068A}Heidi</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF1b5b29C0}Alli</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF95628465}Ella</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF3637fb94}Elina</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFEd3678ad}Elsa</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF4b78E23a}Fanni</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF7a6989Aa}Likka</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFaa443775}Lina</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFb4Bb714C}Liris</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMFE1E58e9a}Lahja</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF7e3F5b3D}Kukka</xsl:attribute>
+            </name>
+            <name>
+                <xsl:attribute name="name">{=IMF36FA9018}Lauri</xsl:attribute>
+            </name>
     </xsl:copy>
   </xsl:template>
   <!-- Template to add notable_and_wanderer_templates element within the nord culture if it doesn't already exist -->
@@ -305,90 +305,90 @@
       <xsl:apply-templates select="@*"/>
       <xsl:if test="not(notable_and_wanderer_templates)">
         <notable_and_wanderer_templates>
-          <template>
-            <xsl:attribute name="name">{=IMFRD969e7427}NPCCharacter.spc_wanderer_sturgia_0</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDF728E8eE}NPCCharacter.spc_wanderer_sturgia_1</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD10165B18}NPCCharacter.spc_wanderer_sturgia_2</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDd8B64833}NPCCharacter.spc_wanderer_sturgia_3</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD5C8b6c40}NPCCharacter.spc_wanderer_sturgia_4</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD949e2016}NPCCharacter.spc_wanderer_sturgia_5</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD5094Ae13}NPCCharacter.spc_wanderer_sturgia_6</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD469e7102}NPCCharacter.spc_wanderer_sturgia_7</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD5951F891}NPCCharacter.spc_wanderer_sturgia_8</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDFdC9e507}NPCCharacter.spc_wanderer_sturgia_9</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDEf35B4f4}NPCCharacter.spc_notable_sturgia_0</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD73b4Aaa9}NPCCharacter.spc_notable_sturgia_0b</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD76C3822d}NPCCharacter.spc_notable_sturgia_1</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDAf0242c1}NPCCharacter.spc_notable_sturgia_2</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD77EB773a}NPCCharacter.spc_notable_sturgia_2b</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD58E85dAc}NPCCharacter.spc_notable_sturgia_3</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD0682ccE9}NPCCharacter.spc_notable_sturgia_3b</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD8a603957}NPCCharacter.spc_notable_sturgia_3c</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD4EC1e9da}NPCCharacter.spc_notable_sturgia_4</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD41655f4D}NPCCharacter.spc_notable_sturgia_5</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD16B829c2}NPCCharacter.spc_notable_sturgia_6</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDeeAa5682}NPCCharacter.spc_notable_sturgia_7</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD872132ca}NPCCharacter.spc_notable_sturgia_8</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD202f29C8}NPCCharacter.spc_notable_sturgia_9</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD14Fa45E7}NPCCharacter.spc_notable_sturgia_10</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD72827f26}NPCCharacter.spc_sturgia_headman_1</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRDE1662ba8}NPCCharacter.spc_sturgia_headman_2</xsl:attribute>
-          </template>
-          <template>
-            <xsl:attribute name="name">{=IMFRD33A610C3}NPCCharacter.spc_sturgia_headman_3</xsl:attribute>
-          </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_0</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_1</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_2</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_3</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_4</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_5</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_6</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_7</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_8</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_wanderer_sturgia_9</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_0</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_0b</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_1</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_2</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_2b</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_3</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_3b</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_3c</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_4</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_5</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_6</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_7</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_8</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_9</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_notable_sturgia_10</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_sturgia_headman_1</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_sturgia_headman_2</xsl:attribute>
+                    </template>
+                    <template>
+                        <xsl:attribute name="name">NPCCharacter.spc_sturgia_headman_3</xsl:attribute>
+                    </template>
         </notable_and_wanderer_templates>
       </xsl:if>
       <xsl:apply-templates select="node()"/>
