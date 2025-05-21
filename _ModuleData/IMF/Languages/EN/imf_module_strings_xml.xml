@@ -92,14 +92,20 @@
 
     <!--#region MFHideout-->
     <string id="Fv1F13jxM" text="You cannot attack while wounded"/>
-    <string id="cl7GYHwgi" text="Attacking this hideout will significantly decrease your relation with this Clan"/>
+    <string id="cl7GYHwgi" text="Attacking this place will significantly decrease your relation with this Clan"/>
     <string id="1PM860Jco" text="Taking hostile action will start a war between you and this Clan or whoever hired them."/>
-    <string id="92PPJNVSa" text="You don't have enough relation to stay in this hideout."/>
+    <string id="92PPJNVSa" text="You don't have enough relation to stay here."/>
     <string id="pzEj8yvXS" text="Your relation with this clan must be at least {MIN_RELATION} to recruit troops."/>
     <string id="WAkOJrsBf" text="The camp is being dismantled because the land here has been used up."/>
     <string id="bTIQXD4cq" text="The {MINOR_FACTION} have moved their camp to a new location."/>
-    
+    <string id="ldONWPCl6i" text="Raid Camp"/>
+    <string id="prcBB123" text="{HIDEOUT_DESCRIPTION} You see a calm nomad village with tents, herds of livestock, and simple clothing. There is conversation about raids, ransoms, and the best places to waylay travellers."/>
+    <string id="" text=""/>
+    <string id="" text=""/>
+    <string id="" text=""/>
+    <string id="" text=""/>
     <!--#endRegion MFHideout-->
+
 
     <!--#region misc-->
     <string id="dtwUqRyju" text="bandits"/>
