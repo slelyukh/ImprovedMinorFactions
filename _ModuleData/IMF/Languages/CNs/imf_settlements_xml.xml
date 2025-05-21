@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+  <!-- Settlements -->
+   <string id="ghilman_hideout" text="古拉姆藏身处"/>
+   <string id="legion_hideout" text="背弃者军团藏身处"/>
+   <string id="skolderbroda_hideout" text="护盾兄弟会藏身处"/>
+   <string id="company_of_the_boar_hideout" text="黄金野猪兵团藏身处"/>
+   <string id="wolfskin_hideout" text="狼皮部落藏身处"/>
+   <string id="beni_zilal_hideout" text="暗隐之子藏身处"/>
+   <string id="brotherhood_of_the_woods_hideout" text="绿林兄弟会藏身处"/>
+   <string id="hidden_hane_hideout" text="秘密之手藏身处"/>
+   <string id="embers_of_the_flame_hideout" text="火焰余烬藏身处"/>
+   <string id="jawwal_hideout" text="贾沃勒藏身处"/>
+   <string id="karakhergit_hideout" text="喀拉库吉特藏身处"/>
+   <string id="forest_people_hideout" text="森民藏身处"/>
+   <string id="Eleftheroi_hideout" text="自由民藏身处"/>
+   <string id="lake_rat_hideout" text="湖鼠帮藏身处"/>
+   <!-- complex -->
+   <string id="25pNV9E3" text="藏身处中心"/>
+
+ 
+  </strings>
+</base>

@@ -18,7 +18,7 @@ namespace ImprovedMinorFactions.Patches
     {
         static void Postfix(Clan __instance)
         {
-            if (!__instance.IsMinorFaction || Helpers.IsMFHideout(__instance.HomeSettlement) || !IMFManager.Current.HasActiveHideouts(__instance))
+            if (!__instance.IsMinorFaction || Helpers.IsMFHideout(__instance.HomeSettlement) || !IMFManager.Current!.HasActiveHideouts(__instance))
                 return;
 
             var activeHideouts = IMFManager.Current.GetActiveHideoutsOfClan(__instance);

@@ -13,21 +13,25 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
-using TaleWorlds.Library;
 using TaleWorlds.Localization;
 using TaleWorlds.SaveSystem;
+using static ImprovedMinorFactions.IMFModels;
 using MathF = TaleWorlds.Library.MathF;
 
 namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 {
     public class NearbyMFHideoutIssueBehavior : CampaignBehaviorBase
     {
-        private Settlement FindSuitableHideout(Hero issueOwner)
+        // TODO: use locatablesearchdata instead
+        private Settlement? FindSuitableHideout(Hero issueOwner)
         {
-            Settlement result = null;
+            Settlement? result = null;
             float minDistance = float.MaxValue;
             IMFManager.InitManagerIfNone();
-            foreach (var mfHideout in (from mfh in IMFManager.Current.AllMFHideouts where mfh.IsActive && Helpers.IsEnemyOfMinorFaction(issueOwner.MapFaction, mfh.OwnerClan) select mfh))
+            foreach (var mfHideout in (
+                from mfh in IMFManager.Current!.AllMFHideouts 
+                where mfh.IsActive && Helpers.IsEnemyOfMinorFaction(issueOwner.MapFaction, mfh.OwnerClan) 
+                select mfh))
             {
                 float distance = mfHideout.Settlement.GatePosition.Distance(issueOwner.GetMapPoint().Position2D);
                 if (distance <= NearbyHideoutMaxDistance 
@@ -45,7 +49,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
         {
             if (this.ConditionsHold(hero))
             {
-                Settlement settlement = this.FindSuitableHideout(hero);
+                Settlement? settlement = this.FindSuitableHideout(hero);
                 if (settlement != null)
                 {
                     Campaign.Current.IssueManager.AddPotentialIssueData(
@@ -66,15 +70,20 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
         private IssueBase OnIssueSelected(in PotentialIssueData pid, Hero issueOwner)
         {
-            return new NearbyMFHideoutIssue(issueOwner, pid.RelatedObject as Settlement);
+            return new NearbyMFHideoutIssue(issueOwner, (pid.RelatedObject as Settlement)!);
         }
 
         private bool ConditionsHold(Hero issueGiver)
         {
-            return issueGiver.IsNotable && issueGiver.IsHeadman && issueGiver.CurrentSettlement != null && issueGiver.CurrentSettlement.Village.Bound.Town.Security <= 50f;
+            return issueGiver.IsNotable 
+                && issueGiver.IsHeadman 
+                && issueGiver.CurrentSettlement != null 
+                && issueGiver.CurrentSettlement.Village.Bound.Town.Security <= 50f
+                && !issueGiver.CurrentSettlement.IsRaided
+                && !issueGiver.CurrentSettlement.IsUnderRaid;
         }
 
-        private void OnIssueUpdated(IssueBase issue, IssueBase.IssueUpdateDetails details, Hero issueSolver = null)
+        private void OnIssueUpdated(IssueBase issue, IssueBase.IssueUpdateDetails details, Hero? issueSolver = null)
         {
         }
 
@@ -108,13 +117,17 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             {
                 get
                 {
-                    if (_targetHideout.OwnerClan.IsNomad)
-                        return setCommonTextVariables(new TextObject("{=z2f39hbXns}Yes... There's this {HIDEOUT_NAME}, a place that offers a good view of the roads. " +
-                        "The {MINOR_FACTION} have moved in and they have been giving hell to the caravans and travellers passing by instead of minding their" +
-                        " own business.[ib:closed][if:convo_undecided_open]"));
-                    else 
-                        return setCommonTextVariables(new TextObject("{=kcKVjMawu}Yes... There's this old ruin, a place that offers a good view of the roads, and is yet hard to reach. " +
-                        "The {MINOR_FACTION} have moved in and they have been giving hell to the caravans and travellers passing by.[ib:closed][if:convo_undecided_open]"));
+                    var factionText = IMFTexts.GetFactionText("NearbyMFHideoutQuest_IssueBrief", _targetHideout.OwnerClan);
+                    return setCommonTextVariables(
+                        factionText ?? (_targetHideout.OwnerClan.IsNomad 
+
+                        ? new TextObject("{=z2f39hbXns}Yes... There's this {HIDEOUT_NAME}, a place that offers a good view of the roads. " +
+                        "The {MINOR_FACTION} have moved in and they have been giving hell to the caravans and travelers passing by instead of minding their" +
+                        " own business.[ib:closed][if:convo_undecided_open]") 
+
+                        : new TextObject("{=kcKVjMawu}Yes... There's this old ruin, a place that offers a good view of the roads, " +
+                        "and is yet hard to reach. The {MINOR_FACTION} have moved in and they have been giving hell to the " +
+                        "caravans and travelers passing by.[ib:closed][if:convo_undecided_open]")));
                 }
             }
 
@@ -127,12 +140,15 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             {
                 get
                 {
-                    if (_targetHideout.OwnerClan.IsNomad)
-                        return setCommonTextVariables(new TextObject("{=z7QOvsPNDf}There are likely significant number of defenders at the {HIDEOUT_NAME}. " +
-                            "Make sure to attack with plenty of capable men... [ib:closed][if:convo_thinking]"));
-                    else
-                        return setCommonTextVariables(new TextObject("{=8fLe6O58j}Any {MINOR_FACTION} bandits there can easily spot and evade a large army moving against them, " +
-                        "but if you can enter the hideout with a small group of determined warriors you can catch them unaware.[ib:closed][if:convo_thinking]"));
+                    var factionText = IMFTexts.GetFactionText("NearbyMFHideoutQuest_IssueSolution", _targetHideout.OwnerClan);
+                    return setCommonTextVariables(
+                        factionText ?? (_targetHideout.OwnerClan.IsNomad
+
+                        ? new TextObject("{=z7QOvsPNDf}There are likely significant number of defenders at the {HIDEOUT_NAME}. " +
+                            "Make sure to attack with plenty of capable men... [ib:closed][if:convo_thinking]")
+
+                        : new TextObject("{=8fLe6O58j}Any {MINOR_FACTION} bandits there can easily spot and evade a large army moving against them, " +
+                        "but if you can enter the hideout with a small group of determined warriors you can catch them unaware.[ib:closed][if:convo_thinking]")));
                 }
             }
 
@@ -222,9 +238,9 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             protected override float GetIssueEffectAmountInternal(IssueEffect issueEffect)
             {
                 if (issueEffect == DefaultIssueEffects.SettlementProsperity)
-                    return -0.3f * (Helpers.GetMFHideout(_targetHideout).Hearth / 300);
+                    return -0.3f * (Helpers.GetMFHideout(_targetHideout)!.Hearth / 300);
                 if (issueEffect == DefaultIssueEffects.SettlementSecurity)
-                    return -0.6f * (Helpers.GetMFHideout(_targetHideout).Hearth / 300);
+                    return -0.6f * (Helpers.GetMFHideout(_targetHideout)!.Hearth / 300);
                 return 0f;
             }
 
@@ -274,7 +290,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 });
                 GainRenownAction.Apply(Hero.MainHero, 1f);
                 MFHideoutCampaignBehavior.ApplyHideoutRaidConsequences(_targetHideout);
-                IMFManager.Current.ClearHideout(Helpers.GetMFHideout(_targetHideout), DeactivationReason.Raid);
+                IMFManager.Current!.ClearHideout(Helpers.GetMFHideout(_targetHideout)!, DeactivationReason.Raid);
             }
 
             protected override void AlternativeSolutionEndWithFailureConsequence()
@@ -303,7 +319,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 return NearbyHideoutIssueFrequency;
             }
 
-            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flags, out Hero relationHero, out SkillObject skill)
+            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flags, out Hero? relationHero, out SkillObject? skill)
             {
                 flags = PreconditionFlags.None;
                 relationHero = null;
@@ -314,13 +330,13 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                     return false;
                 }
                     
-                if (issueGiver.GetRelationWithPlayer() < IMFModels.MinRelationToGetMFQuest
-                    || Helpers.IsRivalOfMinorFaction(Hero.MainHero.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
+                if (issueGiver!.GetRelationWithPlayer() < MinRelationNeeded(RelationLevelNeededForQuest)
+                    || Helpers.ConsidersMFOutlaw(Hero.MainHero!.MapFaction, issueGiver.CurrentSettlement.OwnerClan))
                 {
                     flags |= PreconditionFlags.Relation;
                     relationHero = issueGiver;
                 }
-                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero.MapFaction))
+                if (FactionManager.IsAtWarAgainstFaction(issueGiver.MapFaction, Hero.MainHero!.MapFaction))
                 {
                     flags |= PreconditionFlags.AtWar;
                 }
@@ -329,7 +345,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
             public override bool IssueStayAliveConditions()
             {
-                return Helpers.GetMFHideout(this._targetHideout).IsActive 
+                return Helpers.GetMFHideout(this._targetHideout)!.IsActive 
                     && base.IssueOwner.CurrentSettlement.IsVillage 
                     && !base.IssueOwner.CurrentSettlement.IsRaided 
                     && !base.IssueOwner.CurrentSettlement.IsUnderRaid 
@@ -402,7 +418,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
             private const int IssueDuration = 15;
 
-            private const int QuestTimeLimit = 30;
+            private const int QuestTimeLimit = 20;
 
             [SaveableField(100)]
             private readonly Settlement _targetHideout;
@@ -520,13 +536,17 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             private void OnQuestAccepted()
             {
                 base.StartQuest();
-                Helpers.GetMFHideout(this._targetHideout).IsSpotted = true;
+                Helpers.GetMFHideout(this._targetHideout)!.IsSpotted = true;
                 this._targetHideout.IsVisible = true;
                 base.AddTrackedObject(this._targetHideout);
                 QuestHelper.AddMapArrowFromPointToTarget(new TextObject("{=xpsQyPaV}Direction to Hideout"), this._questSettlement.Position2D, this._targetHideout.Position2D, 5f, 0.1f);
                 MBInformationManager.AddQuickInformation(setCommonTextVariables(
                     new TextObject("{=fMVPO1kzzz}{QUEST_GIVER.NAME} has marked the {HIDEOUT_NAME} on your map")));
                 base.AddLog(this._onQuestStartedLogText);
+
+                // Make sure the nomad camp doesn't move mid quest
+                if (_targetHideout.OwnerClan.IsNomad)
+                    Helpers.GetMFHideout(_targetHideout)!.ExtendNomadCampMigrationTimePastTime(this.QuestDueTime);
             }
 
             private void OnQuestSucceeded()
@@ -665,6 +685,8 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
         private const int NearbyHideoutMaxDistance = 40;
 
         private const IssueBase.IssueFrequency NearbyHideoutIssueFrequency = IssueBase.IssueFrequency.Common;
+
+        internal const MFRelation RelationLevelNeededForQuest = MFRelation.Neutral;
         public class NearbyMFHideoutIssueTypeDefiner : SaveableTypeDefiner
         {
             public NearbyMFHideoutIssueTypeDefiner() : base(404_322_929)

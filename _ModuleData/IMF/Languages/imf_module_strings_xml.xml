@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <!--#region MF Notable Needs Recruits Quest-->
+    <string id="3mADItXNb" text="Yes... As you no doubt know, this is rough work, and I've lost a lot of good lads recently. I haven't had much luck replacing them. I need men who understand how things work in our business, and that's not always easy to find. I need capable {MOUNTED}{TROOP_TYPE}...[ib:hip][if:convo_undecided_closed]"/>
+    <string id="kolxPW10J" text="Look, I know that warriors like you can sometimes recruit {MOUNTED}{TROOP_TYPE} to your party. Some of those men might want to take their chances working for me. More comfortable with us, where there's always drink and women on hand, than {?IS_OUTLAW}roaming endlessly about the countryside{?}working for a lord{\?}, eh? For each one that signs up with me I'll give you a bounty, more if they have some experience.[if:convo_innocent_smile][ib:hip]"/>
+    <string id="FtHAENedg" text="You can also send me a recruiter: a trustworthy companion who is good at leading men, and also enough of a leader to recruit soldiers...[if:convo_undecided_open][ib:confident]"/>
+    <string id="R3fkc5wSH" text="You asked {COMPANION.LINK} to deliver at least {WANTED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} to {ISSUE_GIVER.LINK} in {SETTLEMENT}. They should rejoin your party in {RETURN_DAYS} days."/>
+    <string id="awjQeYiRo" text="A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\?} Clan."/>
+    <string id="Exa8gzGlC" text="{MINOR_FACTION} Hideout Needs Recruits"/>
+    <string id="lpc6tS3bs" text="A {MINOR_FACTION} Notable needs recruits for {?ISSUE_GIVER.GENDER}her{?}his{\?} Clan."/>
+    <string id="kYU0MOSP1" text="{QUEST_GIVER.LINK}, a Notable of the {MINOR_FACTION}, told you that {?QUEST_GIVER.GENDER}she{?}he{\?} needs recruits for {?QUEST_GIVER.GENDER}her{?}his{\?} Clan. {?QUEST_GIVER.GENDER}She{?}He{\?} asked you to recruit {NEEDED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} into your party, then transfer them to {?QUEST_GIVER.GENDER}her{?}him{\?}. You will be paid for the recruits depending on their experience."/>
+    <string id="gOEIZ30vl" text="{QUEST_GIVER.LINK} has died. {?QUEST_GIVER.GENDER}She{?}He{\?} has no more desires."/>
+    <string id="5oIRMI8cL" text="Your companion seems to have a knack with the local youths. I hear a lot of fine lads have already signed up.[if:convo_relaxed_happy][ib:hip2]"/>
+    <!--#endRegion MF Notable Needs Recruits Quest-->
+
+    <!--#region MF Lord Needs Recruits Quest-->
+    <string id="6mXBgnywX" text="{ISSUE_GIVER} needs recruits"/>
+    <string id="A3tTkd2BM" text="{QUEST_GIVER.LINK}, told you that {?QUEST_GIVER.GENDER}she{?}he{\?} needs recruits for {?QUEST_GIVER.GENDER}her{?}his{\?} Clan. {?QUEST_GIVER.GENDER}She{?}He{\?} asked you to recruit {NEEDED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE} into your party, then transfer them to {?QUEST_GIVER.GENDER}her{?}him{\?}. You will be paid for the recruits depending on their experience."/>
+    <!--#endRegion MF Lord Needs Recruits Quest-->
+
+    <!--#region MF Notable Needs Troops Trained Quest-->
+    <string id="npV743inQ" text="Train recruits for {MINOR_FACTION} Hideout"/>
+    <string id="5ORyuslE2" text="{ISSUE_GIVER.NAME} needs some of his {MINOR_FACTION} recruits to gain some real war experience {?ISSUE_GIVER.GENDER}She{?}He{\?} wants you to take them with you on some fairly safe expeditions, such as hunting some bandits."/>
+    <string id="oCbu6eG6F" text="We have recently acquired some new recruits for the {MINOR_FACTION}. They are young and eager to get into some combat but I'm afraid they won't last very long against real warriors. Maybe you could take some of them in your party and show them how to carry themselves in battle. In exchange they will share with you the values of the {MINOR_FACTION} and maybe we could form a partnership in the future.[if:convo_focused_happy][ib:hip]"/>
+    <string id="NNIqnPU40" text="{ISSUE_GIVER.LINK} a member of the {MINOR_FACTION}, asked you to train recruits for {?QUEST_GIVER.GENDER}her{?}him{\?}. {?QUEST_GIVER.GENDER}She{?}He{\?} gave you {NUMBER_OF_MEN} men, hoping to take them back when once they are veterans.{newline}You sent them with one of your companions {COMPANION.LINK} to hunt down some easy targets. You arranged to meet them in {RETURN_DAYS} days."/>
+    <string id="1QEr8eYap" text="{QUEST_GIVER.LINK}, a member of the {MINOR_FACTION}, asked you to train some recruits for {?QUEST_GIVER.GENDER}her{?}him{\?}. {?QUEST_GIVER.GENDER}She{?}He{\?} gave you {NUMBER_OF_MEN} men, hoping to take them back when once they have some experience.\nThe easiest way to train them without putting them in too much danger is to attack weak parties."/>
+    <!--#endRegion MF Notable Needs Troops Trained Quest-->
+
+    <!--#region Notable Wants MF Hideout Cleared Quest-->
+    <string id="o1H6QqaW2" text="{MINOR_FACTION} Base Near {ISSUE_SETTLEMENT}"/>
+    <string id="951elMchg" text="{ISSUE_GIVER.LINK} wants you to clear the {HIDEOUT_NAME} that causes trouble in {?ISSUE_GIVER.GENDER}her{?}his{\?} region."/>
+    <string id="kcKVjMawu" text="Yes... There's this old ruin, a place that offers a good view of the roads, and is yet hard to reach. The {MINOR_FACTION} have moved in and they have been giving hell to the caravans and travellers passing by.[ib:closed][if:convo_undecided_open]"/>
+    <string id="8fLe6O58j" text="Any {MINOR_FACTION} bandits there can easily spot and evade a large army moving against them, but if you can enter the hideout with a small group of determined warriors you can catch them unaware.[ib:closed][if:convo_thinking]"/>
+    <string id="B9tqOUtoI" text="I will go to the {HIDEOUT_NAME} myself and ambush the bandits."/>
+    <string id="bYdnhFrJ2" text="{ISSUE_GIVER.LINK}, a headman from {ISSUE_SETTLEMENT}, has told you about {MINOR_FACTION} attacks on local villagers and asked you to clear out the {HIDEOUT_NAME}. You asked {COMPANION.LINK} to take {TROOP_COUNT} of your best men to go and take care of it. They should report back to you in {RETURN_DAYS} days."/>
+    <string id="HxKTKBo5h" text="You received a message from {ISSUE_GIVER.LINK}.&#10;&quot;Thank you for clearing out that outlaws' nest. Please accept these {REWARD}{GOLD_ICON} denars with our gratitude.&quot;"/>
+    <string id="EIjCKoXaP" text="{MINOR_FACTION} Base Near {SETTLEMENT_NAME}"/>
+    <string id="svLtMGrhv" text="{QUEST_GIVER.LINK}, a headman from {QUEST_SETTLEMENT}, has told you about some {MINOR_FACTION} members who have recently been attacking local villagers. You told {?QUEST_GIVER.GENDER}her{?}him{\?} that you will take care of the situation yourself. {QUEST_GIVER.LINK} also marked the location of the {HIDEOUT_NAME} on your map."/>
+    <string id="oe0TUx9bg" text="{HIDEOUT_NAME} was cleared by someone else. Your agreement with {QUEST_GIVER.LINK} is canceled."/>
+    <string id="pJj2R5gnG" text="{SETTLEMENT_FACTION} is no longer at war with {MINOR_FACTION}. Your agreement with {QUEST_GIVER.LINK} is canceled."/>
+    <string id="s4Wev86aQ" text="The {MINOR_FACTION} are no more. Your agreement with {QUEST_GIVER.LINK} is canceled."/>
+    <string id="z7QOvsPNDf" text="There are likely significant number of defenders at the {HIDEOUT_NAME}. Make sure to attack with plenty of capable men... [ib:closed][if:convo_thinking]"/>
+    <string id="Rjoihl2Xfh" text="You failed to clear the {HIDEOUT_NAME} in time to prevent further attacks. {ISSUE_GIVER.LINK} is disappointed."/>
+    <string id="rWDHgNtTxJ" text="Good! I'll mark the location for you on a map.[if:convo_excited]"/>
+    <string id="duEssvQRAz" text="Any news? Have you managed to clear them out yet?[if:convo_astonished]"/>
+    <string id="fMVPO1kzzz" text="{QUEST_GIVER.NAME} has marked the {HIDEOUT_NAME} on your map"/>
+    <string id="z2f39hbXns" text="Yes... There's this {HIDEOUT_NAME}, a place that offers a good view of the roads. The {MINOR_FACTION} have moved in and they have been giving hell to the caravans and travellers passing by instead of minding their own business.[ib:closed][if:convo_undecided_open]"/>
+    <!--#endRegion Notable Wants MF Hideout Cleared Quest-->
+
+    <!--#region MFHideout-->
+    <string id="Fv1F13jxM" text="You cannot attack while wounded"/>
+    <string id="cl7GYHwgi" text="Attacking this place will significantly decrease your relation with this Clan"/>
+    <string id="1PM860Jco" text="Taking hostile action will start a war between you and this Clan or whoever hired them."/>
+    <string id="92PPJNVSa" text="You don't have enough relation to stay here."/>
+    <string id="pzEj8yvXS" text="Your relation with this clan must be at least {MIN_RELATION} to recruit troops."/>
+    <string id="WAkOJrsBf" text="The camp is being dismantled because the land here has been used up."/>
+    <string id="bTIQXD4cq" text="The {MINOR_FACTION} have moved their camp to a new location."/>
+    <string id="ldONWPCl6i" text="Raid Camp"/>
+    <string id="prcBB123" text="{HIDEOUT_DESCRIPTION} You see a calm nomad village with tents, herds of livestock, and simple clothing. There is conversation about raids, ransoms, and the best places to waylay travellers."/>
+    <string id="" text=""/>
+    <string id="" text=""/>
+    <string id="" text=""/>
+    <string id="" text=""/>
+    <!--#endRegion MFHideout-->
+
+    <!--#region misc-->
+    <string id="dtwUqRyju" text="bandits"/>
+    <string id="Mcp21ip8V" text="soldiers"/>
+    <string id="kDeZI8FIZ" text="mounted "/>
+    <!--#endRegion misc-->
+  </strings>
+</base>

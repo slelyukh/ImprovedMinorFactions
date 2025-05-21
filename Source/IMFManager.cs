@@ -44,6 +44,7 @@ namespace ImprovedMinorFactions
         // true if mfh1 should replace mfh2.
         private bool ShouldReplaceHideout(MinorFactionHideout mfh1, MinorFactionHideout mfh2)
         {
+            if (mfh1?.Owner == null || mfh1?.Settlement?.Notables == null) return false;
             if (mfh1.IsActiveOrScheduled && mfh1.Settlement.Notables.Count > 0)
             {
                 return true;
@@ -57,9 +58,10 @@ namespace ImprovedMinorFactions
         {
             if (_LoadedMFHideouts.ContainsKey(mfh.StringId))
             {
-                InformationManager.DisplayMessage(new InformationMessage($"{mfh.StringId} duplicate hideout saves! Please send your save file to modders on Nexus Mods.", Colors.Red));
-                if (ShouldReplaceHideout(mfh, _LoadedMFHideouts[mfh.StringId]))
-                    _LoadedMFHideouts[mfh.StringId] = mfh;
+                InformationManager.DisplayMessage(new InformationMessage($"{mfh.StringId} duplicate hideout saves! If you see any strange behavior please send your savefiles to Improved Minor Factions mod author.", Colors.Red));
+                // if (ShouldReplaceHideout(mfh, _LoadedMFHideouts[mfh.StringId]))
+                //    _LoadedMFHideouts[mfh.StringId] = mfh;
+                // When looking at save with duplicates the existing mfhideout seems to be consistently the one we want.
                 return;
             }
             
@@ -69,9 +71,9 @@ namespace ImprovedMinorFactions
             _LoadedMFHideouts[mfh.StringId] = mfh;
         }
 
-        public MinorFactionHideout GetLoadedMFHideout(string stringId)
+        public MinorFactionHideout? GetLoadedMFHideout(string stringId)
         {
-            MinorFactionHideout mfh = null;
+            MinorFactionHideout? mfh = null;
             _LoadedMFHideouts.TryGetValue(stringId, out mfh);
             return mfh;
         }
@@ -210,13 +212,12 @@ namespace ImprovedMinorFactions
         // Transfer ownership of an mfh from one clan to another or do nothing.
         private void AssignHideoutToClan(Clan newOwner, MinorFactionHideout mfh)
         {
-            Clan oldOwner = mfh.OwnerClan;
+            Clan oldOwner = mfh!.OwnerClan!;
             if (oldOwner == newOwner)
                 return;
             if (mfh.IsActiveOrScheduled)
                 throw new Exception("Trying to reassign active hideout to another clan!");
 
-            // TODO: update Name
             mfh.OwnerClan = newOwner;
             mfh.Settlement.Name = new TextObject("{=dt9393yju}{MINOR_FACTION} Hideout")
                 .SetTextVariable("MINOR_FACTION", newOwner.Name);
@@ -241,9 +242,13 @@ namespace ImprovedMinorFactions
                     List<MinorFactionHideout>? priorityList = null;
                     priorityLists.TryGetValue(mfClan, out priorityList);
 
+                    if (priorityList == null)
+                        continue;
+
                     if (numHideoutsToGive[mfClan] == 0)
                         satisfiedClans.Add(mfClan);
-                    if (satisfiedClans.Contains(mfClan)) continue;
+                    if (satisfiedClans.Contains(mfClan)) 
+                        continue;
 
                     HashSet<MinorFactionHideout> mfhsToRemoveFromPriorityList = new HashSet<MinorFactionHideout>();
                     foreach (var mfh in priorityList!)
@@ -374,7 +379,7 @@ namespace ImprovedMinorFactions
 
         public MFData? GetClanMFData(Clan c)
         {
-            MFData mfData = null;
+            MFData? mfData = null;
             _mfData?.TryGetValue(c, out mfData);
             return mfData;
         }
@@ -410,7 +415,7 @@ namespace ImprovedMinorFactions
                     oldHideout.MoveHideoutsNomad(newHideout);
             } catch (KeyNotFoundException ex)
             {
-                InformationManager.DisplayMessage(new InformationMessage("IMF ERROR: Somehow we tried to clear a hideout not in MFHManager._mfData.", Colors.Red));
+                InformationManager.DisplayMessage(new InformationMessage($"IMF ERROR: Somehow we tried to clear a hideout not in MFHManager._mfData. {ex}", Colors.Red));
             }
             
         }
@@ -498,9 +503,9 @@ namespace ImprovedMinorFactions
             }
         }
 
-        internal bool IsFullHideoutOccupationMF(Clan c)
+        internal bool IsFullHideoutOccupationMF(Clan? c)
         {
-            return _mfData.ContainsKey(c) && _mfData[c].NumTotalHideouts == _mfData[c].NumActiveHideouts;
+            return c != null && _mfData.ContainsKey(c) && _mfData[c].NumTotalHideouts == _mfData[c].NumActiveHideouts;
         }
 
         internal MBReadOnlyList<MinorFactionHideout> AllMFHideouts
@@ -508,7 +513,21 @@ namespace ImprovedMinorFactions
             get => this._hideouts;
         }
 
-        public static IMFManager Current { get; set; }
+        public static void ConvertGangLeaderMFNotablesToPreachers()
+        {
+            foreach (Hero h in Hero.AllAliveHeroes)
+            {
+                if (h != null && Helpers.IsMFHideout(h.CurrentSettlement) && h.Occupation == Occupation.GangLeader)
+                {
+                    h.SetNewOccupation(Occupation.Preacher);
+                    // TODO: remove debug
+                    //InformationManager.DisplayMessage(new InformationMessage(h.Name + " Is gang leader: " + h.IsGangLeader + " Is notable: " + h.IsNotable));
+                }
+                    
+            }
+        }
+
+        public static IMFManager? Current { get; set; }
 
         private Dictionary<string, MinorFactionHideout> _LoadedMFHideouts;
 

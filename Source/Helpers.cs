@@ -12,7 +12,7 @@ namespace ImprovedMinorFactions
 {
     public static class Helpers
     {
-        internal static bool IsMFHideout(Settlement s)
+        internal static bool IsMFHideout(Settlement? s)
         {
             return s != null && GetMFHideout(s) != null;
         }
@@ -22,7 +22,7 @@ namespace ImprovedMinorFactions
         internal static bool IsSingleHideoutMF(Clan c)
         {
             IMFManager.InitManagerIfNone();
-            return c!= null && IMFManager.Current.IsFullHideoutOccupationMF(c);
+            return c!= null && IMFManager.Current!.IsFullHideoutOccupationMF(c);
         }
 
         internal static List<TooltipProperty> GetVillageOrMFHideoutMilitiaTooltip(Settlement s)
@@ -40,9 +40,9 @@ namespace ImprovedMinorFactions
             }
         }
 
-        internal static bool IsMFGangLeader(Hero h)
+        internal static bool IsMFNotable(Hero h)
         {
-            return h != null && IsMFHideout(h.CurrentSettlement) && !h.IsLord && h.Occupation == Occupation.GangLeader;
+            return h != null && IsMFHideout(h.CurrentSettlement) && !h.IsLord && h.Occupation == Occupation.Preacher;
         }
 
         internal static List<TooltipProperty> GetVillageOrMFHideoutProsperityTooltip(Settlement s)
@@ -65,10 +65,11 @@ namespace ImprovedMinorFactions
 
         // a minor faction is a rival of a Kingdom if it is an Outlaw faction and shares a culture with the Kingdom
         // these factions are always at war unless the Minor Faction is someone's mercenary
-        internal static bool IsRivalOfMinorFaction(IFaction faction, Clan minorFaction)
+        internal static bool ConsidersMFOutlaw(IFaction faction, Clan minorFaction)
         {
             return faction != null && minorFaction != null
                 && minorFaction.IsOutlaw 
+                && !faction.IsMinorFaction
                 && (faction.Culture == minorFaction.Culture 
                 || (minorFaction.Culture.GetCultureCode() == CultureCode.Vakken && faction.Culture.GetCultureCode() == CultureCode.Sturgia));
         }
@@ -78,7 +79,7 @@ namespace ImprovedMinorFactions
             return Clan.PlayerClan.GetRelationWithClan(minorFaction) >= IMFModels.MinRelationToBeMFHFriend;
         }
 
-        internal static MinorFactionHideout? GetMFHideout(Settlement s)
+        internal static MinorFactionHideout? GetMFHideout(Settlement? s)
         {
             var setComp = s?.SettlementComponent;
             if (setComp == null || setComp is Town || setComp is Village || setComp is RetirementSettlementComponent)
@@ -152,12 +153,12 @@ namespace ImprovedMinorFactions
 
         internal static void setPrivateField<I, V>(I instance, string field, V value)
         {
-            FieldInfo fieldInfo = typeof(I).GetField(field, BindingFlags.NonPublic | BindingFlags.Instance);
-            fieldInfo.SetValue(instance, value);
+            FieldInfo fieldInfo = typeof(I)!.GetField(field, BindingFlags.NonPublic | BindingFlags.Instance)!;
+            fieldInfo!.SetValue(instance, value);
         }
 
         // If method is static use null for instance and provide a type
-        internal static object? CallPrivateMethod(object? instance, string methodName, object[] args, Type type = null)
+        internal static object? CallPrivateMethod(object? instance, string methodName, object[] args, Type? type = null)
         {
             MethodInfo? method;
             if (type == null)
@@ -172,6 +173,9 @@ namespace ImprovedMinorFactions
             return minorFaction.BasicTroop.IsMounted;
         }
 
-
+        internal static bool HasMFHideout(Clan clan)
+        {
+            return (IMFManager.Current!.GetClanMFData(clan)?.Hideouts.Count ?? 0) > 0;
+        }
     }
 }

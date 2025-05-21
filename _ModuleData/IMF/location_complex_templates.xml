@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LocationComplexTemplates>
+	<LocationComplexTemplate
+		id="mf_hideout_complex">
+		<Location
+			id="mf_hideout_center"
+			name="{=25pNV9E3}Hideout Center"
+			scene_name="empire_village_a"
+			indoor="false"
+			max_prosperity="40"
+			ai_can_enter="CanAlways"
+			ai_can_exit="CanAlways"
+			player_can_enter="CanIfSettlementAccessModelLetsPlayer"
+			player_can_see="CanAlways" />
+		<Passages></Passages>
+	</LocationComplexTemplate>
+</LocationComplexTemplates>

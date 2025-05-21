@@ -30,10 +30,34 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, new Action<Clan>(OnClanDestroyed));
             CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, new Action<Clan, Kingdom, Kingdom, ChangeKingdomAction.ChangeKingdomActionDetail, bool>(OnClanChangedKingdom));
             // debug listeners
-            CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, new Action(OnDailyTick));
-            CampaignEvents.OnQuarterDailyPartyTick.AddNonSerializedListener(this, new Action<MobileParty>(DEBUGMFPartyTick));
+            //CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, new Action(OnDailyTick));
+            //CampaignEvents.OnQuarterDailyPartyTick.AddNonSerializedListener(this, new Action<MobileParty>(DEBUGMFPartyTick));
+            //CampaignEvents.MissionTickEvent.AddNonSerializedListener(this, new Action<float>(OnMissionTick));
         }
 
+        // DEBUG FUNCs
+        public void OnMissionTick(float dt)
+        {
+            InformationManager.DisplayMessage(new InformationMessage("Is MFHideout = " + curSettlementIsMFHideout()));
+        }
+
+        private bool curSettlementIsMFHideout()
+        {
+            var ownerClan = Settlement.CurrentSettlement?.OwnerClan;
+            var setl = Settlement.CurrentSettlement;
+
+            return setl != null
+                && ownerClan != null
+                && !setl.IsHideout
+                && !setl.IsCastle
+                && !setl.IsVillage
+                && !setl.IsTown
+                && ownerClan.IsMinorFaction
+                && !ownerClan.IsNomad
+                && ownerClan != Clan.PlayerClan;
+        }
+
+        // DEBUG FUNCs
         public void OnDailyTick()
         {
 
@@ -50,13 +74,13 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         private void OnClanDestroyed(Clan destroyedClan)
         {
             if (destroyedClan.IsMinorFaction)
-                IMFManager.Current.RemoveClan(destroyedClan);
+                IMFManager.Current!.RemoveClan(destroyedClan);
         }
 
         private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification = true)
         {
             if (clan.IsMinorFaction && detail == ChangeKingdomAction.ChangeKingdomActionDetail.LeaveAsMercenary)
-                IMFManager.Current.DeclareWarOnPlayerIfNeeded(clan);
+                IMFManager.Current!.DeclareWarOnPlayerIfNeeded(clan);
         }
 
         private void OnMFHideoutSpotted(PartyBase party, PartyBase mfHideoutParty)
@@ -81,9 +105,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 float num2 = 1f - num / (hideoutSpottingDistance * hideoutSpottingDistance);
                 if (num2 > 0f && MBRandom.RandomFloat < num2 && !mfHideout.IsSpotted)
                 {
-                    mfHideout.IsSpotted = true;
-                    settlement.IsVisible = true;
-                    CampaignEventDispatcher.Instance.OnHideoutSpotted(MobileParty.MainParty.Party, settlement.Party);
+                    mfHideout.PlayerSpotHideout();
                 }
             }
         }
@@ -171,7 +193,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             if (curSettlement.OwnerClan.IsNomad)
             {
                 PrepareForBattle();
-                CampaignMission.OpenBattleMission(Helpers.GetMFHideout(curSettlement).SceneName, true);
+                CampaignMission.OpenBattleMission(Helpers.GetMFHideout(curSettlement)!.SceneName, true);
                 return;
             }
 
@@ -197,7 +219,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             ArrangeHideoutTroopCountsForMission();
             GameMenu.SwitchToMenu("mf_hideout_place");
             var mfHideout = Helpers.GetMFHideout(curSettlement);
-            if (!Helpers.IsMFHideout(curSettlement))
+            if (mfHideout == null)
                 return;
             mfHideout.UpdateNextPossibleAttackTime();
             if (PlayerEncounter.IsActive)
@@ -220,7 +242,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         {
             args.optionLeaveType = Options.LeaveType.Submenu;
             args.Tooltip = new TextObject("{=1PM860Jco}Taking hostile action will start a war between you and this Clan or whoever hired them.");
-            return !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction) && Settlement.CurrentSettlement.IsActive;
+            return Clan.PlayerClan != Settlement.CurrentSettlement.OwnerClan
+                && !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction) 
+                && Settlement.CurrentSettlement.IsActive;
         }
 
         public void menu_hostile_action_on_consequence(MenuCallbackArgs args)
@@ -391,7 +415,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 {
                     GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{HIDEOUT_DESCRIPTION} You’re well-known and well-liked by the nomads, and they happily receive you into their camp.");
                 }
-                else if (Helpers.IsRivalOfMinorFaction(Clan.PlayerClan, mfHideout.OwnerClan))
+                else if (Helpers.ConsidersMFOutlaw(Clan.PlayerClan, mfHideout.OwnerClan))
                 {
                     GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{HIDEOUT_DESCRIPTION} You and the nomads are at odds as your people have marked them as outlaws.");
                 }
@@ -409,7 +433,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             {
                 GameTexts.SetVariable("MF_HIDEOUT_ATTACK", "{=zxMOqlhs}Attack Hideout");
                 GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{=prcBBqMR}{HIDEOUT_DESCRIPTION} You see armed men moving about. As you listen quietly, you hear scraps" +
-                    " of conversation about raids, ransoms, and the best places to waylay travellers.");
+                    " of conversation about raids, ransoms, and the best places to waylay travelers.");
             }
 
 
@@ -491,7 +515,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             if (mfClan.IsUnderMercenaryService)
             {
                 ChangeRelationAction.ApplyPlayerRelation(mfClan.Leader, -20);
-                IMFManager.Current.RegisterClanForPlayerWarOnEndingMercenaryContract(mfClan);
+                IMFManager.Current!.RegisterClanForPlayerWarOnEndingMercenaryContract(mfClan);
             }
             else
             {
@@ -509,7 +533,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             PrepareForBattle();
 
             var mfHideout = Helpers.GetMFHideout(Settlement.CurrentSettlement);
-            CampaignMission.OpenHideoutBattleMission(mfHideout.SceneName, playerTroops.ToFlattenedRoster());
+            CampaignMission.OpenHideoutBattleMission(mfHideout!.SceneName, playerTroops.ToFlattenedRoster());
         }
 
         private bool CanChangeStatusOfTroop(CharacterObject character)
@@ -537,14 +561,14 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         {
             AddGameMenus(campaignGameStarter);
             IMFManager.InitManagerIfNone();
-            IMFManager.Current.ActivateAllFactionHideouts();
+            IMFManager.Current!.ActivateAllFactionHideouts();
         }
 
         public void OnGameLoaded(CampaignGameStarter campaignGameStarter)
         {
             AddGameMenus(campaignGameStarter);
             IMFManager.InitManagerIfNone();
-            IMFManager.Current.ActivateAllFactionHideouts();
+            IMFManager.Current!.ActivateAllFactionHideouts();
         }
     }
 

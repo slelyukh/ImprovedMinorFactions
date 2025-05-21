@@ -1,0 +1,86 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <Version>0.3.2</Version>
+    <TargetFrameworks>net472;net6</TargetFrameworks>
+    <Platforms>x64</Platforms>
+    <LangVersion>10.0</LangVersion>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+    <Nullable>enable</Nullable>
+    <BuildForWindows>false</BuildForWindows>
+    <BuildForWindowsStore>false</BuildForWindowsStore>
+    <ModuleId>$(MSBuildProjectName)</ModuleId>
+    <ModuleName>$(MSBuildProjectName)</ModuleName>
+    <ModuleUrl></ModuleUrl>
+    <GameFolder>$(BANNERLORD_GAME_DIR)</GameFolder>
+    <GameBinariesFolder Condition="Exists('$(GameFolder)\bin\Win64_Shipping_Client\Bannerlord.exe')">Win64_Shipping_Client</GameBinariesFolder>
+    <GameBinariesFolder Condition="Exists('$(GameFolder)\bin\Gaming.Desktop.x64_Shipping_Client\Bannerlord.exe')">Gaming.Desktop.x64_Shipping_Client</GameBinariesFolder>
+    <AssemblyVersion>0.1.1</AssemblyVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="$(TargetFramework) == 'net472'">
+    <BuildForWindows>true</BuildForWindows>
+  </PropertyGroup>
+  <PropertyGroup Condition="$(TargetFramework) == 'net6'">
+    <BuildForWindowsStore>true</BuildForWindowsStore>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="$(GameFolder)\bin\$(GameBinariesFolder)\Newtonsoft.Json.dll">
+      <HintPath>%(Identity)</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(GameFolder)\bin\$(GameBinariesFolder)\TaleWorlds.*.dll" Exclude="$(GameFolder)\bin\$(GameBinariesFolder)\TaleWorlds.Native.dll">
+      <HintPath>%(Identity)</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(GameFolder)\Modules\Native\bin\$(GameBinariesFolder)\*.dll">
+      <HintPath>%(Identity)</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(GameFolder)\Modules\SandBox\bin\$(GameBinariesFolder)\*.dll">
+      <HintPath>%(Identity)</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(GameFolder)\Modules\SandBoxCore\bin\$(GameBinariesFolder)\*.dll">
+      <HintPath>%(Identity)</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(GameFolder)\Modules\StoryMode\bin\$(GameBinariesFolder)\*.dll">
+      <HintPath>%(Identity)</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(GameFolder)\Modules\CustomBattle\bin\$(GameBinariesFolder)\*.dll">
+      <HintPath>%(Identity)</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="$(GameFolder)\Modules\BirthAndDeath\bin\$(GameBinariesFolder)\*.dll">
+      <HintPath>%(Identity)</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Lib.Harmony" Version="2.3.0" />
+    <PackageReference Include="Harmony.Extensions" Version="3.2.0.77">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Nullable" Version="1.3.1" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <PackageReference Include="IsExternalInit" Version="1.0.3" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <PackageReference Include="Bannerlord.BuildResources" Version="1.1.0.104" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <PackageReference Include="BUTR.Harmony.Analyzer" Version="1.0.1.50" PrivateAssets="all" IncludeAssets="runtime; build; native; contentfiles; analyzers; buildtransitive" />
+    <PackageReference Include="System.Numerics.Vectors" Version="4.5.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="_ModuleData\IMF\" />
+    <Folder Include="_ModuleData\IMF %28CE%29\" />
+  </ItemGroup>
+
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent">
+    <Exec Command="xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Improved Minor Factions (AD1259)\bin\Win64_Shipping_Client&quot; /Y&#xD;&#xA;xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\ImprovedMinorFactions (CE)\bin\Win64_Shipping_Client&quot; /Y&#xD;&#xA;xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Improved Minor Factions (No Map)\bin\Win64_Shipping_Client&quot; /Y&#xD;&#xA;xcopy &quot;C:\Users\slely\Mods\ImprovedMinorFactions\bin\x64\Debug\net472&quot; &quot;C:\Program Files (x86)\Steam\steamapps\common\Mount &amp; Blade II Bannerlord\Modules\Improved Minor Factions (Realm Divided)\bin\Win64_Shipping_Client&quot; /Y" />
+  </Target>
+
+</Project>

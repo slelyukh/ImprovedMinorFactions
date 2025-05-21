@@ -12,7 +12,6 @@ using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements.Locations;
 using TaleWorlds.CampaignSystem.AgentOrigins;
 using TaleWorlds.Core;
-using TaleWorlds.CampaignSystem.ViewModelCollection.CharacterDeveloper;
 
 namespace ImprovedMinorFactions.Source.CampaignBehaviors
 {
@@ -86,8 +85,8 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
 
         private void AddNotableLocationCharacter(Hero notable, Settlement settlement)
         {
-            string suffix = notable.IsArtisan ? "_villager_artisan" : notable.IsMerchant ? "_villager_merchant" : notable.IsPreacher ? "_villager_preacher" : Helpers.IsMFGangLeader(notable) ? "_villager_gangleader" : notable.IsRuralNotable ? "_villager_ruralnotable" : notable.IsFemale ? "_lord" : "_villager_merchant";
-            string text = notable.IsArtisan ? "sp_notable_artisan" : notable.IsMerchant ? "sp_notable_merchant" : notable.IsPreacher ? "sp_notable_preacher" : Helpers.IsMFGangLeader(notable) ? "sp_notable_gangleader" : notable.IsRuralNotable ? "sp_notable_rural_notable" : notable.GovernorOf == notable.CurrentSettlement.Town ? "sp_governor" : "sp_notable";
+            string suffix = notable.IsArtisan ? "_villager_artisan" : notable.IsMerchant ? "_villager_merchant" : notable.IsPreacher ? "_villager_preacher" : Helpers.IsMFNotable(notable) ? "_villager_gangleader" : notable.IsRuralNotable ? "_villager_ruralnotable" : notable.IsFemale ? "_lord" : "_villager_merchant";
+            string text = notable.IsArtisan ? "sp_notable_artisan" : notable.IsMerchant ? "sp_notable_merchant" : notable.IsPreacher ? "sp_notable_preacher" : Helpers.IsMFNotable(notable) ? "sp_notable_gangleader" : notable.IsRuralNotable ? "sp_notable_rural_notable" : notable.GovernorOf == notable.CurrentSettlement.Town ? "sp_governor" : "sp_notable";
             Monster monsterWithSuffix = FaceGen.GetMonsterWithSuffix(notable.CharacterObject.Race, "_settlement");
             AgentData agentData = new AgentData(
                 new PartyAgentOrigin(null, notable.CharacterObject)).Monster(monsterWithSuffix).NoHorses(true);
@@ -145,7 +144,22 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 foreach (Hero notable in settlement.Notables)
                 {
                     notable.SetHasMet();
+                    // TODO REMOVE DEBUG
+                    //InformationManager.DisplayMessage(new InformationMessage(notable.Name + " Is gang leader: " + notable.IsGangLeader + " Is notable: " + notable.IsNotable));
+
+                    foreach (Hero h in Hero.AllAliveHeroes)
+                    {
+                        if (h.IsNotable && h.IsGangLeader && h.CurrentSettlement?.IsVillage == true)
+                        {
+                            h.SetNewOccupation(Occupation.Preacher);
+                            // TODO: remove debug
+                            //InformationManager.DisplayMessage(new InformationMessage(h.Name + " Is gang leader: " + h.IsGangLeader + " Is notable: " + h.IsNotable));
+                        }
+
+                    }
+                    // TODO REMOVE DEBUG
                 }
+
                 if (LocationComplex.Current != null && PlayerEncounter.LocationEncounter != null)
                 {
                     if (party == null)

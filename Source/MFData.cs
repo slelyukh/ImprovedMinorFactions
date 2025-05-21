@@ -38,14 +38,14 @@ namespace ImprovedMinorFactions
             ClanGender = IMFModels.ClanGender(c);
 
             // make sure clans that shouldn't have hideouts don't
-            if (mfClan.IsEliminated || mfClan.MapFaction == null || mfClan == Clan.PlayerClan)
+            if (mfClan.IsEliminated || mfClan.MapFaction == null)
                 NumActiveHideouts = 0;
         }
 
         public override void Deserialize(MBObjectManager objectManager, XmlNode node)
         {
             base.Deserialize(objectManager, node);
-            string? mfClanId = node.Attributes?.GetNamedItem("minor_faction")?.Value.Replace("Faction.", "");
+            string? mfClanId = node.Attributes?.GetNamedItem("minor_faction")?.Value?.Replace("Faction.", "");
             Clan? mfClan = Clan.All?.Find((x) => x.StringId == mfClanId);
             if (mfClan == null)
                 mfClan = objectManager.ReadObjectReferenceFromXml<Clan>("minor_faction", node);
@@ -58,21 +58,21 @@ namespace ImprovedMinorFactions
             InitData(mfClan);
 
             // parse data for me
-            if (node.Attributes?.GetNamedItem("num_active_hideouts") != null)
-                this.NumActiveHideouts = Int32.Parse(node.Attributes.GetNamedItem("num_active_hideouts").Value);
-            if (node.Attributes?.GetNamedItem("num_militia_first_time") != null)
-                this.NumMilitiaFirstTime = Int32.Parse(node.Attributes.GetNamedItem("num_militia_first_time").Value);
-            if (node.Attributes?.GetNamedItem("num_militia_post_raid") != null)
-                this.NumMilitiaPostRaid = Int32.Parse(node.Attributes.GetNamedItem("num_militia_post_raid").Value);
-            if (node.Attributes?.GetNamedItem("num_lvl2_militia") != null)
-                this.NumLvl2Militia = Int32.Parse(node.Attributes.GetNamedItem("num_lvl2_militia").Value);
-            if (node.Attributes?.GetNamedItem("num_lvl3_militia") != null)
-                this.NumLvl3Militia = Int32.Parse(node.Attributes.GetNamedItem("num_lvl3_militia").Value);
-            if (node.Attributes?.GetNamedItem("max_militia") != null)
-                this.MaxMilitia = Int32.Parse(node.Attributes.GetNamedItem("max_militia").Value);
-            if (node.Attributes?.GetNamedItem("clan_gender") != null)
+            if (node?.Attributes?.GetNamedItem("num_active_hideouts") != null)
+                this.NumActiveHideouts = Int32.Parse(node!.Attributes!.GetNamedItem("num_active_hideouts")!.Value!);
+            if (node?.Attributes?.GetNamedItem("num_militia_first_time") != null)
+                this.NumMilitiaFirstTime = Int32.Parse(node!.Attributes!.GetNamedItem("num_militia_first_time")!.Value!);
+            if (node?.Attributes?.GetNamedItem("num_militia_post_raid") != null)
+                this.NumMilitiaPostRaid = Int32.Parse(node!.Attributes!.GetNamedItem("num_militia_post_raid")!.Value!);
+            if (node?.Attributes?.GetNamedItem("num_lvl2_militia") != null)
+                this.NumLvl2Militia = Int32.Parse(node!.Attributes!.GetNamedItem("num_lvl2_militia")!.Value!);
+            if (node?.Attributes?.GetNamedItem("num_lvl3_militia") != null)
+                this.NumLvl3Militia = Int32.Parse(node!.Attributes!.GetNamedItem("num_lvl3_militia")!.Value!);
+            if (node?.Attributes?.GetNamedItem("max_militia") != null)
+                this.MaxMilitia = Int32.Parse(node!.Attributes!.GetNamedItem("max_militia")!.Value!);
+            if (node?.Attributes?.GetNamedItem("clan_gender") != null)
             {
-                string genderString = node.Attributes.GetNamedItem("clan_gender").Value;
+                string genderString = node!.Attributes!.GetNamedItem("clan_gender")!.Value!;
                 if (genderString == "Male")
                 {
                     this.ClanGender = IMFModels.Gender.Male;
@@ -95,7 +95,7 @@ namespace ImprovedMinorFactions
             if (IMFManager.Current?.GetClanMFData(mfClan) != null)
             {
                 // set values for current data
-                MFData existingData = IMFManager.Current.GetClanMFData(mfClan)!;
+                MFData existingData = IMFManager.Current!.GetClanMFData(mfClan)!;
                 existingData.NumActiveHideouts = this.NumActiveHideouts;
                 existingData.NumMilitiaFirstTime = this.NumMilitiaFirstTime;
                 existingData.NumMilitiaPostRaid = this.NumMilitiaPostRaid;

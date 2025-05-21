@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<base xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" type="string">
+  <tags>
+    <tag language="English" />
+  </tags>
+  <strings>
+    <!--#region MF Notable Needs Recruits Quest-->
+    <string id="3mADItXNb" text="是的…毫无疑问，这是艰苦的工作，最近我失去了很多优秀的伙计，还没找到合适的人顶替他们，我需要了解我们业务的人，而这并不容易，我需要有能力的{MOUNTED}{TROOP_TYPE}...[ib:hip][if:convo_undecided_closed]"/>
+    <string id="kolxPW10J" text="听着，我知道像你这样的战士有时会招募{MOUNTED}{TROOP_TYPE}到你的队伍里。其中一些人可能想要冒险为我工作。他们在我这里会感觉更舒适，因为这里总是有酒和女人，总比{?IS_OUTLAW}在乡间无休止地游荡好吧{?}不断地为领主工作好吧{\?}，对吧? 每一个跟我签约的人，我都会给你一笔赏金，如果他们有经验，赏金会更多。[if:convo_innocent_smile][ib:hip]"/>
+    <string id="FtHAENedg" text="您也可以给我派一名征兵官：一名值得信赖的同伴，擅长带兵，同时也是一名足以招募士兵的领袖......[if:convo_undecided_open][ib:confident]"/>
+    <string id="R3fkc5wSH" text="你要求{COMPANION.LINK}至少将{WANTED_RECRUIT_AMOUNT}名{MOUNTED}{TROOP_TYPE}送到{ISSUE_GIVER.LINK}位于{SETTLEMENT}的地方。他们应该在{RETURN_DAYS}天内重新加入你的队伍。"/>
+    <string id="awjQeYiRo" text="一个{MINOR_FACTION}的名人需要为{?ISSUE_GIVER.GENDER}她{?}他{\?}的家族招募新兵。"/>
+    <string id="Exa8gzGlC" text="{MINOR_FACTION}藏身处需要新兵"/>
+    <string id="lpc6tS3bs" text="一个{MINOR_FACTION}的名人需要为{?ISSUE_GIVER.GENDER}她{?}他{\?}的家族招募新兵。"/>
+    <string id="kYU0MOSP1" text="{QUEST_GIVER.LINK}，{MINOR_FACTION}的名人，告诉你 {?QUEST_GIVER.GENDER}她{?}他{\?}需要为{?QUEST_GIVER.GENDER}她{?}他{\?}的氏族招兵买马。{?QUEST_GIVER.GENDER}她{?}他{\?}让你招募{NEEDED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE}到你的队伍，然后把他们转交给{?QUEST_GIVER.GENDER}她{?}他{\?}。你将根据新兵的经验值获得报酬。"/>
+    <string id="gOEIZ30vl" text="{QUEST_GIVER.LINK}已经死了。{?QUEST_GIVER.GENDER}她{?}他{\?}已经无欲无求了。"/>
+    <string id="5oIRMI8cL" text="你的同伴似乎在当地年轻人中很受欢迎。我听说很多优秀的小伙子已经报名加入我们的队伍。[if:convo_relaxed_happy][ib:hip2]"/>
+    <!--#endRegion MF Notable Needs Recruits Quest-->
+
+    <!--#region MF Lord Needs Recruits Quest-->
+    <string id="6mXBgnywX" text="{ISSUE_GIVER}需要招募新兵"/>
+    <string id="A3tTkd2BM" text="{QUEST_GIVER.LINK}告诉你{?QUEST_GIVER.GENDER}她{?}他{\?}需要为{?QUEST_GIVER.GENDER}她{?}他{\?}的氏族招募新兵。{?QUEST_GIVER.GENDER}她{?}他{\?}让你招募{NEEDED_RECRUIT_AMOUNT} {MOUNTED}{TROOP_TYPE}加入你的队伍，然后把他们转交给{?QUEST_GIVER.GENDER}她{?}他{\?}。你将根据新兵的经验值获得报酬。"/>
+    <!--#endRegion MF Lord Needs Recruits Quest-->
+
+    <!--#region MF Notable Needs Troops Trained Quest-->
+    <string id="npV743inQ" text="为{MINOR_FACTION}藏身处训练新兵"/>
+    <string id="5ORyuslE2" text="{ISSUE_GIVER.NAME}需要他的{MINOR_FACTION}新兵见试一下战争以获取经验。{?ISSUE_GIVER.GENDER}她{?}他{\?}想让你带新兵参加一些相对安全的战斗，比如追捕强盗。"/>
+    <string id="oCbu6eG6F" text="我们最近为{MINOR_FACTION}招募了一些新兵。他们都很年轻，渴望参加战斗，但我担心他们在真正的战士面前撑不了多久。也许你可以把他们中的一些人收编到你的队伍中，教教他们如何在战斗中表现自己。作为交换，他们将与你分享{MINOR_FACTION}的价值观，也许我们将来可以建立伙伴关系。[if:convo_focused_happy][ib:hip]"/>
+    <string id="NNIqnPU40" text="{ISSUE_GIVER.LINK}，一个{MINOR_FACTION}的成员，让你为{?QUEST_GIVER.GENDER}她{?}他{\?}训练新兵。{?QUEST_GIVER.GENDER}她{?}他{\?}给了你{NUMBER_OF_MEN}人，希望等他们成为老兵后再把他们带回去。 {newline}你派他们和你的一个同伴{COMPANION.LINK}一起去追捕一些简单的目标。你安排他们在{RETURN_DAYS}天后见面。"/>
+    <string id="1QEr8eYap" text="{QUEST_GIVER.LINK}，{MINOR_FACTION}的成员，让你为{?QUEST_GIVER.GENDER}她{?}他{\?}训练一些新兵。{?QUEST_GIVER.GENDER}她{?}他{\?}给了你{NUMBER_OF_MEN}人，希望等他们有了一些经验之后再把他们带回去。"/>
+    <!--#endRegion MF Notable Needs Troops Trained Quest-->
+
+    <!--#region Notable Wants MF Hideout Cleared Quest-->
+    <string id="o1H6QqaW2" text="{MINOR_FACTION}在{ISSUE_SETTLEMENT}附近的基地。"/>
+    <string id="951elMchg" text="{ISSUE_GIVER.LINK}希望你清除在{?ISSUE_GIVER.GENDER}她{?}他{\?}地区制造麻烦的{MINOR_FACTION}藏身处。"/>
+    <string id="kcKVjMawu" text="是的... 这里有座古老的废墟，可以看到道路的全貌，但却很难到达，因为{MINOR_FACTION}在此定居，他们对路过的商队和旅行者大打出手。[ib:closed][if:convo_undecided_open]"/>
+    <string id="8fLe6O58j" text="那里的{MINOR_FACTION}强盗能轻易发现并躲避大部队的追击，但如果你能带着一小队意志坚定的战士进入藏身处，就能打他们个措手不及。 [ib:closed][if:convo_thinking]"/>
+    <string id="B9tqOUtoI" text="我将亲自前往{MINOR_FACTION}藏身处伏击强盗。"/>
+    <string id="bYdnhFrJ2" text="{ISSUE_GIVER.LINK}是{ISSUE_SETTLEMENT}的首领，他向你报告了{MINOR_FACTION}当地村民遭到袭击的情况，并要求你清除不法分子的藏身处。您让{COMPANION.LINK}带领{TROOP_COUNT}精兵强将前去处理。他们应该在{RETURN_DAYS}天内向您汇报。"/>
+    <string id="HxKTKBo5h" text="您收到来自{ISSUE_GIVER.LINK}.&#10;&quot;谢谢你清除了那些不法分子的巢穴。 请接受这些{REWARD}{GOLD_ICON}第纳尔，以表谢意。&quot;"/>
+    <string id="EIjCKoXaP" text="{MINOR_FACTION}在{SETTLEMENT_NAME}附近的基地。"/>
+    <string id="svLtMGrhv" text="{QUEST_GIVER.LINK}，一个来自{QUEST_SETTLEMENT}的首领，告诉了你一些{MINOR_FACTION}成员的藏身之处，他们最近一直在袭击当地村民。你告诉{?QUEST_GIVER.GENDER}她{?}他{\?}，你将亲自处理这个问题。{QUEST_GIVER.LINK}还在你的地图上标出了藏身地点。"/>
+    <string id="oe0TUx9bg" text="{MINOR_FACTION}藏身处已被他人清除。您与{QUEST_GIVER.LINK}的协议已取消。"/>
+    <string id="pJj2R5gnG" text="{SETTLEMENT_FACTION}已不再与{MINOR_FACTION}交战。您与{QUEST_GIVER.LINK}的协议已取消。"/>
+    <string id="s4Wev86aQ" text="{MINOR_FACTION}不再存在。您与{QUEST_GIVER.LINK}的协议已取消。"/>
+    <!--#endRegion Notable Wants MF Hideout Cleared Quest-->
+
+    <!--#region MFHideout-->
+    <string id="Fv1F13jxM" text="负伤时不能攻击"/>
+    <string id="cl7GYHwgi" text="攻击这个藏身处会大大降低你与该氏族的关系"/>
+    <string id="1PM860Jco" text="采取敌对行动会引发你和这个氏族或雇佣他们的人之间的战争。"/>
+    <string id="92PPJNVSa" text="你没有足够的关系留在这个藏身处。"/>
+    <string id="pzEj8yvXS" text="您与该氏族的关系必须至少达到{MIN_RELATION}才能招募新兵。"/>
+    <!--#endRegion MFHideout-->
+
+    <!--#region misc-->
+    <string id="dtwUqRyju" text="强盗"/>
+    <string id="Mcp21ip8V" text="士兵"/>
+    <string id="kDeZI8FIZ" text="坐骑 "/>
+    <!--#endRegion misc-->
+  </strings>
+</base>
