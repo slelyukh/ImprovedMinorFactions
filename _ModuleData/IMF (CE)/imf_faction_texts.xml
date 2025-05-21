@@ -115,4 +115,77 @@
     text="{=!}We need you to raid {NEEDED_VILLAGES_AMOUNT} village{?PLURAL}s{?}{\?} near our camp. The villagers will be too busy rebuilding to hunt or be interested in our forest activities. They cannot know that you are doing this on our behalf."
     />
     <!-- Nomad Village Raid Texts End -->
+
+    <!-- MF Description Dialog Texts Begin -->
+    <IMFText
+    faction_id="forest_people" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a Vakken nomadic tribe that lives deep in the northern woods and does not respect anyone's wishes to control its forests."
+    />
+    <IMFText
+    faction_id="jawwal" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}the main bedouin confederacy that lives deep in the Nahasa Desert and practices a nomadic way of life."
+    />
+    <IMFText
+    faction_id="karakhuzaits" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a Khuzait nomadic tribe that lives wherever they please in the steppe and bows to no Khan or foreign ruler."
+    />
+    <IMFText
+    faction_id="eleftheroi" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a nomadic tribe descended from runaway slaves and debtors that lives further in the steppe than any other imperial citizens would dare to venture."
+    />
+    <IMFText
+    faction_id="lakepike" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}the fierce and untamed free people of the marshes around the Great Northern Lake. In our territory, caravans and villagers bend to our protection or face the unforgiving wilds alone."
+    />
+    <IMFText
+    faction_id="skolderbrotva" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}the best mercenary company in all of Calradia. We adhere to a strict set of military principles and value our honor more than our lives. Most of our soldiers are Nords but we sometimes take in warriors from other cultures as well."
+    />
+    <IMFText
+    faction_id="ghilman" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a powerful Darshi mercenary company that lives in western Aserai lands during peace times. Our cavalry is one of the most formidable in all of Calradia."
+    />
+    <IMFText
+    faction_id="beni_zilal" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}We are the Sons of the Shadows and keepers of the deepest secrets. Any caravan daring to pass through our territories must pay our toll, or face the wrath of the night."
+    />
+    <IMFText
+    faction_id="brotherhood_of_woods" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a brotherhood of former Vlandian peasants who steal from the rich and give to the poor. Every wealthy caravan that passes through our lands pays us a tax to ensure that no Vlandian peasants go hungry."
+    />
+    <IMFText
+    faction_id="company_of_the_boar" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a Vlandian mercenary company that has mastered use of the crossbow. Unlike other mercenaries who fight for gold alone, we fight because we love war and cannot live without it."
+    />
+    <IMFText
+    faction_id="wolfskins" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a band of Battanians that adheres to the ancient Code Of the Wolf and is thus exempt from the laws of man. Civilization is meaningless to us and we do not eat cooked food, wear woven cloth, or sleep under roofs."
+    />
+    <IMFText
+    faction_id="hidden_hand" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}the real authority in the Southern Empire. No caravan dares to travel in our lands without our permission. Even the horses seek our approval before drinking from our streams."
+    />
+    <IMFText
+    faction_id="legion_of_the_betrayed" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}the last remnants of the glorious Imperial Legions from long ago. There are no soldiers in Calradia that are more professional than us."
+    />
+    <IMFText
+    faction_id="embers_of_flame" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}devout followers of the Flame who are waiting patiently for Emperor Darusos' return from Heaven."
+    />
+    <!-- MF Description Dialog Texts End -->
 </IMFTexts>
