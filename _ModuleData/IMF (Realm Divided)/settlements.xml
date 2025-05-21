@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Settlements>
    <!-- IMF -->
   <Settlement id="hideout_ghilman_1" name="{=ghilman_hideout}Ghilman Hideout" owner="Faction.ghilman" posX="718.28" posY="72.684" culture="Culture.darshi">
@@ -585,7 +585,7 @@
       <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
     </Locations>
   </Settlement>
-  <Settlement id="hideout_unassigned_1" name="Unassigned Hideout" owner="Faction.none" posX="584.809" posY="584.331" culture="Culture.empire">
+  <Settlement id="hideout_unassigned_1" name="{=IMFRD7c316a3b}Unassigned Hideout" owner="Faction.none" posX="584.809" posY="584.331" culture="Culture.empire">
     <Components>
       <MinorFactionHideout id="hideout_unassigned_1" map_icon="bandit_hideout_c" scene_name="sea_bandit_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
     </Components>
@@ -593,7 +593,7 @@
       <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
     </Locations>
   </Settlement>
-  <Settlement id="hideout_unassigned_2" name="Unassigned Hideout" owner="Faction.none" posX="454.13" posY="427.047" culture="Culture.empire">
+  <Settlement id="hideout_unassigned_2" name="{=IMFRD7c316a3b}Unassigned Hideout" owner="Faction.none" posX="454.13" posY="427.047" culture="Culture.empire">
     <Components>
       <MinorFactionHideout id="hideout_unassigned_2" map_icon="bandit_hideout_c" scene_name="sea_bandit_c" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_seaside" gate_rotation="0.0" />
     </Components>
@@ -601,7 +601,7 @@
       <Location id="mf_hideout_center" scene_name="sea_bandit_c" />
     </Locations>
   </Settlement>
-  <Settlement id="hideout_unassigned_3" name="Unassigned Hideout" owner="Faction.none" posX="234.427" posY="340.804" culture="Culture.vlandia">
+  <Settlement id="hideout_unassigned_3" name="{=IMFRD7c316a3b}Unassigned Hideout" owner="Faction.none" posX="234.427" posY="340.804" culture="Culture.vlandia">
     <Components>
       <MinorFactionHideout id="hideout_unassigned_3" map_icon="bandit_hideout_b" scene_name="bandit_forest" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
     </Components>
@@ -609,7 +609,7 @@
       <Location id="mf_hideout_center" scene_name="bandit_forest" />
     </Locations>
   </Settlement>
-  <Settlement id="hideout_unassigned_4" name="Unassigned Hideout" owner="Faction.none" posX="97.66501" posY="96.616" culture="Culture.battania">
+  <Settlement id="hideout_unassigned_4" name="{=IMFRD7c316a3b}Unassigned Hideout" owner="Faction.none" posX="97.66501" posY="96.616" culture="Culture.battania">
     <Components>
       <MinorFactionHideout id="hideout_unassigned_4" map_icon="bandit_hideout_b" scene_name="bandit_forest" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
     </Components>
@@ -617,7 +617,7 @@
       <Location id="mf_hideout_center" scene_name="bandit_forest" />
     </Locations>
   </Settlement>
-  <Settlement id="hideout_unassigned_5" name="Unassigned Hideout" owner="Faction.none" posX="729.243" posY="132.484" culture="Culture.khuzait">
+  <Settlement id="hideout_unassigned_5" name="{=IMFRD7c316a3b}Unassigned Hideout" owner="Faction.none" posX="729.243" posY="132.484" culture="Culture.khuzait">
     <Components>
       <MinorFactionHideout id="hideout_unassigned_5" map_icon="bandit_hideout_b" scene_name="bandit_forest" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
     </Components>
@@ -625,7 +625,7 @@
       <Location id="mf_hideout_center" scene_name="bandit_forest" />
     </Locations>
   </Settlement>
-  <Settlement id="hideout_unassigned_6" name="Unassigned Hideout" owner="Faction.none" posX="726.579" posY="260.554" culture="Culture.empire">
+  <Settlement id="hideout_unassigned_6" name="{=IMFRD7c316a3b}Unassigned Hideout" owner="Faction.none" posX="726.579" posY="260.554" culture="Culture.empire">
     <Components>
       <MinorFactionHideout id="hideout_unassigned_6" map_icon="bandit_hideout_b" scene_name="bandit_forest" background_crop_position="0.0" background_mesh="empire_twn_scene_bg" wait_mesh="wait_hideout_forest" gate_rotation="0.0" />
     </Components>
