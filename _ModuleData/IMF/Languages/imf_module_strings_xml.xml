@@ -51,7 +51,7 @@
     <string id="z2f39hbXns" text="Yes... There's this {HIDEOUT_NAME}, a place that offers a good view of the roads. The {MINOR_FACTION} have moved in and they have been giving hell to the caravans and travellers passing by instead of minding their own business.[ib:closed][if:convo_undecided_open]"/>
     <!--#endRegion Notable Wants MF Hideout Cleared Quest-->
 
-    <!-- #region MFText dialogs -->
+    <!-- #region IMFText dialogs -->
     <string id="IMF9a94b68f" text="Ah, traveler, heed my words, for our village is in need of your strength. The Beni Zilal, the elusive Sons of the Shadows, have established a hideout not far from here. These cunning marauders, with their whispered legends and shadowy origins, now use their secretive base to extort caravans and raid our humble homes.[ib:closed][if:convo_undecided_open]" />
     <string id="IMF4756F533" text="Their mastery of subterfuge and reliance on fear have made them a formidable presence in the Nahasa desert. While they cloak their deeds in tales of mystic preachers and ancient rites, we suffer the consequences of their greed and violence. Destroy their lair, and you will earn not only our gratitude but a reward fitting for such a brave endeavor. Their dark influence must be dispelled so our village can thrive in peace once more.[ib:closed][if:convo_undecided_open]" />
     <string id="IMF55E74123" text="Ah, traveler, may I trouble you for a moment? The Brotherhood of the Woods, once champions of the common folk, have set up a hideout nearby. What began as a noble cause—robbing from the rich to give to the poor—has twisted into something darker. Now, they turn their blades against the very people they once swore to protect, extorting and terrorizing commoners to sustain their dwindling supplies.[ib:closed][if:convo_undecided_open]" />
@@ -88,18 +88,24 @@
     <string id="IMF096C4d62" text="the real authority in the Southern Empire. No caravan dares to travel in our lands without our permission. Even the horses seek our approval before drinking from our streams." />
     <string id="IMF3b80b65c" text="the last remnants of the glorious Imperial Legions from long ago. There are no soldiers in Calradia that are more professional than us." />
     <string id="IMF9d21Fbb3" text="devout followers of the Flame who are waiting patiently for Emperor Darusos' return from Heaven." />
-    <!-- #endregion MFText dialogs -->
+    <!-- #endregion IMFText dialogs -->
 
     <!--#region MFHideout-->
     <string id="Fv1F13jxM" text="You cannot attack while wounded"/>
-    <string id="cl7GYHwgi" text="Attacking this hideout will significantly decrease your relation with this Clan"/>
+    <string id="cl7GYHwgi" text="Attacking this place will significantly decrease your relation with this Clan"/>
     <string id="1PM860Jco" text="Taking hostile action will start a war between you and this Clan or whoever hired them."/>
-    <string id="92PPJNVSa" text="You don't have enough relation to stay in this hideout."/>
+    <string id="92PPJNVSa" text="You don't have enough relation to stay here."/>
     <string id="pzEj8yvXS" text="Your relation with this clan must be at least {MIN_RELATION} to recruit troops."/>
     <string id="WAkOJrsBf" text="The camp is being dismantled because the land here has been used up."/>
     <string id="bTIQXD4cq" text="The {MINOR_FACTION} have moved their camp to a new location."/>
-    
+    <string id="ldONWPCl6i" text="Raid Camp"/>
+    <string id="prcBB123" text="{HIDEOUT_DESCRIPTION} You see a calm nomad village with tents, herds of livestock, and simple clothing. There is conversation about raids, ransoms, and the best places to waylay travellers."/>
+    <string id="" text=""/>
+    <string id="" text=""/>
+    <string id="" text=""/>
+    <string id="" text=""/>
     <!--#endRegion MFHideout-->
+
 
     <!--#region misc-->
     <string id="dtwUqRyju" text="bandits"/>
