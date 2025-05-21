@@ -19,9 +19,10 @@
    <string id="forest_people_hideout" text="Forest People Camp"/>
    <string id="Eleftheroi_hideout" text="Eleftheroi Camp"/>
    <string id="lake_rat_hideout" text="Lake Rat Hideout"/>
+   <string id="IMF7c316a3b" text="Unassigned Hideout" />
    <!-- complex -->
    <string id="25pNV9E3" text="Hideout Center"/>
 
- 
+
   </strings>
 </base>
