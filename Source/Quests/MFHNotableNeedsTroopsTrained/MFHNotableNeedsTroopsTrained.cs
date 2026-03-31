@@ -222,16 +222,14 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 
             public override bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, out TextObject explanation)
             {
-                explanation = TextObject.Empty;
                 bool mountedRequired = Helpers.mfIsMounted(base.IssueSettlement.OwnerClan);
-                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
+                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             public override bool AlternativeSolutionCondition(out TextObject explanation)
             {
-                explanation = TextObject.Empty;
                 bool mountedRequired = Helpers.mfIsMounted(base.IssueSettlement.OwnerClan);
-                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
+                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             protected override void AlternativeSolutionEndWithSuccessConsequence()

@@ -306,10 +306,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                 {
                     // Get caravans near hideout and track them for the player
                     LocatableSearchData<MobileParty> data = MobileParty
-                        .StartFindingLocatablesAroundPosition(QuestHideout()!.Position2D, _maxDistanceToHideoutForTargetCaravan);
+                        .StartFindingLocatablesAroundPosition(QuestHideout()!.GetPosition2D, _maxDistanceToHideoutForTargetCaravan);
                     for (MobileParty mParty = MobileParty.FindNextLocatable(ref data); mParty != null; mParty = MobileParty.FindNextLocatable(ref data))
                     {
-                        if (mParty?.Position2D == null || !mParty.IsActive || !mParty.IsCaravan
+                        if (mParty?.Position == null || !mParty.IsActive || !mParty.IsCaravan
                             || mParty.IsMainParty || mParty.IsDisbanding || mParty.MapFaction == Hero.MainHero.MapFaction
                             || _extortedCaravans.Contains(mParty) || mParty.MapFaction == QuestGiver.MapFaction)
                             continue;
@@ -321,9 +321,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
                     List<MobileParty> caravansToRemove = new List<MobileParty>();
                     foreach (var caravan in _targetCaravans!)
                     {
-                        if (caravan.Position2D.DistanceSquared(QuestHideout()!.Position2D) > _maxDistanceSquaredToHideoutForTargetCaravan
+                        if (caravan.Position.DistanceSquared(QuestHideout()!.Position) > _maxDistanceSquaredToHideoutForTargetCaravan
                             && Hero.MainHero.IsPartyLeader && !Hero.MainHero.IsPrisoner
-                            && caravan.Position2D.DistanceSquared(MobileParty.MainParty.Position2D) > MathF.Pow((MobileParty.MainParty.SeeingRange + 10f), 2))
+                            && caravan.Position.DistanceSquared(MobileParty.MainParty.Position) > MathF.Pow((MobileParty.MainParty.SeeingRange + 10f), 2))
                         {
                             caravansToRemove.Add(caravan);
                         }
@@ -413,12 +413,12 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
             // TODO: increase clan power if player attacks caravan for quest and increase extortion failure likelyhood if clan is weak
             private bool caravan_extortion_failure_on_condition()
             {
-                return MobileParty.ConversationParty.GetTotalStrengthWithFollowers() > PartyBase.MainParty.MobileParty.GetTotalStrengthWithFollowers();
+                return MobileParty.ConversationParty.GetTotalLandStrengthWithFollowers() > PartyBase.MainParty.MobileParty.GetTotalLandStrengthWithFollowers();
             }
 
             private void caravan_extortion_failure_on_consequence()
             {
-                PlayerEncounter.Current.IsEnemy = true;
+                // PlayerEncounter.Current.IsEnemy = true;
                 PrepareForBattle();
 
                 BeHostileAction.ApplyEncounterHostileAction(PartyBase.MainParty, MobileParty.ConversationParty.Party);
@@ -428,7 +428,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFMafiaCaravanExtortion
 
             private bool caravan_extortion_success_on_condition()
             {
-                return MobileParty.ConversationParty.GetTotalStrengthWithFollowers() <= PartyBase.MainParty.MobileParty.GetTotalStrengthWithFollowers();
+                return MobileParty.ConversationParty.GetTotalLandStrengthWithFollowers() <= PartyBase.MainParty.MobileParty.GetTotalLandStrengthWithFollowers();
             }
 
             private void caravan_extortion_success_on_consequence()

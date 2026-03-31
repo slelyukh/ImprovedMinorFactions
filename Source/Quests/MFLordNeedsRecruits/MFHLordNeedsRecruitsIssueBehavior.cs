@@ -41,7 +41,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                 && issueGiver.IsPartyLeader
                 && !issueGiver.IsPrisoner
                 && issueGiver.Gold > 2000
-                && party.LimitedPartySize > party.MemberRoster.TotalManCount + 7;
+                && party.Party.PartySizeLimit > party.MemberRoster.TotalManCount + 7;
         }
 
         public void OnCheckForIssue(Hero hero)
@@ -228,16 +228,14 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             public override bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, out TextObject explanation)
             {
-                explanation = TextObject.Empty;
                 bool mountedRequired = Helpers.mfIsMounted(IssueClan());
-                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
+                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             public override bool AlternativeSolutionCondition(out TextObject explanation)
             {
-                explanation = TextObject.Empty;
                 bool mountedRequired = Helpers.mfIsMounted(IssueClan());
-                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
+                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             public override bool IsTroopTypeNeededByAlternativeSolution(CharacterObject character)
@@ -291,7 +289,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
             {
                 var party = base.IssueOwner.PartyBelongedTo;
                 return base.IssueOwner.IsPartyLeader 
-                    && party.LimitedPartySize > party.MemberRoster.TotalManCount + this.RequestedRecruitCount;
+                    && party.Party.PartySizeLimit > party.MemberRoster.TotalManCount + this.RequestedRecruitCount;
             }
 
             protected override void CompleteIssueWithTimedOutConsequences()
@@ -566,7 +564,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             private void OpenRecruitDeliveryScreen()
             {
-                PartyScreenManager.OpenScreenWithCondition(
+                PartyScreenHelper.OpenScreenWithCondition(
                     new IsTroopTransferableDelegate(this.IsTroopTransferable),
                     new PartyPresentationDoneButtonConditionDelegate(this.DoneButtonCondition),
                     new PartyPresentationDoneButtonDelegate(this.DoneClicked),
@@ -577,7 +575,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     this._requestedRecruitCount - this._deliveredRecruitCount,
                     false,
                     false,
-                    PartyScreenMode.TroopsManage);
+                    PartyScreenHelper.PartyScreenMode.TroopsManage);
             }
 
             private Tuple<bool, TextObject> DoneButtonCondition(TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, int leftLimitNum, int rightLimitNum)

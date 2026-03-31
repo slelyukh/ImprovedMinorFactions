@@ -18,6 +18,7 @@ using TaleWorlds.CampaignSystem.Settlements;
 using System.Linq;
 using TaleWorlds.CampaignSystem.MapEvents;
 using static ImprovedMinorFactions.IMFModels;
+using SandBox.GauntletUI;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 {
@@ -233,16 +234,15 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 
             public override bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, out TextObject explanation)
             {
-                explanation = TextObject.Empty;
+                explanation = TextObject.GetEmpty();
                 bool mountedRequired = Helpers.mfIsMounted(base.IssueSettlement.OwnerClan);
-                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
+                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             public override bool AlternativeSolutionCondition(out TextObject explanation)
             {
-                explanation = TextObject.Empty;
                 bool mountedRequired = Helpers.mfIsMounted(base.IssueSettlement.OwnerClan);
-                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
+                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             public override bool IsTroopTypeNeededByAlternativeSolution(CharacterObject character)
@@ -574,7 +574,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             
             private void OpenRecruitDeliveryScreen()
             {
-                PartyScreenManager.OpenScreenWithCondition(
+                
+                PartyScreenHelper.OpenScreenWithCondition(
                     new IsTroopTransferableDelegate(this.IsTroopTransferable), 
                     new PartyPresentationDoneButtonConditionDelegate(this.DoneButtonCondition), 
                     new PartyPresentationDoneButtonDelegate(this.DoneClicked), 
@@ -585,7 +586,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     this._requestedRecruitCount - this._deliveredRecruitCount, 
                     false, 
                     false, 
-                    PartyScreenMode.TroopsManage);
+                    PartyScreenHelper.PartyScreenMode.TroopsManage);
             }
 
             private Tuple<bool, TextObject> DoneButtonCondition(TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, int leftLimitNum, int rightLimitNum)

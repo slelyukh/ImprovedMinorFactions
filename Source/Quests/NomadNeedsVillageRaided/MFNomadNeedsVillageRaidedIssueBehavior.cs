@@ -354,7 +354,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFNomadNeedsVillageRaidedIssueBeha
             {
                 // Get villages close enough to the hideout and track them
                 LocatableSearchData<Settlement> data = Settlement.StartFindingLocatablesAroundPosition(
-                    QuestHideout()!.Position2D, _maxDistanceToHideoutForTargetVillage);
+                    QuestHideout()!.GetPosition2D, _maxDistanceToHideoutForTargetVillage);
 
                 for (Settlement settlement = Settlement.FindNextLocatable(ref data); settlement != null; settlement = Settlement.FindNextLocatable(ref data))
                 {

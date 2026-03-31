@@ -38,7 +38,7 @@ namespace ImprovedMinorFactions.Patches
     [HarmonyPatch(typeof(Settlement), "AddMilitiasToParty")]
     public class SettlementMilitiasPatch
     {
-        static bool Prefix(Settlement __instance, MobileParty militaParty, int militiaToAdd)
+        static bool Prefix(Settlement __instance, MobileParty militiaParty, int militiaNumberToAdd)
         {
             MinorFactionHideout? mfHideout = Helpers.GetMFHideout(__instance);
             if (mfHideout == null)
@@ -55,7 +55,7 @@ namespace ImprovedMinorFactions.Patches
             }
 
             Helpers.removeMilitiaImposters(__instance);
-            militaParty.MemberRoster.AddToCounts(troopToAdd, militiaToAdd);
+            militiaParty.MemberRoster.AddToCounts(troopToAdd, militiaNumberToAdd);
             
             return false;
         }
@@ -76,7 +76,8 @@ namespace ImprovedMinorFactions.Patches
             if (IMFManager.Current != null)
             {
                 var settlementMfh = IMFManager.Current.GetLoadedMFHideout(mfHideout.StringId) ?? mfHideout;
-                __instance.SetSettlementComponent(settlementMfh);
+
+                Helpers.CallPrivateMethod(__instance, "SetSettlementComponent",new object[] { settlementMfh });
                 foreach (XmlNode child in node.ChildNodes)
                 {
                     if (child.Name != "Components")
@@ -107,24 +108,25 @@ namespace ImprovedMinorFactions.Patches
             if (__instance.OwnerClan != null && mfClanId != __instance.OwnerClan.StringId)
             {
                 if (__instance.OwnerClan.IsNomad)
-                    __instance.Name = new TextObject("{=dt9395yju}{MINOR_FACTION} Camp")
-                        .SetTextVariable("MINOR_FACTION", __instance.OwnerClan.Name);
+                    Helpers.setPrivateField(__instance, "_name", new TextObject("{=dt9395yju}{MINOR_FACTION} Camp")
+                        .SetTextVariable("MINOR_FACTION", __instance.OwnerClan.Name));
                 else
-                    __instance.Name = new TextObject("{=dt9393yju}{MINOR_FACTION} Hideout")
-                        .SetTextVariable("MINOR_FACTION", __instance.OwnerClan.Name);
+                    Helpers.setPrivateField(__instance, "_name", new TextObject("{=dt9393yju}{MINOR_FACTION} Hideout")
+                        .SetTextVariable("MINOR_FACTION", __instance.OwnerClan.Name));
                 
             }
         }
     }
 
-    [HarmonyPatch(typeof(Settlement), "SetNameAttributes")]
-    public class SettlementSetNameAttributesPatch
-    {
-        static void Postfix(Settlement __instance, ref TextObject ____name)
-        {
-            if (!Helpers.IsMFHideout(__instance))
-                return;
-            ____name.SetTextVariable("IS_MINORFACTIONHIDEOUT", 1);
-        }
-    }
+    // Not needed after war sails
+    // [HarmonyPatch(typeof(Settlement), "SetNameAttributes")]
+    //public class SettlementSetNameAttributesPatch
+    //{
+    //    static void Postfix(Settlement __instance, ref TextObject ____name)
+    //    {
+    //        if (!Helpers.IsMFHideout(__instance))
+    //            return;
+    //        ____name.SetTextVariable("IS_MINORFACTIONHIDEOUT", 1);
+    //    }
+    //}
 }

@@ -7,7 +7,6 @@ using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
-using TaleWorlds.CampaignSystem.Overlay;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -101,7 +100,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             if (mfHideout.IsActive && !mfHideout.IsSpotted)
             {
                 float hideoutSpottingDistance = Campaign.Current.Models.MapVisibilityModel.GetHideoutSpottingDistance();
-                float num = MobileParty.MainParty.Position2D.DistanceSquared(settlement.Position2D);
+                float num = MobileParty.MainParty.Position.DistanceSquared(settlement.Position);
                 float num2 = 1f - num / (hideoutSpottingDistance * hideoutSpottingDistance);
                 if (num2 > 0f && MBRandom.RandomFloat < num2 && !mfHideout.IsSpotted)
                 {
@@ -116,7 +115,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             
             campaignGameStarter.AddGameMenu("mf_hideout_place", "{=!}{MF_HIDEOUT_TEXT}",
                 new OnInitDelegate(game_menu_hideout_place_on_init),
-                GameOverlays.MenuOverlayType.SettlementWithBoth);
+                GameMenu.MenuOverlayType.SettlementWithBoth);
             campaignGameStarter.AddGameMenuOption("mf_hideout_place", "attack", "{=!}{MF_HIDEOUT_ATTACK}",
                 new Options.OnConditionDelegate(menu_attack_on_condition),
                 new Options.OnConsequenceDelegate(menu_attack_on_consequence));
@@ -140,14 +139,14 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 null,
                 new OnTickDelegate(wait_menu_on_tick),
                 GameMenu.MenuAndOptionType.WaitMenuHideProgressAndHoursOption,
-                GameOverlays.MenuOverlayType.SettlementWithBoth);
+                GameMenu.MenuOverlayType.SettlementWithBoth);
             campaignGameStarter.AddGameMenuOption("mf_hideout_wait", "stop_waiting", "{=UqDNAZqM}Stop waiting",
                 new Options.OnConditionDelegate(menu_leave_on_condition),
                 new Options.OnConsequenceDelegate(stop_wait_on_consequence));
 
             campaignGameStarter.AddGameMenu("mf_hideout_hostile_action", "{=YVNZaVCA}What action do you have in mind?",
                 new OnInitDelegate(hostile_menu_on_init),
-                GameOverlays.MenuOverlayType.SettlementWithBoth);
+                GameMenu.MenuOverlayType.SettlementWithBoth);
             campaignGameStarter.AddGameMenuOption("mf_hideout_hostile_action", "attack",
                     "{=!}{MF_HIDEOUT_ATTACK}",
                     new Options.OnConditionDelegate(hostile_action_menu_attack_on_condition),
@@ -160,7 +159,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             campaignGameStarter.AddGameMenu("mf_hideout_nomads_left",
                 "{=WAkOJrsBf}The camp is being dismantled because the land here has been used up.",
                 new OnInitDelegate(game_menu_hideout_place_on_init),
-                GameOverlays.MenuOverlayType.SettlementWithParties);
+                GameMenu.MenuOverlayType.SettlementWithParties);
             campaignGameStarter.AddGameMenuOption("mf_hideout_nomads_left", "leave", "{=3sRdGQou}Leave",
                 new Options.OnConditionDelegate(menu_leave_on_condition),
                 new Options.OnConsequenceDelegate(menu_nomad_leave_on_consequence));
@@ -476,7 +475,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             List<Settlement> nearbyVillages = new List<Settlement>();
             foreach (Village village in Village.All)
             {
-                if (village.Settlement.Position2D.DistanceSquared(settlement.Position2D) <= MaxDistanceSquaredBetweenHideoutAndBoundVillage)
+                if (village.Settlement.Position.DistanceSquared(settlement.Position) <= MaxDistanceSquaredBetweenHideoutAndBoundVillage)
                     nearbyVillages.Add(village.Settlement);
             }
             foreach (Settlement village in nearbyVillages)
@@ -486,7 +485,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
             if (Hero.MainHero.GetPerkValue(DefaultPerks.Charm.EffortForThePeople))
             {
-                Town town = SettlementHelper.FindNearestTown(null, settlement).Town;
+                Town town = SettlementHelper.FindNearestTownToSettlement(settlement, MobileParty.NavigationType.Default);
                 Hero leader = town.OwnerClan.Leader;
                 if (leader == Hero.MainHero)
                     town.Loyalty += 1f;
@@ -494,7 +493,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                     ChangeRelationAction.ApplyPlayerRelation(leader, (int)DefaultPerks.Charm.EffortForThePeople.PrimaryBonus, true, true);
             }
             MBTextManager.SetTextVariable("RELATION_VALUE", (int)DefaultPerks.Charm.EffortForThePeople.PrimaryBonus);
-            MBInformationManager.AddQuickInformation(new TextObject("{=o0qwDa0q}Your relation increased by {RELATION_VALUE} with nearby notables.", null), 0, null, "");
+            MBInformationManager.AddQuickInformation(new TextObject("{=o0qwDa0q}Your relation increased by {RELATION_VALUE} with nearby notables.", null), 0, null);
         }
 
         private void ArrangeHideoutTroopCountsForMission()
@@ -533,7 +532,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             PrepareForBattle();
 
             var mfHideout = Helpers.GetMFHideout(Settlement.CurrentSettlement);
-            CampaignMission.OpenHideoutBattleMission(mfHideout!.SceneName, playerTroops.ToFlattenedRoster());
+            CampaignMission.OpenHideoutBattleMission(mfHideout!.SceneName, playerTroops.ToFlattenedRoster(), false);
         }
 
         private bool CanChangeStatusOfTroop(CharacterObject character)

@@ -71,7 +71,7 @@ namespace ImprovedMinorFactions
                 && minorFaction.IsOutlaw 
                 && !faction.IsMinorFaction
                 && (faction.Culture == minorFaction.Culture 
-                || (minorFaction.Culture.GetCultureCode() == CultureCode.Vakken && faction.Culture.GetCultureCode() == CultureCode.Sturgia));
+                || (minorFaction.Culture.StringId == nameof(CultureId.vakken) && faction.Culture.StringId == nameof(CultureId.sturgia)));
         }
 
         internal static bool IsPlayerFriendOfMF(Clan minorFaction)
@@ -90,7 +90,7 @@ namespace ImprovedMinorFactions
         // Nord removed due to only having 2 names for their culture...
         internal static bool IsMinorCulture(CultureObject c)
         {
-            return c.GetCultureCode() == CultureCode.Vakken || c.GetCultureCode() == CultureCode.Darshi || c.GetCultureCode() == CultureCode.Nord;
+            return c.StringId == nameof(CultureId.vakken) || c.StringId == nameof(CultureId.darshi) || c.StringId == nameof(CultureId.nord);
         }
 
         // Removes any normal militia units from MFHideout militia party
@@ -177,5 +177,16 @@ namespace ImprovedMinorFactions
         {
             return (IMFManager.Current!.GetClanMFData(clan)?.Hideouts.Count ?? 0) > 0;
         }
+    }
+    public enum CultureId {
+        khuzait,
+        nord,
+        vakken,
+        darshi,
+        battania,
+        empire,
+        aserai,
+        sturgia,
+        vlandia,
     }
 }

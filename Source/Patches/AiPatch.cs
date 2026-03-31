@@ -44,9 +44,9 @@ namespace ImprovedMinorFactions.Patches
 
         public override float DefendingFactor => _previousModel.DefendingFactor;
 
-        public override float CalculatePatrollingScoreForSettlement(Settlement targetSettlement, MobileParty mobileParty)
+        public override float CalculatePatrollingScoreForSettlement(Settlement targetSettlement, bool isFromPort, MobileParty mobileParty)
         {
-            float result = _previousModel.CalculatePatrollingScoreForSettlement(targetSettlement, mobileParty);
+            float result = _previousModel.CalculatePatrollingScoreForSettlement(targetSettlement, isFromPort, mobileParty);
             if (!Helpers.IsMFHideout(targetSettlement) || !mobileParty.ActualClan.IsMinorFaction)
                 return result;
             return result * 3;
@@ -57,9 +57,14 @@ namespace ImprovedMinorFactions.Patches
             return _previousModel.CurrentObjectiveValue(mobileParty);
         }
 
-        public override float GetTargetScoreForFaction(Settlement targetSettlement, Army.ArmyTypes missionType, MobileParty mobileParty, float ourStrength, int numberOfEnemyFactionSettlements = -1, float totalEnemyMobilePartyStrength = -1)
+        public override float GetPatrollingFactor(bool isNavalPatrolling)
         {
-            return _previousModel.GetTargetScoreForFaction(targetSettlement, missionType, mobileParty, ourStrength, numberOfEnemyFactionSettlements, totalEnemyMobilePartyStrength);
+            return _previousModel.GetPatrollingFactor(isNavalPatrolling);
+        }
+
+        public override float GetTargetScoreForFaction(Settlement targetSettlement, Army.ArmyTypes missionType, MobileParty mobileParty, float ourStrength)
+        {
+            return _previousModel.GetTargetScoreForFaction(targetSettlement, missionType, mobileParty, ourStrength);
         }
     }
 }

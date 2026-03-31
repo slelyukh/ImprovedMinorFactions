@@ -136,8 +136,8 @@ namespace ImprovedMinorFactions
             }
 
             // mfh1 is closer
-            if (mfh1.Settlement.Position2D.Distance(c.InitialPosition)
-                < mfh2.Settlement.Position2D.Distance(c.InitialPosition))
+            if (mfh1.Settlement.Position.Distance(c.InitialHomeSettlement.Position) // TODO COMPAT: is initial home settlement good proxy for MF clan position?
+                < mfh2.Settlement.Position.Distance(c.InitialHomeSettlement.Position))
             {
                 priority1 += 1;
             }
@@ -219,10 +219,10 @@ namespace ImprovedMinorFactions
                 throw new Exception("Trying to reassign active hideout to another clan!");
 
             mfh.OwnerClan = newOwner;
-            mfh.Settlement.Name = new TextObject("{=dt9393yju}{MINOR_FACTION} Hideout")
-                .SetTextVariable("MINOR_FACTION", newOwner.Name);
-
-            if (newOwner.Culture.NotableAndWandererTemplates.Count > 0)
+            Helpers.setPrivateField(mfh.Settlement,"_name", new TextObject("{=dt9393yju}{MINOR_FACTION} Hideout")
+                .SetTextVariable("MINOR_FACTION", newOwner.Name));
+                
+            if (newOwner.Culture.NotableTemplates.Count > 0)
                 mfh.Settlement.Culture = newOwner.Culture;
 
             GetClanMFData(newOwner)!.AddMFHideout(mfh);

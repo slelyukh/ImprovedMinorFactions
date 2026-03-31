@@ -33,7 +33,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 where mfh.IsActive && Helpers.IsEnemyOfMinorFaction(issueOwner.MapFaction, mfh.OwnerClan) 
                 select mfh))
             {
-                float distance = mfHideout.Settlement.GatePosition.Distance(issueOwner.GetMapPoint().Position2D);
+                float distance = mfHideout.Settlement.GatePosition.Distance(issueOwner.GetMapPoint().Position);
                 if (distance <= NearbyHideoutMaxDistance 
                     && distance < minDistance 
                     && mfHideout.Hearth >= IMFModels.MinimumMFHHearthToAffectVillage)
@@ -264,8 +264,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
             public override bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, out TextObject explanation)
             {
-                explanation = TextObject.Empty;
-                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, (int) (base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f), ref explanation, 2, false);
+                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, (int) (base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f), out explanation, 2, false);
             }
 
             public override bool IsTroopTypeNeededByAlternativeSolution(CharacterObject character)
@@ -275,8 +274,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
             public override bool AlternativeSolutionCondition(out TextObject explanation)
             {
-                explanation = TextObject.Empty;
-                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, (int)(base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f), ref explanation, 2);
+                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, (int)(base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f), out explanation, 2);
             }
 
             protected override void AlternativeSolutionEndWithSuccessConsequence()
@@ -539,7 +537,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 Helpers.GetMFHideout(this._targetHideout)!.IsSpotted = true;
                 this._targetHideout.IsVisible = true;
                 base.AddTrackedObject(this._targetHideout);
-                QuestHelper.AddMapArrowFromPointToTarget(new TextObject("{=xpsQyPaV}Direction to Hideout"), this._questSettlement.Position2D, this._targetHideout.Position2D, 5f, 0.1f);
+                QuestHelper.AddMapArrowFromPointToTarget(new TextObject("{=xpsQyPaV}Direction to Hideout"), this._questSettlement.Position, this._targetHideout.Position, 5f, 0.1f);
                 MBInformationManager.AddQuickInformation(setCommonTextVariables(
                     new TextObject("{=fMVPO1kzzz}{QUEST_GIVER.NAME} has marked the {HIDEOUT_NAME} on your map")));
                 base.AddLog(this._onQuestStartedLogText);

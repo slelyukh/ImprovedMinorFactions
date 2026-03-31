@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
 using SandBox.ViewModelCollection.Nameplate;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Engine;
@@ -26,7 +27,7 @@ namespace ImprovedMinorFactions.Patches
                 select x;
 
             List<SettlementNameplateVM> mfhNameplates = new List<SettlementNameplateVM>();
-            foreach (var nameplate in __instance.Nameplates)
+            foreach (var nameplate in __instance.AllNameplates)
             {
                 if (Helpers.IsMFHideout(nameplate.Settlement))
                     mfhNameplates.Add(nameplate);
@@ -35,7 +36,7 @@ namespace ImprovedMinorFactions.Patches
             foreach (var nameplate in mfhNameplates)
             {
                 if (!Helpers.GetMFHideout(nameplate.Settlement)!.IsSpotted)
-                    __instance.Nameplates.Remove(nameplate);
+                    __instance.AllNameplates.Remove(nameplate);
             }
         }
     }
@@ -44,7 +45,7 @@ namespace ImprovedMinorFactions.Patches
     [HarmonyPatch(typeof(SettlementNameplatesVM), "OnPartyBaseVisibilityChange")]
     public class SettlementNameplateVMOnPartyVisibilityPatch
     {
-        static void Postfix(SettlementNameplatesVM __instance, PartyBase party, ref Camera ____mapCamera, ref Action<Vec2> ____fastMoveCameraToPosition)
+        static void Postfix(SettlementNameplatesVM __instance, PartyBase party, ref Camera ____mapCamera, ref Action<CampaignVec2> ____fastMoveCameraToPosition)
         {
             if (!party.IsSettlement || !(party.Settlement.SettlementComponent is MinorFactionHideout))
                 return;
@@ -55,17 +56,17 @@ namespace ImprovedMinorFactions.Patches
                 .SingleOrDefault((Tuple<Settlement, GameEntity> h) => h.Item1 == party.Settlement);
             if (desiredSettlementTuple != null)
             {
-                SettlementNameplateVM nameplate = __instance.Nameplates
+                SettlementNameplateVM nameplate = __instance.AllNameplates
                     .SingleOrDefault((SettlementNameplateVM n) => n.Settlement == desiredSettlementTuple.Item1);
                 if (party.IsVisible && nameplate == null)
                 {
                     SettlementNameplateVM newNameplate = new
                         SettlementNameplateVM(desiredSettlementTuple.Item1, desiredSettlementTuple.Item2, ____mapCamera, ____fastMoveCameraToPosition);
-                    __instance.Nameplates.Add(newNameplate);
+                    __instance.AllNameplates.Add(newNameplate);
                     newNameplate.RefreshRelationStatus();
                 }
                 if (!party.IsVisible && nameplate != null)
-                    __instance.Nameplates.Remove(nameplate);
+                    __instance.AllNameplates.Remove(nameplate);
             }
         }
     }

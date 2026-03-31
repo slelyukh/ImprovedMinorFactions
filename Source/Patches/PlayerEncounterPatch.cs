@@ -29,14 +29,15 @@ namespace ImprovedMinorFactions.Patches
     public class StartBattleInternalPatch
     {
         static bool Prefix(ref MapEvent? __result, PlayerEncounter __instance,
-            ref PartyBase ____defenderParty, ref PartyBase ____attackerParty, ref MapEvent? ____mapEvent)
+            ref PartyBase ____defenderParty, ref PartyBase ____attackerParty, ref MapEvent? ____mapEvent, ref bool ___ForceHideoutSendTroops)
         {
             if (____mapEvent == null 
                 && ____defenderParty != null 
                 && ____defenderParty.IsSettlement 
                 && Helpers.IsMFHideout(____defenderParty.Settlement))
             {
-                Helpers.setPrivateField(__instance, "_mapEvent", HideoutEventComponent.CreateHideoutEvent(____attackerParty, ____defenderParty).MapEvent);
+                Helpers.setPrivateField(__instance, "_mapEvent",
+                    HideoutEventComponent.CreateHideoutEvent(____attackerParty, ____defenderParty, ___ForceHideoutSendTroops).MapEvent);
                 Helpers.CallPrivateMethod(__instance, "CheckNearbyPartiesToJoinPlayerMapEvent", new object[] { });
                 __result = ____mapEvent;
                 return false;
@@ -112,7 +113,7 @@ namespace ImprovedMinorFactions.Patches
             var mfHideout = Helpers.GetMFHideout(settlement);
             
             MBTextManager.SetTextVariable("PARTY", MapEvent.PlayerMapEvent.GetLeaderParty(PartyBase.MainParty.OpponentSide).Name);
-            if (!PlayerEncounter.EncounteredPartySurrendered)
+            if (!PlayerEncounter.EnemySurrender)
             {
                 MBTextManager.SetTextVariable("ENCOUNTER_TEXT", GameTexts.FindText("str_you_have_encountered_PARTY"), sendClients: true);
             }

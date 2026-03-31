@@ -12,19 +12,21 @@ using TaleWorlds.CampaignSystem.Settlements;
 namespace ImprovedMinorFactions.Source.Patches
 {
     // allows MFHideout notables to have quests by adding MFHideouts to list of settlements with notables
-    [HarmonyPatch(typeof(IssuesCampaignBehavior), "OnSessionLaunched")]
-    public class NeedsSpecialWeaponsPatch
-    {
-        static void Postfix(IssuesCampaignBehavior __instance, ref Settlement[] ____settlements)
-        {
-            var newSettlementsList = ____settlements.ToList();
-            newSettlementsList.AppendList(
-                Enumerable.ToList(Enumerable.Where<Settlement>(
-                    Settlement.All,
-                    (Settlement x) => Helpers.IsMFHideout(x))));
-            Helpers.setPrivateField(__instance, "_settlements", newSettlementsList.ToArray());
-        }
-    }
+    // WAR SAILS: commented out because the settlement array is not a class variable anymore so it doesn't seem to matter
+    // TODO: find out what is actually being used to check if a settlement can have a quest
+    //[HarmonyPatch(typeof(IssuesCampaignBehavior), "OnSessionLaunched")]
+    //public class NeedsSpecialWeaponsPatch
+    //{
+    //    static void Postfix(IssuesCampaignBehavior __instance, ref Settlement[] ____settlements)
+    //    {
+    //        var newSettlementsList = ____settlements.ToList();
+    //        newSettlementsList.AppendList(
+    //            Enumerable.ToList(Enumerable.Where<Settlement>(
+    //                Settlement.All,
+    //                (Settlement x) => Helpers.IsMFHideout(x))));
+    //        Helpers.setPrivateField(__instance, "_settlements", newSettlementsList.ToArray());
+    //    }
+    //}
 
     // mostly copypasta that allows MF lords to have quests by raising the maximum amount of quests in a clan to 25% instead of 20%
     // because MF Clans only have 4 members

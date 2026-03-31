@@ -57,5 +57,10 @@ namespace ImprovedMinorFactions.Patches
         {
             return _previousModel.GetRaidCompleteMenu();
         }
+
+        public override bool IsPlunderMenu(string menuId)
+        {
+            return _previousModel.IsPlunderMenu(menuId);
+        }
     }
 }
