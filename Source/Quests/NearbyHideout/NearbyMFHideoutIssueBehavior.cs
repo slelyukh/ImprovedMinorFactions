@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Linq;
 using Helpers;
 using ImprovedMinorFactions.Source.CampaignBehaviors;
@@ -33,7 +33,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 where mfh.IsActive && Helpers.IsEnemyOfMinorFaction(issueOwner.MapFaction, mfh.OwnerClan) 
                 select mfh))
             {
-                float distance = mfHideout.Settlement.GatePosition.Distance(issueOwner.GetMapPoint().Position2D);
+                float distance = mfHideout.Settlement.GatePosition.Distance(issueOwner.GetMapPoint().Position.ToVec2());
                 if (distance <= NearbyHideoutMaxDistance 
                     && distance < minDistance 
                     && mfHideout.Hearth >= IMFModels.MinimumMFHHearthToAffectVillage)
@@ -218,7 +218,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 text.SetCharacterProperties("ISSUE_GIVER", base.IssueOwner.CharacterObject);
                 return text.SetTextVariable("MINOR_FACTION", MFClan.Name)
                     .SetTextVariable("HIDEOUT_NAME", this._targetHideout.Name)
-                    .SetTextVariable("TROOP_COUNT", (int)(base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f))
+                    .SetTextVariable("TROOP_COUNT", base.GetTotalAlternativeSolutionNeededMenCount())
                     .SetTextVariable("RETURN_DAYS", base.GetTotalAlternativeSolutionDurationInDays())
                     .SetTextVariable("ISSUE_SETTLEMENT", this._issueSettlement.EncyclopediaLinkWithName)
                     .SetTextVariable("REWARD", this.RewardGold)
@@ -264,8 +264,8 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
             public override bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, out TextObject explanation)
             {
-                explanation = TextObject.Empty;
-                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, (int) (base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f), ref explanation, 2, false);
+                explanation = TextObject.GetEmpty();
+                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, 2, false);
             }
 
             public override bool IsTroopTypeNeededByAlternativeSolution(CharacterObject character)
@@ -275,8 +275,8 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 
             public override bool AlternativeSolutionCondition(out TextObject explanation)
             {
-                explanation = TextObject.Empty;
-                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, (int)(base.GetTotalAlternativeSolutionNeededMenCount() * 1.5f), ref explanation, 2);
+                explanation = TextObject.GetEmpty();
+                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, 2);
             }
 
             protected override void AlternativeSolutionEndWithSuccessConsequence()
@@ -289,8 +289,13 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                     new Tuple<TraitObject, int>(DefaultTraits.Honor, 50)
                 });
                 GainRenownAction.Apply(Hero.MainHero, 1f);
-                MFHideoutCampaignBehavior.ApplyHideoutRaidConsequences(_targetHideout);
-                IMFManager.Current!.ClearHideout(Helpers.GetMFHideout(_targetHideout)!, DeactivationReason.Raid);
+                // camp may have moved or been cleared meanwhile, don't open a second one
+                MinorFactionHideout? target = Helpers.GetMFHideout(_targetHideout);
+                if (target != null && target.IsActive)
+                {
+                    MFHideoutCampaignBehavior.ApplyHideoutRaidConsequences(_targetHideout);
+                    IMFManager.Current!.ClearHideout(target, DeactivationReason.Raid);
+                }
             }
 
             protected override void AlternativeSolutionEndWithFailureConsequence()
@@ -319,11 +324,13 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 return NearbyHideoutIssueFrequency;
             }
 
-            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flags, out Hero? relationHero, out SkillObject? skill)
+            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flags, out Hero? relationHero, out SkillObject? skill, out int requiredGold)
             {
                 flags = PreconditionFlags.None;
                 relationHero = null;
                 skill = null;
+                requiredGold = 0;
+
                 if ((issueGiver?.MapFaction ?? issueGiver?.CurrentSettlement?.OwnerClan
                     ?? Hero.MainHero?.MapFaction) == null)
                 {
@@ -481,7 +488,9 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             private TextObject setCommonTextVariables(TextObject text)
             {
                 text.SetCharacterProperties("QUEST_GIVER", base.QuestGiver.CharacterObject);
+                text.SetCharacterProperties("ISSUE_GIVER", base.QuestGiver.CharacterObject);
                 return text.SetTextVariable("MINOR_FACTION", MFClan.Name)
+                    .SetTextVariable("HIDEOUT_NAME", this._targetHideout.Name)
                     .SetTextVariable("REWARD", this.RewardGold)
                     .SetTextVariable("QUEST_SETTLEMENT", this._questSettlement.EncyclopediaLinkWithName)
                     .SetTextVariable("SETTLEMENT_NAME", this._questSettlement.Name)
@@ -539,7 +548,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 Helpers.GetMFHideout(this._targetHideout)!.IsSpotted = true;
                 this._targetHideout.IsVisible = true;
                 base.AddTrackedObject(this._targetHideout);
-                QuestHelper.AddMapArrowFromPointToTarget(new TextObject("{=xpsQyPaV}Direction to Hideout"), this._questSettlement.Position2D, this._targetHideout.Position2D, 5f, 0.1f);
+                QuestHelper.AddMapArrowFromPointToTarget(new TextObject("{=xpsQyPaV}Direction to Hideout"), this._questSettlement.Position, this._targetHideout.Position, 5f, 0.1f);
                 MBInformationManager.AddQuickInformation(setCommonTextVariables(
                     new TextObject("{=fMVPO1kzzz}{QUEST_GIVER.NAME} has marked the {HIDEOUT_NAME} on your map")));
                 base.AddLog(this._onQuestStartedLogText);
@@ -588,6 +597,7 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 CampaignEvents.OnHideoutDeactivatedEvent.AddNonSerializedListener(this, new Action<Settlement>(this.OnHideoutCleared));
                 CampaignEvents.MapEventStarted.AddNonSerializedListener(this, new Action<MapEvent, PartyBase, PartyBase>(this.OnMapEventStarted));
                 CampaignEvents.WarDeclared.AddNonSerializedListener(this, new Action<IFaction, IFaction, DeclareWarAction.DeclareWarDetail>(this.OnWarDeclared));
+                CampaignEvents.MakePeace.AddNonSerializedListener(this, new Action<IFaction, IFaction, MakePeaceAction.MakePeaceDetail>(this.OnPeaceMade));
                 CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, new Action<Clan, Kingdom, Kingdom, ChangeKingdomAction.ChangeKingdomActionDetail, bool>(this.OnClanChangedKingdom));
                 CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, new Action<Clan>(this.OnClanDestroyed));
             }
@@ -648,6 +658,15 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
                 if (MFClan == clan)
                 {
                     base.AddLog(this._onClanDestroyedLogText);
+                    base.CompleteQuestWithCancel();
+                }
+            }
+
+            private void OnPeaceMade(IFaction faction1, IFaction faction2, MakePeaceAction.MakePeaceDetail detail)
+            {
+                if (!FactionManager.IsAtWarAgainstFaction(QuestGiver.MapFaction, _targetHideout.OwnerClan))
+                {
+                    base.AddLog(this._onNoLongerAtWarLogText);
                     base.CompleteQuestWithCancel();
                 }
             }

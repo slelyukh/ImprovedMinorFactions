@@ -1,6 +1,8 @@
-﻿using TaleWorlds.CampaignSystem.ComponentInterfaces;
+﻿using TaleWorlds.CampaignSystem;
+using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.Core;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
@@ -12,8 +14,6 @@ namespace ImprovedMinorFactions.Source.Patches
         {
             this._previousModel = banditDensityModel;
         }
-
-        public override int NumberOfMaximumLooterParties => _previousModel.NumberOfMaximumLooterParties;
 
         public override int NumberOfMinimumBanditPartiesInAHideoutToInfestIt => _previousModel.NumberOfMinimumBanditPartiesInAHideoutToInfestIt;
 
@@ -42,9 +42,24 @@ namespace ImprovedMinorFactions.Source.Patches
 
         public override float SpawnPercentageForFirstFightInHideoutMission => _previousModel.SpawnPercentageForFirstFightInHideoutMission;
 
-        public override int GetPlayerMaximumTroopCountForHideoutMission(MobileParty party)
+        public override int GetMaxSupportedNumberOfLootersForClan(Clan clan)
         {
-            return _previousModel.GetPlayerMaximumTroopCountForHideoutMission(party);
+            return _previousModel.GetMaxSupportedNumberOfLootersForClan(clan);
+        }
+
+        public override int GetMinimumTroopCountForHideoutMission(MobileParty party, bool isAssault)
+        {
+            return _previousModel.GetMinimumTroopCountForHideoutMission(party, isAssault);
+        }
+
+        public override int GetMaximumTroopCountForHideoutMission(MobileParty party, bool isAssault)
+        {
+            return _previousModel.GetMaximumTroopCountForHideoutMission(party, isAssault);
+        }
+
+        public override bool IsPositionInsideNavalSafeZone(CampaignVec2 position)
+        {
+            return _previousModel.IsPositionInsideNavalSafeZone(position);
         }
     }
 }

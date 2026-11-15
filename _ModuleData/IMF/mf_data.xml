@@ -1,31 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!--
+  One row per minor faction, copy this and change what you need:
+
+  <MFData id="my_clan_native" minor_faction="Faction.my_clan" module="Native" hideouts="2" num_active_hideouts="1" scenes="bandit_forest,mountain_hideout_002" clan_gender="Any"/>
+
+  Only id and minor_faction are required, everything else falls back to the defaults:
+    id                      any unique name for the row
+    minor_faction           Faction.<clan id>
+    module                  the row only applies when that module is loaded, a later module wins
+    enabled                 false gives the faction no hideouts
+    hideouts                how many hideouts the faction gets (default 1 + num_active_hideouts)
+    num_active_hideouts     hideouts active at the same time (default 1)
+    scenes                  hideout battle scenes, comma separated, base game scenes only
+    num_militia_first_time  militia in a camp at game start (default 28)
+    num_militia_post_raid   militia in a new camp after a raid (default 20)
+    num_lvl2_militia        militia one tier above the recruit (default 5)
+    num_lvl3_militia        militia two tiers above the recruit (default 3)
+    max_militia             militia cap (default 40)
+    clan_gender             Male, Female or Any, for the faction's notables (default Any)
+    ship                    War Sails ship hull for the faction's parties, for example nord_medium_ship
+
+  Base game hideout scenes: bandit_forest forest_hideout_004 mountain_hideout_001 mountain_hideout_002
+  mountain_hideout_004 desert_hideout_002 desert_hideout_004 hideout_steppe_001 hideout_steppe_002
+  sea_bandit_a sea_bandit_b sea_bandit_c sea_bandit_d khuzait_village_c (most also have a _sv version)
+-->
 <MFDatas>
-    <MFData id="skolderbrotva_data" 
-        minor_faction="Faction.skolderbrotva"
-        clan_gender="Male"
-    />
 
-    <!-- Default values Nomad
-    <MFData id="{unique id}" 
-        minor_faction="Faction.{MF string ID}" # Required
-        num_active_hideouts="1" # Optional: number of active hideouts at a time for the MF
-        num_militia_first_time="65" # Optional: Number of militia in Hideout/Camp at game start
-        num_militia_post_raid="40" # Optional: Number of militia in Hideout/Camp when a new one is spawned post raid
-        num_lvl2_militia="15" # Optional: Number of militia upgraded one tier above MF recruit unit.
-        num_lvl3_militia="10" # Optional: MUST BE greater than 1; Number of militia upgraded two tiers above MF recruit unit.
-        max_militia="120" # Optional
-        clan_gender="Any" # Optional MUST BE "Male", "Female", or "Any"; Gender for notables of MF
-    />
+  <!-- Native -->
+  <MFData id="ghilman_native"                minor_faction="Faction.ghilman"                module="Native" scenes="desert_hideout_002,desert_hideout_004"/>
+  <MFData id="legion_of_the_betrayed_native" minor_faction="Faction.legion_of_the_betrayed" module="Native" scenes="bandit_forest"/>
+  <MFData id="skolderbrotva_native"          minor_faction="Faction.skolderbrotva"          module="Native" scenes="bandit_forest" clan_gender="Male"/>
+  <MFData id="company_of_the_boar_native"    minor_faction="Faction.company_of_the_boar"    module="Native" scenes="mountain_hideout_002"/>
+  <MFData id="wolfskins_native"              minor_faction="Faction.wolfskins"              module="Native" scenes="bandit_forest"/>
+  <MFData id="beni_zilal_native"             minor_faction="Faction.beni_zilal"             module="Native" scenes="desert_hideout_002"/>
+  <MFData id="brotherhood_of_woods_native"   minor_faction="Faction.brotherhood_of_woods"   module="Native" scenes="bandit_forest"/>
+  <MFData id="hidden_hand_native"            minor_faction="Faction.hidden_hand"            module="Native" scenes="mountain_hideout_002,bandit_forest"/>
+  <MFData id="embers_of_flame_native"        minor_faction="Faction.embers_of_flame"        module="Native" scenes="mountain_hideout_002,sea_bandit_c"/>
+  <MFData id="jawwal_native"                 minor_faction="Faction.jawwal"                 module="Native" scenes="desert_hideout_002"/>
+  <MFData id="karakhuzaits_native"           minor_faction="Faction.karakhuzaits"           module="Native" scenes="hideout_steppe_001"/>
+  <MFData id="forest_people_native"          minor_faction="Faction.forest_people"          module="Native" scenes="bandit_forest"/>
+  <MFData id="eleftheroi_native"             minor_faction="Faction.eleftheroi"             module="Native" scenes="khuzait_village_c"/>
+  <MFData id="lakepike_native"               minor_faction="Faction.lakepike"               module="Native" scenes="sea_bandit_c"/>
 
-    Default values Non-nomad
-    <MFData id="{unique id}" 
-        minor_faction="Faction.{MF string ID}" 
-        num_active_hideouts="1"
-        num_militia_first_time="28"
-        num_militia_post_raid="20"
-        num_lvl2_militia="5"
-        num_lvl3_militia="3"
-        max_militia="40"
-        clan_gender="Any" 
-    /> -->
 </MFDatas>

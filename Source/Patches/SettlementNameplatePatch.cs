@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using HarmonyLib;
 using SandBox.ViewModelCollection.Nameplate;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Engine;
@@ -26,7 +27,7 @@ namespace ImprovedMinorFactions.Patches
                 select x;
 
             List<SettlementNameplateVM> mfhNameplates = new List<SettlementNameplateVM>();
-            foreach (var nameplate in __instance.Nameplates)
+            foreach (var nameplate in __instance.AllNameplates)
             {
                 if (Helpers.IsMFHideout(nameplate.Settlement))
                     mfhNameplates.Add(nameplate);
@@ -34,8 +35,9 @@ namespace ImprovedMinorFactions.Patches
 
             foreach (var nameplate in mfhNameplates)
             {
-                if (!Helpers.GetMFHideout(nameplate.Settlement)!.IsSpotted)
-                    __instance.Nameplates.Remove(nameplate);
+                var mfHideout = Helpers.GetMFHideout(nameplate.Settlement);
+                if (mfHideout != null && !mfHideout.IsSpotted)
+                    Helpers.CallPrivateMethod(__instance, "RemoveNameplate", new object[] { nameplate });
             }
         }
     }
@@ -44,29 +46,43 @@ namespace ImprovedMinorFactions.Patches
     [HarmonyPatch(typeof(SettlementNameplatesVM), "OnPartyBaseVisibilityChange")]
     public class SettlementNameplateVMOnPartyVisibilityPatch
     {
-        static void Postfix(SettlementNameplatesVM __instance, PartyBase party, ref Camera ____mapCamera, ref Action<Vec2> ____fastMoveCameraToPosition)
+        static void Postfix(SettlementNameplatesVM __instance, PartyBase party, ref Camera ____mapCamera, ref Action<CampaignVec2> ____fastMoveCameraToPosition)
         {
             if (!party.IsSettlement || !(party.Settlement.SettlementComponent is MinorFactionHideout))
                 return;
 
             IMFManager.InitManagerIfNone();
 
-            var desiredSettlementTuple = IMFManager.Current._allMFHideouts
+            var desiredSettlementTuple = IMFManager.Current!._allMFHideouts
                 .SingleOrDefault((Tuple<Settlement, GameEntity> h) => h.Item1 == party.Settlement);
             if (desiredSettlementTuple != null)
             {
-                SettlementNameplateVM nameplate = __instance.Nameplates
+                SettlementNameplateVM nameplate = __instance.AllNameplates
                     .SingleOrDefault((SettlementNameplateVM n) => n.Settlement == desiredSettlementTuple.Item1);
                 if (party.IsVisible && nameplate == null)
                 {
                     SettlementNameplateVM newNameplate = new
                         SettlementNameplateVM(desiredSettlementTuple.Item1, desiredSettlementTuple.Item2, ____mapCamera, ____fastMoveCameraToPosition);
-                    __instance.Nameplates.Add(newNameplate);
+                    Helpers.CallPrivateMethod(__instance, "AddNameplate", new object[] { newNameplate });
                     newNameplate.RefreshRelationStatus();
                 }
                 if (!party.IsVisible && nameplate != null)
-                    __instance.Nameplates.Remove(nameplate);
+                    Helpers.CallPrivateMethod(__instance, "RemoveNameplate", new object[] { nameplate });
             }
+        }
+    }
+
+    // The hover info only shows for nameplates in range, a camp the player has spotted counts as in range.
+    [HarmonyPatch(typeof(SettlementNameplateVM), "RefreshDynamicProperties")]
+    public class MFHideoutNameplateInRangePatch
+    {
+        private static readonly AccessTools.FieldRef<SettlementNameplateVM, bool> BindIsInRange =
+            AccessTools.FieldRefAccess<SettlementNameplateVM, bool>("_bindIsInRange");
+
+        static void Postfix(SettlementNameplateVM __instance)
+        {
+            if (__instance.Settlement?.SettlementComponent is MinorFactionHideout mfHideout && mfHideout.IsSpotted)
+                BindIsInRange(__instance) = true;
         }
     }
 }

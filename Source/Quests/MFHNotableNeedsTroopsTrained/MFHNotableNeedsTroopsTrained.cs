@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Helpers;
 using TaleWorlds.CampaignSystem.Actions;
@@ -180,7 +180,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 get
                 {
                     TextObject textObject = new TextObject("{=NNIqnPU40}{ISSUE_GIVER.LINK} a member of the {MINOR_FACTION}, asked you" +
-                        " to train recruits for {?QUEST_GIVER.GENDER}her{?}him{\\?}. {?QUEST_GIVER.GENDER}She{?}He{\\?} gave you " +
+                        " to train recruits for {?ISSUE_GIVER.GENDER}her{?}him{\\?}. {?ISSUE_GIVER.GENDER}She{?}He{\\?} gave you " +
                         "{NUMBER_OF_MEN} men, hoping to take them back when once they are veterans.{newline}You sent them with one " +
                         "of your companions {COMPANION.LINK} to hunt down some easy targets. You arranged to meet them in {RETURN_DAYS} days.")
                         .SetTextVariable("MINOR_FACTION", IssueClan().EncyclopediaLinkWithName)
@@ -222,16 +222,16 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 
             public override bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, out TextObject explanation)
             {
-                explanation = TextObject.Empty;
+                explanation = TextObject.GetEmpty();
                 bool mountedRequired = Helpers.mfIsMounted(base.IssueSettlement.OwnerClan);
-                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
+                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             public override bool AlternativeSolutionCondition(out TextObject explanation)
             {
-                explanation = TextObject.Empty;
+                explanation = TextObject.GetEmpty();
                 bool mountedRequired = Helpers.mfIsMounted(base.IssueSettlement.OwnerClan);
-                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
+                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             protected override void AlternativeSolutionEndWithSuccessConsequence()
@@ -281,11 +281,12 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 return new MFHNotableNeedsTroopsTrainedIssueQuest(questId, base.IssueOwner, CampaignTime.DaysFromNow(QuestDuration), base.IssueDifficultyMultiplier, this.RewardGold);
             }
 
-            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero? relationHero, out SkillObject? skill)
+            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero? relationHero, out SkillObject? skill, out int requiredGold)
             {
                 flag = PreconditionFlags.None;
                 relationHero = null;
                 skill = null;
+                requiredGold = 0;
 
                 if ((issueGiver?.MapFaction ?? issueGiver?.CurrentSettlement?.OwnerClan
                     ?? Hero.MainHero?.MapFaction) == null)
@@ -385,7 +386,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                     if (detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility)
                     {
                         CompleteQuestWithFail(_onPlayerDeclaredWarQuestLogText);
-                    } else
+                    }
+                    else
                     {
                         base.CompleteQuestWithCancel(_onQuestGiverAtWarWithPlayerLogText);
                     }
@@ -536,7 +538,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                 base.QuestGiver.AddPower(QuestGiverPowerBonusOnSuccess);
                 ChangeRelationAction.ApplyPlayerRelation(QuestClan().Leader, (int) (ClanRelationBonusOnSuccess * 0.6));
                 Helpers.GetMFHideout(base.QuestGiver.CurrentSettlement)!.UpgradeMilitia((int)(MilitiaToUpgradeOnSuccess * 0.2));
-                base.AddLog(this._partialSuccessLog);
+                base.AddLog(this._weakSuccessLog);
                 base.CompleteQuestWithSuccess();
             }
 
@@ -779,6 +781,30 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
                         .EndPlayerOptions()
                     .CloseDialog();
             }
+            // give the clan's troop types back, a canceled quest takes the borrowed men back
+            public override void OnCanceled()
+            {
+                base.OnCanceled();
+                if (this._questGivenChar != null && this._questTargetChar != null)
+                    this.RemoveBorrowedTroopsFromParty(PartyBase.MainParty);
+            }
+
+            protected override void OnFinalize()
+            {
+                base.OnFinalize();
+                if (Campaign.Current?.QuestManager == null)
+                    return;
+                foreach (CharacterObject? troop in new[] { this._questGivenChar, this._questTargetChar })
+                {
+                    if (troop == null)
+                        continue;
+                    bool stillUsed = Campaign.Current.QuestManager.Quests.Any(q => q != this && q.IsOngoing
+                        && q is MFHNotableNeedsTroopsTrainedIssueQuest other && (other._questGivenChar == troop || other._questTargetChar == troop));
+                    if (!stillUsed)
+                        troop.SetTransferableInPartyScreen(true);
+                }
+            }
+
             protected override void InitializeQuestOnGameLoad()
             {
                 this._questGivenChar = Helpers.GetBasicTroop(QuestClan());

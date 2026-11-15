@@ -3,26 +3,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using HarmonyLib;
-using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem;
-using TaleWorlds.Core;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
-    // fix Bannerlord bug that causes Forest People clan to not be at war with Sturgia due to their Vakken culture
-    [HarmonyPatch(typeof(OutlawClansCampaignBehavior), "MakeOutlawFactionsEnemyToKingdomFactions")]
-    public class OutlawClansPatch
+    // Vanilla misses the Forest People's war with Sturgia, so declare it here.
+    internal class MFOutlawWarCampaignBehavior : CampaignBehaviorBase
     {
-        static void Postfix()
+        private bool _outlawWarFixApplied;
+
+        public override void RegisterEvents()
         {
+            CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(OnNewGameCreated));
+            CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(OnGameLoaded));
+        }
+
+        public override void SyncData(IDataStore dataStore)
+        {
+            dataStore.SyncData("_outlawWarFixApplied", ref _outlawWarFixApplied);
+        }
+
+        private void OnNewGameCreated(CampaignGameStarter campaignGameStarter)
+        {
+            MakeOutlawFactionsEnemyToKingdomFactions();
+        }
+
+        private void OnGameLoaded(CampaignGameStarter campaignGameStarter)
+        {
+            MakeOutlawFactionsEnemyToKingdomFactions();
+        }
+
+        private void MakeOutlawFactionsEnemyToKingdomFactions()
+        {
+            if (_outlawWarFixApplied)
+                return;
+            _outlawWarFixApplied = true;
+
             foreach (Clan clan in Clan.All)
             {
-                if (clan.IsMinorFaction && clan.Culture.GetCultureCode() == CultureCode.Vakken)
+                if (clan.IsMinorFaction && clan.Culture.StringId == "vakken")
                 {
                     foreach (Kingdom kingdom in Kingdom.All)
                     {
-                        if (kingdom.Culture.GetCultureCode() == CultureCode.Sturgia)
+                        if (kingdom.Culture.StringId == "sturgia")
                         {
                             FactionManager.DeclareWar(kingdom, clan);
                         }

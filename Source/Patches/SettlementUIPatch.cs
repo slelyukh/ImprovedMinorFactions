@@ -61,8 +61,8 @@ namespace ImprovedMinorFactions.Patches
 
             IFaction mapFaction = curSettlement.MapFaction;
             __instance.IsCrimeEnabled = mapFaction != null && mapFaction.MainHeroCrimeRating > 0f;
-            __instance.CrimeLbl = ((int)(curSettlement.MapFaction?.MainHeroCrimeRating).Value).ToString();
-            __instance.CrimeChangeAmount = (int)(curSettlement.MapFaction?.DailyCrimeRatingChange).Value;
+            __instance.CrimeLbl = ((int)(mapFaction?.MainHeroCrimeRating ?? 0f)).ToString();
+            __instance.CrimeChangeAmount = (int)(mapFaction?.DailyCrimeRatingChange ?? 0f);
             __instance.RemainingFoodText = "-";
             __instance.FoodChangeAmount = 0;
             __instance.MilitasLbl = ((int)curSettlement.Militia).ToString();

@@ -1,4 +1,4 @@
-﻿using TaleWorlds.CampaignSystem.ComponentInterfaces;
+using TaleWorlds.CampaignSystem.ComponentInterfaces;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameComponents;
 using TaleWorlds.CampaignSystem.Party;
@@ -18,13 +18,12 @@ namespace ImprovedMinorFactions.Patches
         {
             string result = _previousModel.GetEncounterMenu(attackerParty, defenderParty, out startBattle, out joinBattle);
 
-            if (result == null)
+            if (string.IsNullOrEmpty(result))
             {
-                PartyBase encounteredParty = (Helpers.CallPrivateMethod(null, 
-                    "GetEncounteredPartyBase", 
-                    new object[] { attackerParty, defenderParty }, 
-                    typeof(DefaultEncounterGameMenuModel)) as PartyBase)!;
-                if (encounteredParty.IsSettlement && Helpers.IsMFHideout(encounteredParty.Settlement))
+                PartyBase? encounteredParty = global::Helpers.MapEventHelper.GetEncounteredPartyBase(attackerParty, defenderParty);
+                if (encounteredParty == null)
+                    encounteredParty = (defenderParty != null && defenderParty.IsSettlement) ? defenderParty : attackerParty;
+                if (encounteredParty != null && encounteredParty.IsSettlement && Helpers.IsMFHideout(encounteredParty.Settlement))
                     result = "mf_hideout_place";
             }
 
@@ -35,13 +34,13 @@ namespace ImprovedMinorFactions.Patches
         {
             string result = _previousModel.GetGenericStateMenu();
 
-            if (result == null)
+            if (string.IsNullOrEmpty(result))
             {
                 MobileParty mainParty = MobileParty.MainParty;
-                Settlement curSettlement = mainParty.CurrentSettlement;
+                Settlement? curSettlement = mainParty?.CurrentSettlement;
                 if (PlayerEncounter.Current?.IsPlayerWaiting == true)
                     result = "mf_hideout_wait";
-                else if (mainParty.AttachedTo == null && mainParty.CurrentSettlement != null && Helpers.IsMFHideout(curSettlement))
+                else if (mainParty?.AttachedTo == null && curSettlement != null && Helpers.IsMFHideout(curSettlement))
                     result = "mf_hideout_place";
             }
 
@@ -56,6 +55,11 @@ namespace ImprovedMinorFactions.Patches
         public override string GetRaidCompleteMenu()
         {
             return _previousModel.GetRaidCompleteMenu();
+        }
+
+        public override bool IsPlunderMenu(string menuId)
+        {
+            return _previousModel.IsPlunderMenu(menuId);
         }
     }
 }

@@ -142,34 +142,22 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             if (party != null && party.IsMainParty)
             {
                 foreach (Hero notable in settlement.Notables)
-                {
                     notable.SetHasMet();
-                    // TODO REMOVE DEBUG
-                    //InformationManager.DisplayMessage(new InformationMessage(notable.Name + " Is gang leader: " + notable.IsGangLeader + " Is notable: " + notable.IsNotable));
 
-                    foreach (Hero h in Hero.AllAliveHeroes)
-                    {
-                        if (h.IsNotable && h.IsGangLeader && h.CurrentSettlement?.IsVillage == true)
-                        {
-                            h.SetNewOccupation(Occupation.Preacher);
-                            // TODO: remove debug
-                            //InformationManager.DisplayMessage(new InformationMessage(h.Name + " Is gang leader: " + h.IsGangLeader + " Is notable: " + h.IsNotable));
-                        }
-
-                    }
-                    // TODO REMOVE DEBUG
-                }
-
-                if (LocationComplex.Current != null && PlayerEncounter.LocationEncounter != null)
+                // village notables can end up as gang leaders, turn them back into preachers
+                foreach (Hero h in Hero.AllAliveHeroes)
                 {
-                    if (party == null)
-                        return;
-                    if (party.IsMainParty)
-                        AddMFHLocationCharacters(settlement);
-                    else if (MobileParty.MainParty.CurrentSettlement == settlement)
-                        AddPartyHero(party, settlement);
+                    if (h.IsNotable && h.IsGangLeader && h.CurrentSettlement?.IsVillage == true)
+                        h.SetNewOccupation(Occupation.Preacher);
                 }
             }
+
+            if (party == null || LocationComplex.Current == null || PlayerEncounter.LocationEncounter == null)
+                return;
+            if (party.IsMainParty)
+                AddMFHLocationCharacters(settlement);
+            else if (MobileParty.MainParty.CurrentSettlement == settlement)
+                AddPartyHero(party, settlement);
         }
 
         private void OnMissionEnded(IMission mission)

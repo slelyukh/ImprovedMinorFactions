@@ -14,7 +14,7 @@
     <IMFText
     faction_id="brotherhood_of_woods" 
     text_id="NearbyMFHideoutQuest_IssueBrief"
-    text="{=!}Ah, traveler, may I trouble you for a moment? The Brotherhood of the Woods, once champions of the common folk, have set up a hideout nearby. What began as a noble cause—robbing from the rich to give to the poor—has twisted into something darker. Now, they turn their blades against the very people they once swore to protect, extorting and terrorizing commoners to sustain their dwindling supplies.[ib:closed][if:convo_undecided_open]"
+    text="{=!}Ah, traveler, may I trouble you for a moment? The Brotherhood of the Woods, once champions of the common folk, have set up a hideout nearby. What began as a noble cause, robbing from the rich to give to the poor, has twisted into something darker. Now, they turn their blades against the very people they once swore to protect, extorting and terrorizing commoners to sustain their dwindling supplies.[ib:closed][if:convo_undecided_open]"
     />
     <IMFText
     faction_id="brotherhood_of_woods"
@@ -29,7 +29,7 @@
     <IMFText
     faction_id="eleftheroi"
     text_id="NearbyMFHideoutQuest_IssueSolution"
-    text="{=!}Their knowledge of the frontier makes them formidable, and their ties to the empire do not temper their hostility towards its rule—or towards us. I beseech you to help protect our village, to push back against their encroachments. Should you manage to curb their aggressions and secure our safety, you will be richly rewarded by our grateful community.[ib:closed][if:convo_undecided_open]"
+    text="{=!}Their knowledge of the frontier makes them formidable, and their ties to the empire do not temper their hostility towards its rule, or towards us. I beseech you to help protect our village, to push back against their encroachments. Should you manage to curb their aggressions and secure our safety, you will be richly rewarded by our grateful community.[ib:closed][if:convo_undecided_open]"
     />
     <IMFText
     faction_id="embers_of_flame" 
@@ -54,7 +54,7 @@
     <IMFText
     faction_id="hidden_hand" 
     text_id="NearbyMFHideoutQuest_IssueBrief"
-    text="{=!}Ah, traveler, may I have a word? Our village has been plagued by the Hidden Hand, a mafia that has taken root in these parts. These scoundrels, with one foot in the town and the other in the hills, have made a mockery of justice. By day, they pose as respectable traders, but by night, they revert to their true nature—bandits, silencing dissenters and robbing honest merchants.[ib:closed][if:convo_undecided_open]"
+    text="{=!}Ah, traveler, may I have a word? Our village has been plagued by the Hidden Hand, a mafia that has taken root in these parts. These scoundrels, with one foot in the town and the other in the hills, have made a mockery of justice. By day, they pose as respectable traders, but by night, they revert to their true nature: bandits, silencing dissenters and robbing honest merchants.[ib:closed][if:convo_undecided_open]"
     />
     <IMFText
     faction_id="hidden_hand"
@@ -89,7 +89,7 @@
     <IMFText
     faction_id="lakepike"
     text_id="NearbyMFHideoutQuest_IssueSolution"
-    text="{=!}These plunderers are despised across Calradia, and with good reason. Their assaults on our trade routes have left many a family here bereft and our village poorer for it. We seek not just relief but retribution—someone to ensure they no longer threaten our waters or livelihoods. Drive them from their lair, and you shall find both gold and gratitude in our village.[ib:closed][if:convo_undecided_open]"
+    text="{=!}These plunderers are despised across Calradia, and with good reason. Their assaults on our trade routes have left many a family here bereft and our village poorer for it. We seek not just relief but retribution: someone to ensure they no longer threaten our waters or livelihoods. Drive them from their lair, and you shall find both gold and gratitude in our village.[ib:closed][if:convo_undecided_open]"
     />
     <IMFText
     faction_id="wolfskins" 
@@ -115,4 +115,76 @@
     text="{=!}We need you to raid {NEEDED_VILLAGES_AMOUNT} village{?PLURAL}s{?}{\?} near our camp. The villagers will be too busy rebuilding to hunt or be interested in our forest activities. They cannot know that you are doing this on our behalf."
     />
     <!-- Nomad Village Raid Texts End -->
+
+    <!-- Clan Description Texts -->
+    <IMFText
+    faction_id="forest_people" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a Vakken nomadic tribe that lives deep in the northern woods. No village gets to tell us which woods we may burn or hunt."
+    />
+    <IMFText
+    faction_id="jawwal" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}the main bedouin confederacy that lives deep in the Nahasa Desert and practices a nomadic way of life."
+    />
+    <IMFText
+    faction_id="karakhuzaits" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a Khuzait nomadic tribe that roams the steppe as it pleases and bows to no khan or foreign ruler."
+    />
+    <IMFText
+    faction_id="eleftheroi" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a nomadic tribe descended from runaway slaves and debtors that lives deeper in the steppe than any imperial citizen would dare to go."
+    />
+    <IMFText
+    faction_id="lakepike" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}the fierce and untamed free people of the marshes around the Great Northern Lake. In our territory, caravans and villagers bend to our protection or face the unforgiving wilds alone."
+    />
+    <IMFText
+    faction_id="skolderbrotva" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}the best mercenary company in all of Calradia. We adhere to a strict set of military principles and value our honor more than our lives. Most of our soldiers are Nords but we sometimes take in warriors from other cultures as well."
+    />
+    <IMFText
+    faction_id="ghilman" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a powerful Darshi mercenary company that lives in the western Aserai lands in times of peace. Our cavalry is one of the most formidable in all of Calradia."
+    />
+    <IMFText
+    faction_id="beni_zilal" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}the Sons of the Shadows and keepers of the deepest secrets. Any caravan daring to pass through our territories must pay our toll, or face the wrath of the night."
+    />
+    <IMFText
+    faction_id="brotherhood_of_woods" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a brotherhood of former Vlandian peasants who steal from the rich and give to the poor. Every wealthy caravan that passes through our lands pays us a tax so that no Vlandian peasant goes hungry."
+    />
+    <IMFText
+    faction_id="company_of_the_boar" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a Vlandian mercenary company that has mastered the crossbow. Unlike other mercenaries who fight for gold alone, we fight because we love war and cannot live without it."
+    />
+    <IMFText
+    faction_id="wolfskins" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}a band of Battanians that follows the ancient Code of the Wolf and is thus exempt from the laws of man. Civilization is meaningless to us and we do not eat cooked food, wear woven cloth, or sleep under roofs."
+    />
+    <IMFText
+    faction_id="hidden_hand" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}the real authority in the Southern Empire. No caravan dares to travel in our lands without our permission. Even the horses seek our approval before drinking from our streams."
+    />
+    <IMFText
+    faction_id="legion_of_the_betrayed" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}the last remnants of the glorious Imperial Legions from long ago. There are no soldiers in Calradia that are more professional than us."
+    />
+    <IMFText
+    faction_id="embers_of_flame" 
+    text_id="MFDescription_ClanDescription"
+    text="{=!}devout followers of the Flame who are waiting patiently for Emperor Darusos' return from Heaven."
+    />
 </IMFTexts>

@@ -1,14 +1,15 @@
-﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Xml;
+using System;
 using HarmonyLib;
+using ImprovedMinorFactions.Patches;
 using ImprovedMinorFactions.Source;
 using JetBrains.Annotations;
-using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
+using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
 using TaleWorlds.Engine;
 using TaleWorlds.Library;
@@ -39,19 +40,6 @@ namespace ImprovedMinorFactions
         public static void ClearManager()
         {
             IMFManager.Current = null;
-        }
-
-        // true if mfh1 should replace mfh2.
-        private bool ShouldReplaceHideout(MinorFactionHideout mfh1, MinorFactionHideout mfh2)
-        {
-            if (mfh1?.Owner == null || mfh1?.Settlement?.Notables == null) return false;
-            if (mfh1.IsActiveOrScheduled && mfh1.Settlement.Notables.Count > 0)
-            {
-                return true;
-            } else
-            {
-                return false;
-            }
         }
 
         public void AddLoadedMFHideout(MinorFactionHideout mfh)
@@ -102,11 +90,16 @@ namespace ImprovedMinorFactions
 
             foreach (Settlement settlement in Campaign.Current.Settlements)
             {
-                if ((settlement.OwnerClan?.IsMinorFaction ?? false) && Helpers.IsMFHideout(settlement))
+                // converted hideouts keep the clan here, OwnerClan is null once IsHideout is false
+                var ownerClan = (settlement.SettlementComponent as MinorFactionHideout)?.OwnerClan
+                    ?? settlement.OwnerClan;
+                bool isMfHideout = Helpers.IsMFHideout(settlement);
+                if ((ownerClan?.IsMinorFaction ?? false) && isMfHideout)
                 {
                     // TODO: store ownerless hideouts somewhere
-                    var mfClan = settlement.OwnerClan;
+                    var mfClan = ownerClan!;
                     CreateMFDataIfNone(mfClan);
+                    HideoutPlacement.RegisterAnchor(settlement, mfClan.HomeSettlement);
                     _mfData[mfClan].AddMFHideout(settlement);
                 }
             }
@@ -135,9 +128,9 @@ namespace ImprovedMinorFactions
                     priority2 += 100;
             }
 
-            // mfh1 is closer
-            if (mfh1.Settlement.Position2D.Distance(c.InitialPosition)
-                < mfh2.Settlement.Position2D.Distance(c.InitialPosition))
+            Vec2 clanPosition = c.HomeSettlement?.GetPosition2D ?? c.Leader?.GetMapPoint()?.Position.ToVec2() ?? Vec2.Zero;
+            if (mfh1.Settlement.GetPosition2D.Distance(clanPosition)
+                < mfh2.Settlement.GetPosition2D.Distance(clanPosition))
             {
                 priority1 += 1;
             }
@@ -219,10 +212,10 @@ namespace ImprovedMinorFactions
                 throw new Exception("Trying to reassign active hideout to another clan!");
 
             mfh.OwnerClan = newOwner;
-            mfh.Settlement.Name = new TextObject("{=dt9393yju}{MINOR_FACTION} Hideout")
-                .SetTextVariable("MINOR_FACTION", newOwner.Name);
+            mfh.Settlement.Party.SetCustomName(new TextObject("{=dt9393yju}{MINOR_FACTION} Hideout")
+                .SetTextVariable("MINOR_FACTION", newOwner.Name));
 
-            if (newOwner.Culture.NotableAndWandererTemplates.Count > 0)
+            if (newOwner.Culture.NotableTemplates.Count > 0)
                 mfh.Settlement.Culture = newOwner.Culture;
 
             GetClanMFData(newOwner)!.AddMFHideout(mfh);
@@ -284,7 +277,7 @@ namespace ImprovedMinorFactions
             // add MFs with assigned hideouts to clan list first to give them priority later
             foreach (Clan c in Clan.All)
             {
-                if (c.IsMinorFaction && c != Clan.PlayerClan && !c.IsRebelClan && !c.IsNomad && !c.IsEliminated && HasFaction(c) && GetClanMFData(c)!.Hideouts.Count > 0)
+                if (c.IsMinorFaction && c != Clan.PlayerClan && !c.IsRebelClan && !c.IsNomad && !c.IsEliminated && HasFaction(c) && GetClanMFData(c)!.Hideouts.Count > 0 && ConfigLoader.IsEnabled(c.StringId))
                 {
                     hideoutAssignedNonNomadClans.Add(c);
                     NonNomadMFClans.Add(c);
@@ -294,7 +287,9 @@ namespace ImprovedMinorFactions
             // add MFs without assigned hideouts to clan list second to give them less priority
             foreach (Clan c in Clan.All)
             {
-                if (c.IsMinorFaction && c != Clan.PlayerClan && !c.IsRebelClan && !c.IsNomad && !c.IsEliminated && !NonNomadMFClans.Contains(c))
+                // nomads keep their hideouts unless they have none
+                bool isNomadWithoutHideouts = c.IsNomad && (GetClanMFData(c)?.Hideouts.Count ?? 0) == 0;
+                if (c.IsMinorFaction && c != Clan.PlayerClan && !c.IsRebelClan && (!c.IsNomad || isNomadWithoutHideouts) && !c.IsEliminated && !NonNomadMFClans.Contains(c) && ConfigLoader.IsEnabled(c.StringId))
                 {
                     NonNomadMFClans.Add(c);
                     CreateMFDataIfNone(c);
@@ -331,7 +326,19 @@ namespace ImprovedMinorFactions
             AssignHideoutsForList(NonNomadMFClans, ref hideoutPool, ref numHideoutsToGive, priorityLists);
         }
 
-        // activates 1 hideout for every Minor Faction if they have no currently active hideouts
+        public void ActivateFirstHideoutFor(Clan clan)
+        {
+            if (!_mfData.TryGetValue(clan, out MFData? data) || data == null || NumActiveOrScheduledHideouts(clan) > 0)
+                return;
+            var usable = Enumerable.Range(0, data.Hideouts.Count)
+                .Where(k => !data.Hideouts[k].IsActiveOrScheduled && !HideoutPlacement.IsUnplaceable(data.Hideouts[k].Settlement, data.Hideouts[k].OwnerClan))
+                .ToList();
+            if (usable.Count == 0)
+                return;
+            MinorFactionHideout camp = data.Hideouts[usable[MBRandom.RandomInt(usable.Count)]];
+            camp.ActivateHideoutFirstTime();
+            IMFDiagnostics.Info($"[Spawn] {clan.StringId}: first party appeared, camp {camp.Settlement.StringId} is now active");
+        }
         public void ActivateAllFactionHideouts()
         {
             if (!TryInitMFHideoutsLists())
@@ -339,19 +346,31 @@ namespace ImprovedMinorFactions
 
             ReassignHideouts();
 
-            foreach (var (mfClan, mfData) in _mfData.Select(x => (x.Key, x.Value)))
+            foreach (var (mfClan, mfData) in _mfData.Select(x => (x.Key, x.Value)).ToList())
             {
                 int NumExistingActiveOrScheduled = NumActiveOrScheduledHideouts(mfClan);
-                if (mfData == null || NumExistingActiveOrScheduled == mfData.NumActiveHideouts)
+                if (mfData == null)
+                    continue;
+                if (Patches.LoadXmlHideoutsPatch.SpawnGatedClans.Contains(mfClan.StringId) && mfClan != Clan.PlayerClan)
+                {
+                    continue;
+                }
+
+                int expectedActive = ExpectedActive(mfClan.IsMinorFaction, mfData.NumActiveHideouts, mfData.NumTotalHideouts);
+                if (expectedActive < 0)
+                {
+                    mfData.NumActiveHideouts = 0;
+                    continue;
+                }
+                if (expectedActive != mfData.NumActiveHideouts)
+                {
+                    mfData.NumActiveHideouts = expectedActive;
+                }
+                if (NumExistingActiveOrScheduled == mfData.NumActiveHideouts)
                     continue;
                 int NumExpectedActiveOrScheduled = mfData.NumActiveHideouts;
 
                 var hideouts = mfData.Hideouts;
-                if (NumExpectedActiveOrScheduled > hideouts.Count)
-                {
-                    throw new Exception($"{mfClan} has more active hideouts than hideouts." +
-                        $" Change num_active_hideouts in mf_data.xml to a number less than or equal to {mfData.NumTotalHideouts}");
-                }
 
                 // deactivate hideouts if needed
                 for (int i = NumExpectedActiveOrScheduled; i < NumExistingActiveOrScheduled; i++)
@@ -367,11 +386,17 @@ namespace ImprovedMinorFactions
                 // activate new hideouts if needed
                 for (int i = NumExistingActiveOrScheduled; i < NumExpectedActiveOrScheduled; i++)
                 {
-                    int activateIndex = MBRandom.RandomInt(hideouts.Count);
-                    while (hideouts[activateIndex].IsActiveOrScheduled)
+                    // only free hideouts with usable ground
+                    var freeIndexes = Enumerable.Range(0, hideouts.Count).Where(k => !hideouts[k].IsActiveOrScheduled).ToList();
+                    var usableIndexes = freeIndexes
+                        .Where(k => !HideoutPlacement.IsUnplaceable(hideouts[k].Settlement, hideouts[k].OwnerClan)).ToList();
+                    if (usableIndexes.Count == 0)
                     {
-                        activateIndex = MBRandom.RandomInt(hideouts.Count);
+                        IMFDiagnostics.Info($"[Guard] {mfClan.StringId}: no valid ground for any of {freeIndexes.Count} free hideouts, not activating");
+                        break;
                     }
+                    int homeIndex = usableIndexes.FindIndex(k => hideouts[k].Settlement != null && hideouts[k].Settlement == mfClan.InitialHomeSettlement);
+                    int activateIndex = homeIndex >= 0 ? usableIndexes[homeIndex] : usableIndexes[MBRandom.RandomInt(usableIndexes.Count)];
                     hideouts[activateIndex].ActivateHideoutFirstTime();
                 }
             }
@@ -390,6 +415,25 @@ namespace ImprovedMinorFactions
                 throw new Exception("can't switch Hideout due to uninitialized Hideout Manager");
 
             var oldSettlement = oldHideout.Settlement;
+            var mfClan = oldHideout.OwnerClan;
+
+            // -1 = nowhere to go, the raided camp reopens after the delay
+            int nextIndex = -1;
+            try
+            {
+                var owned = _mfData[mfClan].Hideouts;
+                nextIndex = PickNextHideout(owned.Count, owned.IndexOf(oldHideout),
+                    owned.Select(h => h == oldHideout || h.IsActiveOrScheduled || HideoutPlacement.IsUnplaceable(h.Settlement, h.OwnerClan)).ToList(),
+                    MBRandom.RandomInt);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                InformationManager.DisplayMessage(new InformationMessage($"IMF ERROR: Somehow we tried to clear a hideout not in MFHManager._mfData. {ex}", Colors.Red));
+                return;
+            }
+            if (nextIndex < 0 && reason == DeactivationReason.NomadMovement)
+                return;
+
             if (oldSettlement.Parties.Count > 0)
             {
                 foreach (MobileParty mobileParty in new List<MobileParty>(oldSettlement.Parties))
@@ -400,20 +444,22 @@ namespace ImprovedMinorFactions
             }
             oldHideout.IsSpotted = false;
             oldSettlement.IsVisible = false;
-            var mfClan = oldHideout.OwnerClan;
             try
             {
-                var hideouts = _mfData[mfClan].Hideouts;
-                int activateIndex = MBRandom.RandomInt(hideouts.Count);
-                while ((hideouts[activateIndex].Settlement.Equals(oldHideout.Settlement) || hideouts[activateIndex].IsScheduledToBeActive) 
-                    && !IsFullHideoutOccupationMF(mfClan))
-                    activateIndex = MBRandom.RandomInt(hideouts.Count);
-                var newHideout = hideouts[activateIndex];
+                if (nextIndex < 0)
+                {
+                    IMFDiagnostics.Info($"[Raid] {mfClan.StringId} no other free hideout, reusing {oldSettlement.StringId} after the delay");
+                    oldHideout.RespawnAfterRaid();
+                    return;
+                }
+                var newHideout = _mfData[mfClan].Hideouts[nextIndex];
+                IMFDiagnostics.Info($"[Raid] {mfClan.StringId}: {oldSettlement.StringId} cleared ({reason}), next camp {newHideout.Settlement.StringId}");
                 if (reason == DeactivationReason.Raid)
                     oldHideout.MoveHideoutsPostRaid(newHideout);
                 else if (reason == DeactivationReason.NomadMovement)
                     oldHideout.MoveHideoutsNomad(newHideout);
-            } catch (KeyNotFoundException ex)
+            }
+            catch (KeyNotFoundException ex)
             {
                 InformationManager.DisplayMessage(new InformationMessage($"IMF ERROR: Somehow we tried to clear a hideout not in MFHManager._mfData. {ex}", Colors.Red));
             }
@@ -515,6 +561,8 @@ namespace ImprovedMinorFactions
 
         public static void ConvertGangLeaderMFNotablesToPreachers()
         {
+            if (Campaign.Current == null)
+                return;
             foreach (Hero h in Hero.AllAliveHeroes)
             {
                 if (h != null && Helpers.IsMFHideout(h.CurrentSettlement) && h.Occupation == Occupation.GangLeader)
@@ -539,5 +587,29 @@ namespace ImprovedMinorFactions
 
         public IEnumerable<Tuple<Settlement, GameEntity>> _allMFHideouts;
 
+        public static int ExpectedActive(bool isRealMinorClan, int expected, int totalHideouts)
+        {
+            if (!isRealMinorClan || totalHideouts <= 0)
+                return -1;
+            return Math.Min(Math.Max(expected, 0), totalHideouts);
+        }
+
+        public static int PickNextHideout(int count, int clearedIdx, IReadOnlyList<bool> busy, Func<int, int> random)
+        {
+            var free = new List<int>();
+            for (int i = 0; i < count; i++)
+            {
+                if (i == clearedIdx)
+                    continue;
+                if (i < busy.Count && busy[i])
+                    continue;
+                free.Add(i);
+            }
+            if (free.Count == 0)
+                return -1;
+            int pick = random(free.Count);
+            return free[Math.Max(0, Math.Min(pick, free.Count - 1))];
+        }
     }
+
 }

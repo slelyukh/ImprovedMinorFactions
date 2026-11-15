@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
@@ -44,13 +44,23 @@ namespace ImprovedMinorFactions
             return eNum;
         }
 
+        private const float MaxHideoutIncome = 750f;
+
         // TODO: monitor minor faction finances
         public static float CalculateHideoutIncome(MinorFactionHideout mfHideout)
         {
-            return (mfHideout.Hearth - 300) * 2.5f;
+            return MathF.Clamp((mfHideout.Hearth - 300) * 2.5f, 0f, MaxHideoutIncome);
         }
 
-        // copied from bandit hideouts
+        // landless mfs earn less than their parties cost, camps top them up like the kingdom budget does
+        public static int CalculateCampSupport(Clan clan)
+        {
+            if (clan.Kingdom != null || clan.IsUnderMercenaryService || clan.Leader == Hero.MainHero)
+                return 0;
+            int gold = clan.Gold;
+            return gold < 5000 ? 2000 : gold < 10000 ? 1500 : gold < 20000 ? 1000 : gold < 30000 ? 500 : 0;
+        }
+
         public static int GetPlayerMaximumTroopCountForRaidMission(MobileParty party)
         {
             float num = 10f;
@@ -74,7 +84,8 @@ namespace ImprovedMinorFactions
             if (Helpers.IsSingleHideoutMF(ownerClan))
             {
                 return CampaignTime.Days(12);
-            } else
+            }
+            else
             {
                 return CampaignTime.Days(5);
             }
@@ -100,67 +111,62 @@ namespace ImprovedMinorFactions
 
         public static int NumMilitiaFirstTime(Clan c)
         {
-            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
-            if (mfData != null)
-                return mfData.NumMilitiaFirstTime;
+            var config = ConfigLoader.For(c?.StringId);
+            if (config?.NumMilitiaFirstTime.HasValue == true)
+                return config.NumMilitiaFirstTime.Value;
 
-            // default values
-            if (c.IsNomad)
-                return 65;
+            if (c != null && c.IsNomad)
+                return MBRandom.RandomInt(85, 116) + (c.Tier * 6);
             else
-                return 28;
+                return MBRandom.RandomInt(25, 41) + (c != null ? c.Tier * 2 : 0);
         }
 
         public static int NumMilitiaPostRaid(Clan c)
         {
-            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
-            if (mfData != null)
-                return mfData.NumMilitiaPostRaid;
+            var config = ConfigLoader.For(c?.StringId);
+            if (config?.NumMilitiaPostRaid.HasValue == true)
+                return config.NumMilitiaPostRaid.Value;
 
-            // default values
-            if (c.IsNomad)
-                return 40;
+            if (c != null && c.IsNomad)
+                return 60 + (c.Tier * 3);
             else
-                return 20;
+                return 15 + (c != null ? c.Tier : 0);
         }
 
         public static int NumLvl3Militia(Clan c)
         {
-            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
-            if (mfData != null)
-                return mfData.NumLvl3Militia;
+            var config = ConfigLoader.For(c?.StringId);
+            if (config?.NumLvl3Militia.HasValue == true)
+                return config.NumLvl3Militia.Value;
 
-            // default values
-            if (c.IsNomad)
-                return 10;
+            if (c != null && c.IsNomad)
+                return 10 + (c.Tier * 2);
             else
-                return 3;
+                return 3 + (c != null ? c.Tier : 0);
         }
 
         public static int NumLvl2Militia(Clan c)
         {
-            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
-            if (mfData != null)
-                return mfData.NumLvl2Militia;
+            var config = ConfigLoader.For(c?.StringId);
+            if (config?.NumLvl2Militia.HasValue == true)
+                return config.NumLvl2Militia.Value;
 
-            // default values
-            if (c.IsNomad)
-                return 15;
+            if (c != null && c.IsNomad)
+                return 15 + (c.Tier * 3);
             else
-                return 5;
+                return 5 + (c != null ? c.Tier : 0);
         }
 
-        public static int MaxMilitia(Clan c)
+        public static int MaxMilitia(Clan c, float hearth = 200f)
         {
-            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
-            if (mfData != null)
-                return mfData.MaxMilitia;
+            var config = ConfigLoader.For(c?.StringId);
+            if (config?.MaxMilitia.HasValue == true)
+                return config.MaxMilitia.Value;
 
-            // default values
-            if (c.IsNomad)
-                return 120;
+            if (c != null && c.IsNomad)
+                return 140 + (c.Tier * 15) + (int)(hearth * 0.10f);
             else
-                return 40;
+                return 45 + ((c?.Tier ?? 0) * 5) + (int)(hearth * 0.05f);
         }
 
         public static Gender ClanGender(Clan c)

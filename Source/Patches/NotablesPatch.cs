@@ -53,29 +53,47 @@ namespace ImprovedMinorFactions.Source.Patches
         }
     }
 
-    // mostly copypasta
     [HarmonyBefore(new string[] {"BannerKings"})]
-    [HarmonyPatch(typeof(HeroCreator), "CreateHeroAtOccupation")]
+    [HarmonyPatch(typeof(HeroCreator), "CreateNotable")]
     public class CreateHeroAtOccupationPatch
     {
-        public static bool Prefix(Occupation neededOccupation, Settlement forcedHomeSettlement, ref Hero __result)
+        public static bool Prefix(Occupation occupation, Settlement settlement, ref Hero __result)
         {
-            if (!Helpers.IsMFHideout(forcedHomeSettlement))
+            if (!Helpers.IsMFHideout(settlement))
                 return true;
 
-            var gender = IMFModels.ClanGender(forcedHomeSettlement.OwnerClan);
-            Settlement settlement = forcedHomeSettlement ?? SettlementHelper.GetRandomTown(null);
+            var gender = IMFModels.ClanGender(settlement.OwnerClan);
+            Settlement forcedHomeSettlement = settlement ?? SettlementHelper.GetRandomTown(null);
             IEnumerable<CharacterObject> enumerable;
                 
 
             // NOT COPY/PASTED
             if (gender == IMFModels.Gender.Male)
-                enumerable = Enumerable.Where<CharacterObject>(settlement.Culture.NotableAndWandererTemplates, (CharacterObject x) => x.Occupation == neededOccupation && !x.IsFemale);
+                enumerable = Enumerable.Where<CharacterObject>(forcedHomeSettlement.Culture.NotableTemplates, (CharacterObject x) => x.Occupation == occupation && !x.IsFemale);
             else if (gender == IMFModels.Gender.Female)
-                enumerable = Enumerable.Where<CharacterObject>(settlement.Culture.NotableAndWandererTemplates, (CharacterObject x) => x.Occupation == neededOccupation && x.IsFemale);
+                enumerable = Enumerable.Where<CharacterObject>(forcedHomeSettlement.Culture.NotableTemplates, (CharacterObject x) => x.Occupation == occupation && x.IsFemale);
             else
-                enumerable = Enumerable.Where<CharacterObject>(settlement.Culture.NotableAndWandererTemplates, (CharacterObject x) => x.Occupation == neededOccupation);
-            // NOT COPY/PASTED
+            {
+                // Separate pools so it stays around 20% female no matter how many templates there are.
+                var allPreachers = Enumerable.Where<CharacterObject>(forcedHomeSettlement.Culture.NotableTemplates, (CharacterObject x) => x.Occupation == occupation).ToList();
+                if (!allPreachers.Any())
+                {
+                    // no Preacher template, use empire's instead (it always has 3 preachers)
+                    var fallbackCulture = TaleWorlds.ObjectSystem.MBObjectManager.Instance.GetObject<CultureObject>("empire");
+                    if (fallbackCulture != null)
+                        allPreachers = Enumerable.Where<CharacterObject>(fallbackCulture.NotableTemplates, (CharacterObject x) => x.Occupation == occupation).ToList();
+                }
+                if (!allPreachers.Any())
+                {
+                    __result = null;
+                    return true;
+                }
+                var malePool = allPreachers.Where(x => !x.IsFemale).ToList();
+                var femalePool = allPreachers.Where(x => x.IsFemale).ToList();
+                bool pickFemale = femalePool.Any() && settlement.RandomIntWithSeed((uint)(settlement.Notables.Count + 100), 1, 100) <= 20;
+                enumerable = pickFemale && femalePool.Any() ? femalePool : (malePool.Any() ? malePool : allPreachers);
+            }
+            // based on the base game version, changed to work for camps
 
             if (!Enumerable.Any(enumerable))
             {
@@ -117,9 +135,12 @@ namespace ImprovedMinorFactions.Source.Patches
                 else
                     nameList = hideoutCulture.MaleNameList;
 
-                TextObject firstName = nameList.GetRandomElement();
-                TextObject fullName = (TextObject)Helpers.CallPrivateMethod(NameGenerator.Current, "GenerateHeroFullName", new object[] { hero, firstName, true })!;
-                hero.SetName(fullName, firstName);
+                if (nameList != null && nameList.Count > 0)
+                {
+                    TextObject firstName = nameList.GetRandomElement();
+                    TextObject fullName = (TextObject)Helpers.CallPrivateMethod(NameGenerator.Current, "GenerateHeroFullName", new object[] { hero, firstName, true })!;
+                    hero.SetName(fullName, firstName);
+                }
             }
             // NOT copy/pasted
 
@@ -128,7 +149,7 @@ namespace ImprovedMinorFactions.Source.Patches
                 float value = MBRandom.RandomFloat * 20f;
                 hero.AddPower(value);
             }
-            if (neededOccupation != Occupation.Wanderer)
+            if (occupation != Occupation.Wanderer)
             {
                 hero.ChangeState(Hero.CharacterStates.Active);
                 EnterSettlementAction.ApplyForCharacterOnly(hero, settlement);
@@ -137,12 +158,14 @@ namespace ImprovedMinorFactions.Source.Patches
             }
             CharacterObject template2 = hero.Template;
 
-            if (template2?.HeroObject != null && hero?.Template?.HeroObject?.Clan != null && hero.Template.HeroObject.Clan.IsMinorFaction)
+            if (settlement.OwnerClan != null && settlement.OwnerClan == Clan.PlayerClan)
+                hero.SupporterOf = Clan.PlayerClan;
+            else if (template2?.HeroObject != null && hero?.Template?.HeroObject?.Clan != null && hero.Template.HeroObject.Clan.IsMinorFaction)
                 hero.SupporterOf = hero.Template.HeroObject.Clan;
             else
                 hero.SupporterOf = HeroHelper.GetRandomClanForNotable(hero);
 
-            if (neededOccupation != Occupation.Wanderer)
+            if (occupation != Occupation.Wanderer)
                 Helpers.CallPrivateMethod(null, "AddRandomVarianceToTraits", new object[] { hero }, typeof(HeroCreator));
 
             __result = hero;

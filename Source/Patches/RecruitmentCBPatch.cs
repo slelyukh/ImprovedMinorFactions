@@ -1,8 +1,9 @@
-﻿using HarmonyLib;
+using HarmonyLib;
 using TaleWorlds.CampaignSystem.CampaignBehaviors;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Core;
+using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions.Patches
 {
@@ -11,6 +12,11 @@ namespace ImprovedMinorFactions.Patches
     class RecruitmentUpdateNotableVolunteersPatch
     {
         static void Postfix(Settlement settlement)
+        {
+            RefillCampVolunteers(settlement);
+        }
+
+        internal static void RefillCampVolunteers(Settlement settlement)
         {
             var mfHideout = Helpers.GetMFHideout(settlement);
             if (mfHideout == null || !mfHideout.IsActive)
@@ -31,10 +37,13 @@ namespace ImprovedMinorFactions.Patches
                         var upgradeLen = volunteerTypes[i]?.UpgradeTargets.Length ?? 0;
                         if (volunteerTypes[i] == null)
                         {
-                            volunteerTypes[i] = basicVolunteer;
+                            volunteerTypes[i] = Helpers.GetEntryTroop(mfHideout.OwnerClan!) ?? basicVolunteer;
                         }
-                        else if (upgradeLen != 0)
+                        else if (upgradeLen != 0
+                            && volunteerTypes[i].Tier < Campaign.Current.Models.VolunteerModel.MaxVolunteerTier
+                            && MBRandom.RandomFloat < MathF.Log(MathF.Max(notable.Power, 100f) / volunteerTypes[i].Tier, 2f) * 0.01f)
                         {
+                            // Same gates as vanilla: tier cap and the notable power roll.
                             volunteerTypes[i] = volunteerTypes[i].UpgradeTargets[MBRandom.RandomInt(upgradeLen)];
                         }
                     }

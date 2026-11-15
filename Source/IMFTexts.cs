@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using TaleWorlds.Localization;
 using System.IO;
 using System.Xml.Serialization;
-using TaleWorlds.ModuleManager;
-using TaleWorlds.Engine;
-using System.Text.RegularExpressions;
+using ImprovedMinorFactions.Patches;
 using TaleWorlds.CampaignSystem;
 
 
@@ -41,19 +39,8 @@ namespace ImprovedMinorFactions.Source
 
         private void DeserializeTexts()
         {
-            // TODO: get path to current dir without ImprovedMinorFactions
-            string filePath = "../../Modules/ImprovedMinorFactions/ModuleData/imf_faction_texts.xml";
-            var moduleNames = Utilities.GetModulesNames();
-            foreach (string module in moduleNames)
-            {
-                if (Regex.IsMatch(module, @"Improved\s?Minor\s?Factions"))
-                {
-                    filePath = ModuleHelper.GetXmlPath(module, "imf_faction_texts");
-                    Console.WriteLine(filePath);
-                }
-            }
-
-            // TODO: make this shit not throw no error
+            string binDir = Path.GetDirectoryName(typeof(IMFTexts).Assembly.Location) ?? ".";
+            string filePath = Path.GetFullPath(Path.Combine(binDir, "..", "..", "ModuleData", "imf_faction_texts.xml"));
             if (!File.Exists(filePath))
                 return;
 
@@ -76,7 +63,7 @@ namespace ImprovedMinorFactions.Source
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred while deserializing the XML file: {ex.Message}");
+                IMFDiagnostics.Log("IMFTexts could not read imf_faction_texts.xml:", ex);
             }
             
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Helpers;
@@ -7,13 +7,14 @@ using TaleWorlds.CampaignSystem.Actions;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
 using TaleWorlds.CampaignSystem.Encounters;
 using TaleWorlds.CampaignSystem.GameMenus;
-using TaleWorlds.CampaignSystem.Overlay;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Roster;
 using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.Core;
 using TaleWorlds.Library;
 using TaleWorlds.Localization;
+using TaleWorlds.ObjectSystem;
+using ImprovedMinorFactions.Patches;
 using MathF = TaleWorlds.Library.MathF;
 using Options = TaleWorlds.CampaignSystem.GameMenus.GameMenuOption;
 
@@ -21,56 +22,35 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
 {
     internal class MFHideoutCampaignBehavior : CampaignBehaviorBase
     {
+
+        // a clan another mod spawns gets its camp with its first party
+        private void OnPartyCreated(MobileParty party)
+        {
+            try
+            {
+                Clan? clan = party?.ActualClan;
+                if (clan == null || IMFManager.Current == null || !ImprovedMinorFactions.Patches.LoadXmlHideoutsPatch.SpawnGatedClans.Contains(clan.StringId))
+                    return;
+                IMFManager.Current.ActivateFirstHideoutFor(clan);
+            }
+            catch (Exception e)
+            {
+                IMFDiagnostics.Log("OnPartyCreated failed:", e);
+            }
+        }
         public override void RegisterEvents()
         {
             CampaignEvents.HourlyTickSettlementEvent.AddNonSerializedListener(this, new Action<Settlement>(HourlyTickSettlement));
+            CampaignEvents.DailyTickSettlementEvent.AddNonSerializedListener(this, new Action<Settlement>(DailyTickSettlement));
             CampaignEvents.OnHideoutSpottedEvent.AddNonSerializedListener(this, new Action<PartyBase, PartyBase>(OnMFHideoutSpotted));
             CampaignEvents.OnNewGameCreatedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(OnNewGameCreated));
             CampaignEvents.OnGameLoadedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(OnGameLoaded));
+            CampaignEvents.OnAfterSessionLaunchedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(OnAfterSessionLaunched));
             CampaignEvents.OnClanDestroyedEvent.AddNonSerializedListener(this, new Action<Clan>(OnClanDestroyed));
+            CampaignEvents.MobilePartyCreated.AddNonSerializedListener(this, new Action<MobileParty>(OnPartyCreated));
             CampaignEvents.OnClanChangedKingdomEvent.AddNonSerializedListener(this, new Action<Clan, Kingdom, Kingdom, ChangeKingdomAction.ChangeKingdomActionDetail, bool>(OnClanChangedKingdom));
-            // debug listeners
-            //CampaignEvents.DailyTickEvent.AddNonSerializedListener(this, new Action(OnDailyTick));
-            //CampaignEvents.OnQuarterDailyPartyTick.AddNonSerializedListener(this, new Action<MobileParty>(DEBUGMFPartyTick));
-            //CampaignEvents.MissionTickEvent.AddNonSerializedListener(this, new Action<float>(OnMissionTick));
+            CampaignEvents.HeroCreated.AddNonSerializedListener(this, new Action<Hero, bool>(OnHeroCreated));
         }
-
-        // DEBUG FUNCs
-        public void OnMissionTick(float dt)
-        {
-            InformationManager.DisplayMessage(new InformationMessage("Is MFHideout = " + curSettlementIsMFHideout()));
-        }
-
-        private bool curSettlementIsMFHideout()
-        {
-            var ownerClan = Settlement.CurrentSettlement?.OwnerClan;
-            var setl = Settlement.CurrentSettlement;
-
-            return setl != null
-                && ownerClan != null
-                && !setl.IsHideout
-                && !setl.IsCastle
-                && !setl.IsVillage
-                && !setl.IsTown
-                && ownerClan.IsMinorFaction
-                && !ownerClan.IsNomad
-                && ownerClan != Clan.PlayerClan;
-        }
-
-        // DEBUG FUNCs
-        public void OnDailyTick()
-        {
-
-        }
-
-        private void DEBUGMFPartyTick(MobileParty party)
-        {
-            if (party.MapFaction.IsMinorFaction)
-            {
-                // debug print InformationManager.DisplayMessage(new InformationMessage("WAWAWA"));
-            }
-        }
-
         private void OnClanDestroyed(Clan destroyedClan)
         {
             if (destroyedClan.IsMinorFaction)
@@ -98,10 +78,13 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             if (mfHideout == null || !mfHideout.IsActive)
                 return;
 
+            if (_refillVolunteersOurselves)
+                GiveStartingVolunteers(settlement);
+
             if (mfHideout.IsActive && !mfHideout.IsSpotted)
             {
                 float hideoutSpottingDistance = Campaign.Current.Models.MapVisibilityModel.GetHideoutSpottingDistance();
-                float num = MobileParty.MainParty.Position2D.DistanceSquared(settlement.Position2D);
+                float num = MobileParty.MainParty.GetPosition2D.DistanceSquared(settlement.GetPosition2D);
                 float num2 = 1f - num / (hideoutSpottingDistance * hideoutSpottingDistance);
                 if (num2 > 0f && MBRandom.RandomFloat < num2 && !mfHideout.IsSpotted)
                 {
@@ -116,7 +99,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             
             campaignGameStarter.AddGameMenu("mf_hideout_place", "{=!}{MF_HIDEOUT_TEXT}",
                 new OnInitDelegate(game_menu_hideout_place_on_init),
-                GameOverlays.MenuOverlayType.SettlementWithBoth);
+                              GameMenu.MenuOverlayType.SettlementWithBoth);
+            campaignGameStarter.AddGameMenuOption("mf_hideout_place", "walk_around", "{=!}Take a walk around the camp",
+              new Options.OnConditionDelegate(menu_walk_around_on_condition),
+              new Options.OnConsequenceDelegate(menu_walk_around_on_consequence));
             campaignGameStarter.AddGameMenuOption("mf_hideout_place", "attack", "{=!}{MF_HIDEOUT_ATTACK}",
                 new Options.OnConditionDelegate(menu_attack_on_condition),
                 new Options.OnConsequenceDelegate(menu_attack_on_consequence));
@@ -140,14 +126,14 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 null,
                 new OnTickDelegate(wait_menu_on_tick),
                 GameMenu.MenuAndOptionType.WaitMenuHideProgressAndHoursOption,
-                GameOverlays.MenuOverlayType.SettlementWithBoth);
+                GameMenu.MenuOverlayType.SettlementWithBoth);
             campaignGameStarter.AddGameMenuOption("mf_hideout_wait", "stop_waiting", "{=UqDNAZqM}Stop waiting",
                 new Options.OnConditionDelegate(menu_leave_on_condition),
                 new Options.OnConsequenceDelegate(stop_wait_on_consequence));
 
             campaignGameStarter.AddGameMenu("mf_hideout_hostile_action", "{=YVNZaVCA}What action do you have in mind?",
                 new OnInitDelegate(hostile_menu_on_init),
-                GameOverlays.MenuOverlayType.SettlementWithBoth);
+                GameMenu.MenuOverlayType.SettlementWithBoth);
             campaignGameStarter.AddGameMenuOption("mf_hideout_hostile_action", "attack",
                     "{=!}{MF_HIDEOUT_ATTACK}",
                     new Options.OnConditionDelegate(hostile_action_menu_attack_on_condition),
@@ -160,7 +146,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             campaignGameStarter.AddGameMenu("mf_hideout_nomads_left",
                 "{=WAkOJrsBf}The camp is being dismantled because the land here has been used up.",
                 new OnInitDelegate(game_menu_hideout_place_on_init),
-                GameOverlays.MenuOverlayType.SettlementWithParties);
+                GameMenu.MenuOverlayType.SettlementWithParties);
             campaignGameStarter.AddGameMenuOption("mf_hideout_nomads_left", "leave", "{=3sRdGQou}Leave",
                 new Options.OnConditionDelegate(menu_leave_on_condition),
                 new Options.OnConsequenceDelegate(menu_nomad_leave_on_consequence));
@@ -181,19 +167,44 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        private static bool IsFriendlyToPlayer(Settlement? camp)
+        {
+            if (camp == null)
+                return false;
+            if (camp.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction))
+                return false;
+            // good relations alone don't count, those camps can still be attacked
+            return Helpers.IsFriendlyCamp(camp)
+                || camp.MapFaction == Hero.MainHero.MapFaction;
+        }
+
         public bool menu_attack_on_condition(MenuCallbackArgs args)
         {
             ProcessMenusForAttack(args);
-            return Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction) && Settlement.CurrentSettlement.IsActive;
+            Settlement? camp = CurrentCamp();
+            return camp != null
+                && camp.IsActive
+                && camp.OwnerClan != Clan.PlayerClan
+                && camp.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
         }
 
         public void menu_attack_on_consequence(MenuCallbackArgs args)
         {
-            var curSettlement = Settlement.CurrentSettlement;
+            var curSettlement = CurrentCamp()!;
+            if (IsFriendlyToPlayer(curSettlement))
+            {
+                GameMenu.SwitchToMenu("mf_hideout_place");
+                return;
+            }
             if (curSettlement.OwnerClan.IsNomad)
             {
                 PrepareForBattle();
-                CampaignMission.OpenBattleMission(Helpers.GetMFHideout(curSettlement)!.SceneName, true);
+                var nomadHideout = Helpers.GetMFHideout(curSettlement)!;
+                nomadHideout.EnsureTerrainFittingScene();
+                string battleScene = HideoutScenes.ResolveNomadVillage(nomadHideout);
+                if (string.IsNullOrEmpty(battleScene))
+                    battleScene = nomadHideout.SceneName;
+                CampaignMission.OpenBattleMission(battleScene, true);
                 return;
             }
 
@@ -222,34 +233,65 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             if (mfHideout == null)
                 return;
             mfHideout.UpdateNextPossibleAttackTime();
-            if (PlayerEncounter.IsActive)
-            {
-                PlayerEncounter.LeaveEncounter = false;
-            }
-            else
+            if (!PlayerEncounter.IsActive)
             {
                 PlayerEncounter.Start();
-                PlayerEncounter.Current.SetupFields(PartyBase.MainParty, Settlement.CurrentSettlement.Party);
             }
+
+            PlayerEncounter.Current.SetupFields(PartyBase.MainParty, curSettlement.Party);
+            Helpers.SetPlayerEncounterSides(PlayerEncounter.Current, BattleSideEnum.Attacker, BattleSideEnum.Defender);
+            PlayerEncounter.LeaveEncounter = false;
+
             if (PlayerEncounter.Battle == null)
             {
                 PlayerEncounter.StartBattle();
                 PlayerEncounter.Update();
             }
+
+            Helpers.SetPlayerEncounterSides(PlayerEncounter.Current, BattleSideEnum.Attacker, BattleSideEnum.Defender);
         }
 
         public bool menu_hostile_action_on_condition(MenuCallbackArgs args)
         {
             args.optionLeaveType = Options.LeaveType.Submenu;
             args.Tooltip = new TextObject("{=1PM860Jco}Taking hostile action will start a war between you and this Clan or whoever hired them.");
-            return Clan.PlayerClan != Settlement.CurrentSettlement.OwnerClan
-                && !Settlement.CurrentSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction) 
-                && Settlement.CurrentSettlement.IsActive;
+            try
+            {
+                Settlement camp = CurrentCamp()!;
+                bool friendly = IsFriendlyToPlayer(camp);
+                return Clan.PlayerClan != camp.OwnerClan
+                    && !camp.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction)
+                    && !friendly
+                    && camp.IsActive;
+            }
+            catch (Exception e)
+            {
+                IMFDiagnostics.Log("menu_hostile_action_on_condition failed, option hidden:", e);
+                return false;
+            }
         }
 
         public void menu_hostile_action_on_consequence(MenuCallbackArgs args)
         {
             GameMenu.SwitchToMenu("mf_hideout_hostile_action");
+        }
+
+        private bool menu_walk_around_on_condition(MenuCallbackArgs args)
+        {
+            args.optionLeaveType = Options.LeaveType.Mission;
+            Settlement curSettlement = Settlement.CurrentSettlement;
+            if (curSettlement == null)
+                return false;
+            return !curSettlement.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction) && curSettlement.IsActive;
+        }
+
+        private void menu_walk_around_on_consequence(MenuCallbackArgs args)
+        {
+            TaleWorlds.CampaignSystem.Settlements.Locations.Location? location = TaleWorlds.CampaignSystem.Settlements.Locations.LocationComplex.Current?.GetLocationWithId("mf_hideout_center");
+            if (location != null && PlayerEncounter.LocationEncounter != null)
+            {
+                PlayerEncounter.LocationEncounter.CreateAndOpenMissionController(location, null, null, null);
+            }
         }
 
         public bool recruit_troops_on_condition(MenuCallbackArgs args)
@@ -302,6 +344,8 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             if (MobileParty.MainParty.CurrentSettlement != null)
                 PlayerEncounter.LeaveSettlement();
             PlayerEncounter.Finish(true);
+            // otherwise waiting walks the party right back into the camp
+            MobileParty.MainParty.SetMoveModeHold();
         }
 
         private void menu_nomad_leave_on_consequence(MenuCallbackArgs args)
@@ -310,6 +354,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             if (MobileParty.MainParty.CurrentSettlement != null)
                 PlayerEncounter.LeaveSettlement();
             PlayerEncounter.Finish(true);
+            MobileParty.MainParty.SetMoveModeHold();
         }
 
         private void wait_menu_on_init(MenuCallbackArgs args)
@@ -413,7 +458,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 GameTexts.SetVariable("MF_HIDEOUT_ATTACK", "{=ldONWPCl6i}Raid Camp");
                 if (Helpers.IsPlayerFriendOfMF(mfHideout.OwnerClan))
                 {
-                    GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{HIDEOUT_DESCRIPTION} You’re well-known and well-liked by the nomads, and they happily receive you into their camp.");
+                    GameTexts.SetVariable("MF_HIDEOUT_TEXT", "{HIDEOUT_DESCRIPTION} You're well-known and well-liked by the nomads, and they happily receive you into their camp.");
                 }
                 else if (Helpers.ConsidersMFOutlaw(Clan.PlayerClan, mfHideout.OwnerClan))
                 {
@@ -459,7 +504,14 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         private bool hostile_action_menu_attack_on_condition(MenuCallbackArgs args)
         {
             ProcessMenusForAttack(args);
-            return true;
+            Settlement? camp = CurrentCamp();
+            bool friendly = IsFriendlyToPlayer(camp);
+            return camp != null && !friendly;
+        }
+
+        private static Settlement? CurrentCamp()
+        {
+            return Settlement.CurrentSettlement ?? PlayerEncounter.EncounterSettlement ?? MobileParty.MainParty?.CurrentSettlement;
         }
 
         private void CalculateHideoutAttackTime()
@@ -476,17 +528,17 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             List<Settlement> nearbyVillages = new List<Settlement>();
             foreach (Village village in Village.All)
             {
-                if (village.Settlement.Position2D.DistanceSquared(settlement.Position2D) <= MaxDistanceSquaredBetweenHideoutAndBoundVillage)
+                if (village.Settlement.GetPosition2D.DistanceSquared(settlement.GetPosition2D) <= MaxDistanceSquaredBetweenHideoutAndBoundVillage)
                     nearbyVillages.Add(village.Settlement);
             }
             foreach (Settlement village in nearbyVillages)
             {
-                if (settlement.Notables.Count > 0)
+                if (village.Notables.Count > 0)
                     ChangeRelationAction.ApplyPlayerRelation(village.Notables.GetRandomElement(), 2, true, false);
             }
             if (Hero.MainHero.GetPerkValue(DefaultPerks.Charm.EffortForThePeople))
             {
-                Town town = SettlementHelper.FindNearestTown(null, settlement).Town;
+                Town town = SettlementHelper.FindNearestTownToSettlement(settlement, MobileParty.NavigationType.All);
                 Hero leader = town.OwnerClan.Leader;
                 if (leader == Hero.MainHero)
                     town.Loyalty += 1f;
@@ -494,13 +546,30 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                     ChangeRelationAction.ApplyPlayerRelation(leader, (int)DefaultPerks.Charm.EffortForThePeople.PrimaryBonus, true, true);
             }
             MBTextManager.SetTextVariable("RELATION_VALUE", (int)DefaultPerks.Charm.EffortForThePeople.PrimaryBonus);
-            MBInformationManager.AddQuickInformation(new TextObject("{=o0qwDa0q}Your relation increased by {RELATION_VALUE} with nearby notables.", null), 0, null, "");
+            MBInformationManager.AddQuickInformation(new TextObject("{=o0qwDa0q}Your relation increased by {RELATION_VALUE} with nearby notables.", null), 0, null, null, "");
         }
 
         private void ArrangeHideoutTroopCountsForMission()
         {
-            MBList<MobileParty> hideoutParties = Settlement.CurrentSettlement.Parties.Where<MobileParty>(
-(x) => x.IsMilitia).ToMBList();
+            Settlement settlement = Settlement.CurrentSettlement;
+            if (settlement == null)
+                return;
+            MinorFactionHideout mfh = Helpers.GetMFHideout(settlement);
+            if (mfh == null)
+                return;
+
+            // SelectBossAgent crashes on an empty militia roster so put a basic troop in.
+            PartyBase militiaParty = settlement.MilitiaPartyComponent?.Party;
+            if (militiaParty == null || militiaParty.MemberRoster.TotalManCount == 0)
+            {
+                if (militiaParty != null)
+                {
+                    int count = Math.Max(5, (int)settlement.Militia);
+                    foreach ((CharacterObject troop, int part) in Helpers.SplitEntryTroops(mfh.OwnerClan, count))
+                        militiaParty.MemberRoster.AddToCounts(troop, part, false, 0, 0, false);
+                }
+                settlement.Militia = IMFModels.NumMilitiaPostRaid(mfh.OwnerClan);
+            }
         }
 
         private void ApplyHideoutRaidConsequences()
@@ -533,7 +602,8 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             PrepareForBattle();
 
             var mfHideout = Helpers.GetMFHideout(Settlement.CurrentSettlement);
-            CampaignMission.OpenHideoutBattleMission(mfHideout!.SceneName, playerTroops.ToFlattenedRoster());
+            mfHideout!.EnsureTerrainFittingScene();
+            CampaignMission.OpenHideoutBattleMission(mfHideout!.SceneName, playerTroops.ToFlattenedRoster(), false);
         }
 
         private bool CanChangeStatusOfTroop(CharacterObject character)
@@ -559,16 +629,116 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
 
         public void OnNewGameCreated(CampaignGameStarter campaignGameStarter)
         {
+            _ticksSinceNewGame = 0;
+            CampaignEvents.TickEvent.AddNonSerializedListener(this, OnTickAfterNewGame);
             AddGameMenus(campaignGameStarter);
             IMFManager.InitManagerIfNone();
-            IMFManager.Current!.ActivateAllFactionHideouts();
+            ActivateAllSafely();
+        }
+
+        // Some clans aren't ready when the game is created, a second pass catches them.
+        private int _ticksSinceNewGame;
+
+        private void OnTickAfterNewGame(float dt)
+        {
+            if (++_ticksSinceNewGame < 5)
+                return;
+            CampaignEvents.TickEvent.ClearListeners(this);
+            ActivateAllSafely();
         }
 
         public void OnGameLoaded(CampaignGameStarter campaignGameStarter)
         {
             AddGameMenus(campaignGameStarter);
             IMFManager.InitManagerIfNone();
-            IMFManager.Current!.ActivateAllFactionHideouts();
+            ActivateAllSafely();
+        }
+
+        private static void ActivateAllSafely()
+        {
+            try
+            {
+                IMFManager.Current!.ActivateAllFactionHideouts();
+            }
+            catch (Exception e)
+            {
+                IMFDiagnostics.Log("ActivateAllFactionHideouts failed, continuing without full activation:", e);
+            }
+        }
+
+        // some overhauls replace vanilla recruitment, then nothing refills camp volunteers
+        private bool _refillVolunteersOurselves;
+
+        private void DailyTickSettlement(Settlement settlement)
+        {
+            if (_refillVolunteersOurselves && Helpers.IsMFHideout(settlement))
+                RecruitmentUpdateNotableVolunteersPatch.RefillCampVolunteers(settlement);
+        }
+
+        // vanilla fills volunteers once on a new game, the player's camp only activates after character creation
+        private readonly HashSet<string> _gotStartingVolunteers = new HashSet<string>();
+        private const int StartingVolunteerRolls = 3;
+
+        private void GiveStartingVolunteers(Settlement camp)
+        {
+            if (Campaign.Current.Models.CampaignTimeModel.CampaignStartTime.ElapsedDaysUntilNow >= 1f)
+                return;
+            if (!_gotStartingVolunteers.Add(camp.StringId))
+                return;
+            for (int i = 0; i < StartingVolunteerRolls; i++)
+                RecruitmentUpdateNotableVolunteersPatch.RefillCampVolunteers(camp);
+        }
+
+        public void OnAfterSessionLaunched(CampaignGameStarter starter)
+        {
+            _refillVolunteersOurselves = Campaign.Current.GetCampaignBehavior<TaleWorlds.CampaignSystem.CampaignBehaviors.RecruitmentCampaignBehavior>() == null;
+            if (_refillVolunteersOurselves)
+                IMFDiagnostics.Info("no vanilla recruitment behavior in this campaign, camps refill their own volunteers");
+            EnsureClanHeroesAligned();
+        }
+
+        private void OnHeroCreated(Hero hero, bool isBornNaturally)
+        {
+            if (hero?.Clan != null)
+                AlignWithClan(hero);
+        }
+
+        private static void EnsureClanHeroesAligned()
+        {
+            foreach (Clan clan in Clan.All)
+            {
+                if (clan == null || !clan.IsMinorFaction || clan == Clan.PlayerClan || !IMFManager.Current!.HasFaction(clan))
+                    continue;
+                foreach (Hero hero in clan.Heroes)
+                    AlignWithClan(hero);
+            }
+        }
+
+        internal static void AlignWithClan(Hero hero)
+        {
+            try
+            {
+                Clan? clan = hero?.Clan;
+                Hero? leader = clan?.Leader;
+                if (hero == null || clan == null || leader == null || leader == hero || hero.CharacterObject == null || leader.CharacterObject == null)
+                    return;
+                if (!clan.IsMinorFaction || clan == Clan.PlayerClan || IMFManager.Current?.HasFaction(clan) != true)
+                    return;
+                if (leader.CharacterObject.Race == 0 || hero.CharacterObject.Race == leader.CharacterObject.Race)
+                    return;
+                hero.CharacterObject.Race = leader.CharacterObject.Race;
+                if (clan.Culture != null)
+                    hero.Culture = clan.Culture;
+                string suffix = " of " + (clan.Name?.ToString() ?? "").Trim();
+                string first = hero.FirstName?.ToString() ?? "";
+                if (string.IsNullOrWhiteSpace(first) || (hero.Name?.ToString() ?? "").Contains(suffix))
+                    return;
+                hero.SetName(new TextObject("{=!}" + first + suffix, null), new TextObject("{=!}" + first, null));
+            }
+            catch (Exception e)
+            {
+                IMFDiagnostics.Log("AlignWithClan failed for hero " + hero?.Name?.ToString() + ":", e);
+            }
         }
     }
 

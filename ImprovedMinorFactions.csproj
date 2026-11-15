@@ -1,7 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <Version>0.3.4</Version>
+    <Deterministic>true</Deterministic>
+    <PathMap>$(MSBuildProjectDirectory)=/_/</PathMap>
+    <Version>0.3.5</Version>
     <TargetFrameworks>net472;net6</TargetFrameworks>
     <Platforms>x64</Platforms>
     <LangVersion>10.0</LangVersion>
@@ -15,7 +17,7 @@
     <GameFolder>$(BANNERLORD_GAME_DIR)</GameFolder>
     <GameBinariesFolder Condition="Exists('$(GameFolder)\bin\Win64_Shipping_Client\Bannerlord.exe')">Win64_Shipping_Client</GameBinariesFolder>
     <GameBinariesFolder Condition="Exists('$(GameFolder)\bin\Gaming.Desktop.x64_Shipping_Client\Bannerlord.exe')">Gaming.Desktop.x64_Shipping_Client</GameBinariesFolder>
-    <AssemblyVersion>0.1.1</AssemblyVersion>
+    <AssemblyVersion>0.3.5</AssemblyVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="$(TargetFramework) == 'net472'">
@@ -62,7 +64,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Lib.Harmony" Version="2.3.0" />
+    <!-- compile only, the game loads Harmony from Bannerlord.Harmony -->
+    <PackageReference Include="Lib.Harmony" Version="2.4.2" ExcludeAssets="runtime" />
     <PackageReference Include="Harmony.Extensions" Version="3.2.0.77">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

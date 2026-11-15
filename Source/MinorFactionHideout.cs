@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
+using HarmonyLib;
+using ImprovedMinorFactions.Patches;
 using TaleWorlds.CampaignSystem.MapEvents;
 using TaleWorlds.CampaignSystem.Party;
 using TaleWorlds.CampaignSystem.Settlements;
@@ -37,7 +39,8 @@ namespace ImprovedMinorFactions
             base.ConstructContainerDefinition(typeof(Dictionary<string, MinorFactionHideout>));
         }
     }
-    public class MinorFactionHideout : SettlementComponent, ISpottable
+    // ISpottable is gone since 1.5.4 so we track IsSpotted ourselves
+    public class MinorFactionHideout : SettlementComponent
     {
 
 
@@ -66,26 +69,99 @@ namespace ImprovedMinorFactions
                 return;
             }
 
-            if (IMFManager.Current.GetActiveHideoutsOfClan(this.OwnerClan).Contains(this))
+            if (IMFManager.Current!.GetActiveHideoutsOfClan(this.OwnerClan).Contains(this))
             {
                 InformationManager.DisplayMessage(new InformationMessage($"{this.Name} Double Activated!!!!", Color.Black));
                 return;
                 // throw new System.Exception("double clan activation");
             }
-            var notable1 = HeroCreator.CreateHeroAtOccupation(Occupation.Preacher, this.Settlement);
-            var notable2 = HeroCreator.CreateHeroAtOccupation(Occupation.Preacher, this.Settlement);
+
+            // no usable ground = don't go live, parties would spawn off the navmesh
+            if (HideoutPlacement.IsUnplaceable(this.Settlement, this.OwnerClan))
+            {
+                IMFDiagnostics.Info($"[Guard] {this.Settlement?.StringId} of {this.OwnerClan?.StringId} not activated: no valid ground for it on this map");
+                return;
+            }
+            var notable1 = TryCreatePreacher("#1");
+            var notable2 = TryCreatePreacher("#2");
             if (notable1 == null || notable2 == null)
             {
-                InformationManager.DisplayMessage(new InformationMessage($"{this.Name} notable creation has failed!!! Please report this on Nexus mod page", Color.Black));
-            } else
-            {
-                notable1!.IsMinorFactionHero = true;
-                notable2!.IsMinorFactionHero = true;
+                IMFDiagnostics.Info($"{this.Settlement?.StringId} started without {(notable1 == null ? "notable#1 " : "")}{(notable2 == null ? "notable#2" : "")}");
             }
 
             ActivateHideout();
-            base.Settlement.Militia = IMFModels.NumMilitiaFirstTime(this.OwnerClan);
+            base.Settlement.Militia = IMFModels.NumMilitiaFirstTime(this.OwnerClan!);
             this.Hearth = 350;
+        }
+
+        // CreateNotable throws on a null template, so make sure there is one.
+        private Hero? TryCreatePreacher(string tag)
+        {
+            try
+            {
+                EnsureNotableCulture();
+                if (PreacherTemplateCount(this.Settlement?.Culture) == 0)
+                {
+                    IMFDiagnostics.Info($"[Culture] {this.Settlement?.StringId}: no Preacher templates, skipping notable{tag}");
+                    return null;
+                }
+                return HeroCreator.CreateNotable(Occupation.Preacher, this.Settlement);
+            }
+            catch (Exception ex)
+            {
+                IMFDiagnostics.Log($"CreateNotable{tag} failed for {this.Settlement?.StringId} (culture={this.Settlement?.Culture?.StringId}):", ex);
+                return null;
+            }
+        }
+
+        internal static int PreacherTemplateCount(CultureObject? culture)
+        {
+            if (culture == null || culture.NotableTemplates == null)
+                return 0;
+            return culture.NotableTemplates.Count(t => t != null && t.Occupation == Occupation.Preacher);
+        }
+
+        // settlement culture, owner's culture, nearest town with preachers, then any culture with preachers
+        private void EnsureNotableCulture()
+        {
+            Settlement? s = this.Settlement;
+            if (s == null || PreacherTemplateCount(s.Culture) > 0)
+                return;
+
+            CultureObject? pick = PreacherTemplateCount(this.OwnerClan?.Culture) > 0 ? this.OwnerClan!.Culture : null;
+            if (pick == null)
+            {
+                float best = float.MaxValue;
+                Vec2 here = s.GetPosition2D;
+                foreach (Settlement other in Settlement.All)
+                {
+                    if (other == null || other == s || !(other.IsTown || other.IsVillage || other.IsCastle))
+                        continue;
+                    if (PreacherTemplateCount(other.Culture) == 0)
+                        continue;
+                    float d = here.DistanceSquared(other.GetPosition2D);
+                    if (d < best)
+                    {
+                        best = d;
+                        pick = other.Culture;
+                    }
+                }
+            }
+            if (pick == null)
+            {
+                foreach (CultureObject c in MBObjectManager.Instance.GetObjectTypeList<CultureObject>())
+                {
+                    if (PreacherTemplateCount(c) > 0)
+                    {
+                        pick = c;
+                        break;
+                    }
+                }
+            }
+            if (pick == null)
+                return;
+            IMFDiagnostics.Verbose($"[Culture] {s.StringId}: culture {s.Culture?.StringId} has no Preacher notable templates, using {pick.StringId}");
+            s.Culture = pick;
         }
 
         private void ActivateHideout(List<Hero> newNotables, DeactivationReason reason)
@@ -112,27 +188,29 @@ namespace ImprovedMinorFactions
 
         private void ActivateHideout()
         {
+            HideoutPlacement.PlaceOnActivation(this);
+            this.EnsureTerrainFittingScene();
             this._isActive = true;
             if (Clan.PlayerClan == this.OwnerClan)
             {
                 this.PlayerSpotHideout();
-            } else
+            }
+            else
             {
                 this._isSpotted = false;
             }
             this._activationTime = CampaignTime.Now;
 
-            // add lvl 3 militias
-            int numLvl3 = IMFModels.NumLvl3Militia(this.OwnerClan);
-            base.Settlement.Militia = numLvl3;
-            UpgradeMilitia(numLvl3);
-            UpgradeMilitia(numLvl3);
+            // Start with a strong garrison (103 militia) so it doesn't get wiped early.
+            int startingMilitia = IMFModels.NumMilitiaFirstTime(this.OwnerClan);
+            base.Settlement.Militia = startingMilitia;
 
+            int numLvl3 = IMFModels.NumLvl3Militia(this.OwnerClan);
             int numLvl2 = IMFModels.NumLvl2Militia(this.OwnerClan);
-            base.Settlement.Militia += numLvl2;
+            UpgradeMilitia(numLvl3);
+            UpgradeMilitia(numLvl3);
             UpgradeMilitia(numLvl2);
 
-            base.Settlement.Militia = IMFModels.NumMilitiaPostRaid(this.OwnerClan);
             this.Hearth = 200;
 
 
@@ -148,6 +226,14 @@ namespace ImprovedMinorFactions
             List<Hero> notables = this.Settlement.Notables.ToList();
             newHideout.ActivateHideout(notables, DeactivationReason.Raid);
             this.DeactivateHideout(true);
+        }
+
+        // nowhere else to move, reopen after the delay. empty it now so the raid counts
+        internal void RespawnAfterRaid()
+        {
+            List<Hero> notables = this.Settlement.Notables.ToList();
+            this.DeactivateHideout(true);
+            ActivateHideout(notables, DeactivationReason.Raid);
         }
 
         public void MoveHideoutsNomad(MinorFactionHideout newHideout)
@@ -176,18 +262,21 @@ namespace ImprovedMinorFactions
         // Method counts how many militia of each tier there are and gives otherHideout that number of militia of that tier
         internal void CopyMilitiaToHideout(MinorFactionHideout otherHideout)
         {
+            if (this.Settlement.MilitiaPartyComponent?.Party?.MemberRoster == null)
+                return;
             otherHideout.Settlement.Militia = 0;
             int[] tierCounts = new int[15];
             foreach (TroopRosterElement troopInfo in this.Settlement.MilitiaPartyComponent.Party.MemberRoster.GetTroopRoster())
             {
-                int tier = troopInfo.Character.Tier;
+                int tier = Math.Max(0, Math.Min(troopInfo.Character.Tier, tierCounts.Length - 1));
                 int numTroop = troopInfo.Number;
                 tierCounts[tier] += numTroop;
             }
+            int baseTier = Helpers.GetBasicTroop(otherHideout.OwnerClan)?.Tier ?? 1;
             for (int i = tierCounts.Length - 1; i >= 0; i--)
             {
                 otherHideout.Settlement.Militia += tierCounts[i];
-                for (int j = otherHideout.OwnerClan.BasicTroop.Tier; j < i; j++)
+                for (int j = baseTier; j < i; j++)
                 {
                     otherHideout.UpgradeMilitia(tierCounts[i]);
                 }
@@ -212,6 +301,8 @@ namespace ImprovedMinorFactions
 
         public void UpgradeMilitia(int count)
         {
+            if (this.Settlement.MilitiaPartyComponent?.Party == null)
+                return;
             var militiaParty = this.Settlement.MilitiaPartyComponent.Party;
             var militiaRoster = militiaParty.MemberRoster;
             count = MathF.Min(count, (int)this.Settlement.Militia);
@@ -259,9 +350,11 @@ namespace ImprovedMinorFactions
 
             if (!this.IsActive)
                 return;
+            if (this.OwnerClan == null)
+                return;
             float curMil = base.Settlement.Militia;
             float milChange = this.MilitiaChange.ResultNumber;
-            if (curMil + milChange > IMFModels.MaxMilitia(this.OwnerClan) + 1)
+            if (curMil + milChange > IMFModels.MaxMilitia(this.OwnerClan, this.Hearth) + 1)
             {
                 base.Settlement.Militia = (curMil + milChange) - 1;
                 this.UpgradeMilitia(1);
@@ -342,9 +435,9 @@ namespace ImprovedMinorFactions
         public string SceneName { get; private set; }
 
 
-        public IFaction MapFaction
+        public override IFaction MapFaction
         {
-            get => _ownerclan!.MapFaction;
+            get => _ownerclan?.MapFaction;
         }
 
         public bool IsSpotted
@@ -356,6 +449,37 @@ namespace ImprovedMinorFactions
         public void SetScene(string sceneName)
         {
             this.SceneName = sceneName;
+        }
+
+        private Vec2 _sceneCheckedAt = new Vec2(float.NaN, float.NaN);
+
+        internal void EnsureTerrainFittingScene()
+        {
+            try
+            {
+                Settlement? s = this.Settlement;
+                if (s == null)
+                    return;
+                Vec2 here = s.GetPosition2D;
+                if (here.X == _sceneCheckedAt.X && here.Y == _sceneCheckedAt.Y)
+                    return;
+                _sceneCheckedAt = here;
+
+                string resolved = HideoutScenes.Resolve(this, out HideoutTerrain terrain);
+                if (string.IsNullOrEmpty(resolved))
+                    return;
+                if (resolved == this.SceneName)
+                {
+                    IMFDiagnostics.Verbose($"[Scene] {s.StringId} ({this.OwnerClan?.StringId}) stands on {terrain}: scene '{this.SceneName}' fits");
+                    return;
+                }
+                IMFDiagnostics.Verbose($"[Scene] {s.StringId} ({this.OwnerClan?.StringId}) stands on {terrain}: scene '{this.SceneName}' does not fit, using '{resolved}'");
+                this.SceneName = resolved;
+            }
+            catch (Exception e)
+            {
+                IMFDiagnostics.Log("MinorFactionHideout.EnsureTerrainFittingScene failed:", e);
+            }
         }
 
         public MinorFactionHideout()
@@ -445,7 +569,7 @@ namespace ImprovedMinorFactions
 
         public bool IsNomad
         {
-            get => this.OwnerClan.IsNomad;
+            get => this.OwnerClan?.IsNomad ?? false;
         }
 
         public bool Equals(MinorFactionHideout mfh)
@@ -483,6 +607,27 @@ namespace ImprovedMinorFactions
 
         [SaveableField(108)]
         private CampaignTime _activationTime;
+
+        // settlement positions aren't saved, LoadXmlHideoutsPatch puts this back
+        [SaveableField(109)]
+        private bool _hasSavedPosition;
+
+        [SaveableField(110)]
+        private float _savedPosX;
+
+        [SaveableField(111)]
+        private float _savedPosY;
+
+        internal bool HasSavedPosition => _hasSavedPosition;
+
+        internal TaleWorlds.Library.Vec2 SavedPosition => new TaleWorlds.Library.Vec2(_savedPosX, _savedPosY);
+
+        internal void RememberPosition(TaleWorlds.Library.Vec2 position)
+        {
+            _savedPosX = position.X;
+            _savedPosY = position.Y;
+            _hasSavedPosition = true;
+        }
     }
 
     public enum DeactivationReason

@@ -33,23 +33,26 @@ namespace ImprovedMinorFactions.Source.Patches
         public override ExplainedNumber CalculateClanGoldChange(Clan clan, bool includeDescriptions = false, bool applyWithdrawals = false, bool includeDetails = false)
         {
             var eNum = _previousModel.CalculateClanGoldChange(clan, includeDescriptions, applyWithdrawals, includeDetails);
-            var mfHideouts = IMFManager.Current!.GetActiveHideoutsOfClan(clan);
-            foreach (var mfh in mfHideouts)
-            {
-                eNum.Add(IMFModels.CalculateHideoutIncome(mfh), new TextObject("Hideout Income"), mfh.Name);
-            }
+            AddCampIncome(clan, ref eNum);
             return eNum;
         }
 
         public override ExplainedNumber CalculateClanIncome(Clan clan, bool includeDescriptions = false, bool applyWithdrawals = false, bool includeDetails = false)
         {
             var eNum = _previousModel.CalculateClanIncome(clan, includeDescriptions, applyWithdrawals, includeDetails);
+            AddCampIncome(clan, ref eNum);
+            return eNum;
+        }
+
+        private static void AddCampIncome(Clan clan, ref ExplainedNumber eNum)
+        {
             var mfHideouts = IMFManager.Current!.GetActiveHideoutsOfClan(clan);
             foreach (var mfh in mfHideouts)
             {
                 eNum.Add(IMFModels.CalculateHideoutIncome(mfh), new TextObject("Hideout Income"), mfh.Name);
             }
-            return eNum;
+            if (mfHideouts.Count > 0)
+                eNum.Add(IMFModels.CalculateCampSupport(clan), new TextObject("Camp Support"));
         }
 
         public override int CalculateNotableDailyGoldChange(Hero hero, bool applyWithdrawals)

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Reflection;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem.Actions;
@@ -36,7 +36,7 @@ namespace ImprovedMinorFactions.Patches
                 && ____defenderParty.IsSettlement 
                 && Helpers.IsMFHideout(____defenderParty.Settlement))
             {
-                Helpers.setPrivateField(__instance, "_mapEvent", HideoutEventComponent.CreateHideoutEvent(____attackerParty, ____defenderParty).MapEvent);
+                Helpers.setPrivateField(__instance, "_mapEvent", HideoutEventComponent.CreateHideoutEvent(____attackerParty, ____defenderParty, false).MapEvent);
                 Helpers.CallPrivateMethod(__instance, "CheckNearbyPartiesToJoinPlayerMapEvent", new object[] { });
                 __result = ____mapEvent;
                 return false;
@@ -62,12 +62,18 @@ namespace ImprovedMinorFactions.Patches
             if (mfHideout == null || !mapEvent.IsHideoutBattle)
                 return true;
 
-            bool flag2 = MobileParty.MainParty.MapEvent != null && __instance.PlayerSide == BattleSideEnum.Attacker;
-           
-            // wat is this
-            bool playerLost = __instance.BattleSimulation != null && mapEvent.WinningSide != __instance.PlayerSide;
+            if (__instance.PlayerSide != BattleSideEnum.Attacker)
+            {
+                Helpers.SetPlayerEncounterSides(__instance, BattleSideEnum.Attacker, BattleSideEnum.Defender);
+            }
 
             BattleState battleState = mapEvent.BattleState;
+
+            bool playerWon = mapEvent.WinningSide == PartyBase.MainParty.Side
+                || (battleState == BattleState.AttackerVictory && mapEvent.WinningSide == BattleSideEnum.None);
+            bool playerLost = (mapEvent.HasWinner && !playerWon)
+                || (battleState == BattleState.DefenderVictory && !playerWon);
+
             Helpers.setPrivateField(__instance, "_stateHandled", true); //__instance._stateHandled = true;
             if (!playerLost)
             {
@@ -78,7 +84,8 @@ namespace ImprovedMinorFactions.Patches
                 Helpers.CallPrivateMethod(mapEvent, "ResetBattleResults", new object[] { }); // PlayerEncounter.Battle.ResetBattleResults();
             }
 
-            if (battleState == BattleState.AttackerVictory)
+            // Only wipe the camp if the player actually won, not when they got captured.
+            if ((battleState == BattleState.AttackerVictory || playerWon) && !playerLost)
             {
                 IMFManager.Current!.ClearHideout(mfHideout, DeactivationReason.Raid);
                 return false;
@@ -111,8 +118,13 @@ namespace ImprovedMinorFactions.Patches
                 return true;
             var mfHideout = Helpers.GetMFHideout(settlement);
             
+            if (__instance.PlayerSide != BattleSideEnum.Attacker)
+            {
+                Helpers.SetPlayerEncounterSides(__instance, BattleSideEnum.Attacker, BattleSideEnum.Defender);
+            }
+
             MBTextManager.SetTextVariable("PARTY", MapEvent.PlayerMapEvent.GetLeaderParty(PartyBase.MainParty.OpponentSide).Name);
-            if (!PlayerEncounter.EncounteredPartySurrendered)
+            if (!PlayerEncounter.EnemySurrender)
             {
                 MBTextManager.SetTextVariable("ENCOUNTER_TEXT", GameTexts.FindText("str_you_have_encountered_PARTY"), sendClients: true);
             }
@@ -121,7 +133,7 @@ namespace ImprovedMinorFactions.Patches
                 MBTextManager.SetTextVariable("ENCOUNTER_TEXT", GameTexts.FindText("str_you_have_encountered_PARTY_they_surrendered"), sendClients: true);
             }
 
-            if (__instance.CheckIfBattleShouldContinueAfterBattleMission())
+            if (Helpers.CallPrivateMethod(__instance, "CheckIfBattleShouldContinueAfterBattleMission", new object[] { }) is true)
             {
                 Helpers.CallPrivateMethod(__instance, "ContinueBattle", new object[] { }); //__instance.ContinueBattle();
                 return false;
@@ -137,7 +149,7 @@ namespace ImprovedMinorFactions.Patches
                 else
                 {
                     mfHideout?.UpdateNextPossibleAttackTime();
-                    if (!(mapEvent.GetMapEventSide(__instance.PlayerSide).RecalculateMemberCountOfSide() > 0))
+                    if (!(mapEvent.GetMapEventSide(PartyBase.MainParty.Side).RecalculateMemberCountOfSide() > 0))
                     {
                         mapEvent?.SetOverrideWinner(PartyBase.MainParty.OpponentSide);
                     }

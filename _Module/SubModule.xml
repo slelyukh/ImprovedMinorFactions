@@ -9,22 +9,20 @@
   <ModuleType value="Community" />
   <Url value="$moduleurl$" />
   <DependedModules>
-    <DependedModule Id="Bannerlord.Harmony" DependentVersion="v2.3.3" />
-    <DependedModule Id="Native" DependentVersion="v1.2.10" />
-    <DependedModule Id="SandBoxCore" DependentVersion="v1.2.10" />
-    <DependedModule Id="Sandbox" DependentVersion="v1.2.10" />
-    <DependedModule Id="StoryMode" DependentVersion="v1.2.10" />
-    <DependedModule Id="CustomBattle" DependentVersion="v1.2.10" />
+    <DependedModule Id="Bannerlord.Harmony" DependentVersion="v2.4.2" />
+    <DependedModule Id="Native" DependentVersion="v1.5.7" />
+    <DependedModule Id="SandBoxCore" DependentVersion="v1.5.7" />
+    <DependedModule Id="Sandbox" DependentVersion="v1.5.7" />
   </DependedModules>
   <!-- Community Dependency Metadata -->
   <!-- https://github.com/BUTR/Bannerlord.BLSE#community-dependency-metadata -->
   <DependedModuleMetadatas>
-    <DependedModuleMetadata id="Bannerlord.Harmony" order="LoadBeforeThis" version="v2.3.3" />
-    <DependedModuleMetadata id="Native" order="LoadBeforeThis" version="v1.2.10" />
-    <DependedModuleMetadata id="SandBoxCore" order="LoadBeforeThis" version="v1.2.10" />
-    <DependedModuleMetadata id="Sandbox" order="LoadBeforeThis" version="v1.2.10" />
-    <DependedModuleMetadata id="StoryMode" order="LoadBeforeThis" version="v1.2.10" />
-    <DependedModuleMetadata id="CustomBattle" order="LoadBeforeThis" version="v1.2.10" />
+    <DependedModuleMetadata id="Bannerlord.Harmony" order="LoadBeforeThis" version="v2.4.2" />
+    <DependedModuleMetadata id="Native" order="LoadBeforeThis" version="v1.5.7" />
+    <DependedModuleMetadata id="SandBoxCore" order="LoadBeforeThis" version="v1.5.7" />
+    <DependedModuleMetadata id="Sandbox" order="LoadBeforeThis" version="v1.5.7" />
+    <DependedModuleMetadata id="StoryMode" order="LoadBeforeThis" optional="true" />
+    <DependedModuleMetadata id="CustomBattle" order="LoadBeforeThis" optional="true" />
   </DependedModuleMetadatas>
   <!-- Community Dependency Metadata -->
   <SubModules>
@@ -38,20 +36,9 @@
 	<Xmls>
 		<XmlNode>
 			<XmlName id="LocationComplexTemplates" path="location_complex_templates"/>
-			<IncludedGameTypes>
-				<GameType value = "Campaign"/>
-				<GameType value = "CampaignStoryMode"/>
-			</IncludedGameTypes>
 		</XmlNode>
 		<XmlNode>
 			<XmlName id="Settlements" path="settlements"/>
-			<IncludedGameTypes>
-				<GameType value = "Campaign"/>
-				<GameType value = "CampaignStoryMode"/>
-			</IncludedGameTypes>
-		</XmlNode>
-		<XmlNode>
-			<XmlName id="SPCultures" path="spcultures"/>
 			<IncludedGameTypes>
 				<GameType value = "Campaign"/>
 				<GameType value = "CampaignStoryMode"/>

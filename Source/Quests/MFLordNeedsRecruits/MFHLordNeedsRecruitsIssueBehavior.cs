@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Helpers;
 using TaleWorlds.CampaignSystem.Actions;
@@ -41,7 +41,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                 && issueGiver.IsPartyLeader
                 && !issueGiver.IsPrisoner
                 && issueGiver.Gold > 2000
-                && party.LimitedPartySize > party.MemberRoster.TotalManCount + 7;
+                  && party.Party.PartySizeLimit > party.MemberRoster.TotalManCount + 7;
         }
 
         public void OnCheckForIssue(Hero hero)
@@ -228,16 +228,16 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             public override bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, out TextObject explanation)
             {
-                explanation = TextObject.Empty;
+                explanation = TextObject.GetEmpty();
                 bool mountedRequired = Helpers.mfIsMounted(IssueClan());
-                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
+                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             public override bool AlternativeSolutionCondition(out TextObject explanation)
             {
-                explanation = TextObject.Empty;
+                explanation = TextObject.GetEmpty();
                 bool mountedRequired = Helpers.mfIsMounted(IssueClan());
-                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
+                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             public override bool IsTroopTypeNeededByAlternativeSolution(CharacterObject character)
@@ -263,11 +263,12 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                 return _IssueFrequency;
             }
 
-            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero? relationHero, out SkillObject? skill)
+            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero? relationHero, out SkillObject? skill, out int requiredGold)
             {
                 flag = PreconditionFlags.None;
                 relationHero = null;
                 skill = null;
+                requiredGold = 0;
 
                 if ((issueGiver?.MapFaction ?? issueGiver?.Clan ?? Hero.MainHero?.MapFaction) == null)
                 {
@@ -291,7 +292,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
             {
                 var party = base.IssueOwner.PartyBelongedTo;
                 return base.IssueOwner.IsPartyLeader 
-                    && party.LimitedPartySize > party.MemberRoster.TotalManCount + this.RequestedRecruitCount;
+                    && party.Party.PartySizeLimit > party.MemberRoster.TotalManCount + this.RequestedRecruitCount;
             }
 
             protected override void CompleteIssueWithTimedOutConsequences()
@@ -310,8 +311,10 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     new Tuple<TraitObject, int>(DefaultTraits.Honor, AlternativeSolutionPlayerHonorBonus)
                 });
                 this.RelationshipChangeWithIssueOwner = AlternativeSolutionRelationBonus;
-                this.IssueOwner.PartyBelongedTo.AddElementToMemberRoster(Helpers.GetBasicTroop(base.IssueOwner.Clan), this.RequestedRecruitCount);
-                GiveGoldAction.ApplyBetweenCharacters(this.IssueOwner, Hero.MainHero, this.RewardGold, false);
+                // The base class pays RewardGold, the lord only gets the recruits and only if he still has a party.
+                MobileParty? lordParty = this.IssueOwner.PartyBelongedTo;
+                if (lordParty != null && this.IssueOwner.IsPartyLeader)
+                    lordParty.AddElementToMemberRoster(Helpers.GetBasicTroop(base.IssueOwner.Clan), this.RequestedRecruitCount);
 
             }
 
@@ -355,7 +358,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     if (detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility)
                     {
                         CompleteQuestWithFail(QuestCancelledDueToPlayerHostilityLog);
-                    } else
+                    }
+                    else
                     {
                         base.CompleteQuestWithCancel(QuestCancelledDueToWarLog);
                     }
@@ -500,13 +504,15 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     .BeginNpcOptions()
                     .NpcOption(new TextObject("{=BGgDjRcW}I think that's enough. Here is your payment."),
                         () => Hero.OneToOneConversationHero == this.QuestGiver && this._playerReachedRequestedAmount)
-                        .Consequence(delegate {
+                        .Consequence(delegate
+                        {
                             this.ApplyQuestSuccessConsequences();
                             this.CompleteQuestWithSuccess();
                         })
                         .CloseDialog()
                     .NpcOption(npcDiscussLine,
-                        delegate () {
+                        delegate ()
+                        {
                             if (Hero.OneToOneConversationHero != this.QuestGiver)
                             {
                                 return false;
@@ -529,7 +535,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     .PlayerOption(new TextObject("{=QbaOoilS}Yes, I have brought you a few men."))
                         .Condition(() => (this.CheckIfThereIsSuitableRecruitInPlayer() && !this._playerReachedRequestedAmount) && changeDialogAfterTransfer)
                         .NpcLine(npcResponseLine)
-                            .Condition(delegate {
+                            .Condition(delegate
+                            {
                                 if (this._playerReachedRequestedAmount)
                                 {
                                     return false;
@@ -540,7 +547,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                             })
                             .Consequence(new ConversationSentence.OnConsequenceDelegate(this.OpenRecruitDeliveryScreen))
                             .PlayerLine(new TextObject("{=IULW8h03}Sure."))
-                            .Consequence(delegate {
+                            .Consequence(delegate
+                            {
                                 if (this._playerReachedRequestedAmount && Campaign.Current.ConversationManager.IsConversationInProgress)
                                 {
                                     Campaign.Current.ConversationManager.ContinueConversation();
@@ -549,7 +557,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                         .GotoDialogState("quest_discuss")
                     .PlayerOption(new TextObject("{=PZqGagXt}No, not yet. I'm still looking for them."))
                         .Condition(() => !this._playerReachedRequestedAmount & changeDialogAfterTransfer)
-                        .Consequence(delegate {
+                        .Consequence(delegate
+                        {
                             changeDialogAfterTransfer = false;
                         })
                         .NpcLine(new TextObject("{=L1JyetPq}I am glad to hear that.[ib:closed2]"))
@@ -566,7 +575,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             private void OpenRecruitDeliveryScreen()
             {
-                PartyScreenManager.OpenScreenWithCondition(
+                PartyScreenHelper.OpenScreenWithCondition(
                     new IsTroopTransferableDelegate(this.IsTroopTransferable),
                     new PartyPresentationDoneButtonConditionDelegate(this.DoneButtonCondition),
                     new PartyPresentationDoneButtonDelegate(this.DoneClicked),
@@ -577,7 +586,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
                     this._requestedRecruitCount - this._deliveredRecruitCount,
                     false,
                     false,
-                    PartyScreenMode.TroopsManage);
+                    PartyScreenHelper.PartyScreenMode.TroopsManage);
             }
 
             private Tuple<bool, TextObject> DoneButtonCondition(TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, int leftLimitNum, int rightLimitNum)
@@ -628,7 +637,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
             private bool IsTroopUsable(CharacterObject character)
             {
-                return (character.Occupation == Occupation.Bandit) == QuestClan().IsOutlaw
+                return !character.IsHero
+                    && (character.Occupation == Occupation.Bandit) == QuestClan().IsOutlaw
                     && (!Helpers.mfIsMounted(QuestClan()) || character.IsMounted);
             }
 
