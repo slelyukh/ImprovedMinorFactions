@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,9 +8,13 @@ using TaleWorlds.CampaignSystem.Settlements;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.Library;
 using TaleWorlds.ObjectSystem;
+using ImprovedMinorFactions.Patches;
 
 namespace ImprovedMinorFactions
 {
+    /// <summary>
+    /// A minor faction's camp settings and its list of camps. The numbers come from IMFModels defaults with mf_data.xml on top.
+    /// </summary>
     public class MFData : MBObjectBase
     {
         public MFData()
@@ -22,6 +26,9 @@ namespace ImprovedMinorFactions
             InitData(c);
         }
 
+        /// <summary>
+        /// Fills in the defaults for the clan and applies mf_data.xml. Clans that are destroyed or have no faction get no active camps.
+        /// </summary>
         private void InitData(Clan c)
         {
             // Only want to set the current manager here because if we try to call init our new hideouts are not loaded in yet.
@@ -36,79 +43,39 @@ namespace ImprovedMinorFactions
             NumLvl2Militia = IMFModels.NumLvl2Militia(c);
             MaxMilitia = IMFModels.MaxMilitia(c);
             ClanGender = IMFModels.ClanGender(c);
+            ApplyConfig();
 
             // make sure clans that shouldn't have hideouts don't
             if (mfClan.IsEliminated || mfClan.MapFaction == null)
                 NumActiveHideouts = 0;
         }
 
+        /// <summary>
+        /// Overrides the defaults with the clan's settings from mf_data.xml, if there are any.
+        /// </summary>
+        private void ApplyConfig()
+        {
+            FactionConfig? f = ConfigLoader.For(mfClan?.StringId);
+            if (f == null)
+                return;
+            if (f.NumActiveHideouts.HasValue) NumActiveHideouts = f.NumActiveHideouts.Value;
+            if (f.NumMilitiaFirstTime.HasValue) NumMilitiaFirstTime = f.NumMilitiaFirstTime.Value;
+            if (f.NumMilitiaPostRaid.HasValue) NumMilitiaPostRaid = f.NumMilitiaPostRaid.Value;
+            if (f.NumLvl2Militia.HasValue) NumLvl2Militia = f.NumLvl2Militia.Value;
+            if (f.NumLvl3Militia.HasValue) NumLvl3Militia = f.NumLvl3Militia.Value;
+            if (f.MaxMilitia.HasValue) MaxMilitia = f.MaxMilitia.Value;
+            if (f.ClanGender != null)
+                ClanGender = f.ClanGender == "Male" ? IMFModels.Gender.Male
+                           : f.ClanGender == "Female" ? IMFModels.Gender.Female
+                           : IMFModels.Gender.Any;
+            if (f.Enabled == false)
+                NumActiveHideouts = 0;
+        }
+
+        // The game's XML loader has to skip mf_data.xml, a row for a missing clan crashes some maps.
         public override void Deserialize(MBObjectManager objectManager, XmlNode node)
         {
             base.Deserialize(objectManager, node);
-            string? mfClanId = node.Attributes?.GetNamedItem("minor_faction")?.Value?.Replace("Faction.", "");
-            Clan? mfClan = Clan.All?.Find((x) => x.StringId == mfClanId);
-            if (mfClan == null)
-                mfClan = objectManager.ReadObjectReferenceFromXml<Clan>("minor_faction", node);
-            if (mfClan == null)
-            {
-                InformationManager.DisplayMessage(new InformationMessage($"IMF: {mfClanId} not found. mf_data.xml data not loaded", Colors.Red));
-                return;
-            }
-
-            InitData(mfClan);
-
-            // parse data for me
-            if (node?.Attributes?.GetNamedItem("num_active_hideouts") != null)
-                this.NumActiveHideouts = Int32.Parse(node!.Attributes!.GetNamedItem("num_active_hideouts")!.Value!);
-            if (node?.Attributes?.GetNamedItem("num_militia_first_time") != null)
-                this.NumMilitiaFirstTime = Int32.Parse(node!.Attributes!.GetNamedItem("num_militia_first_time")!.Value!);
-            if (node?.Attributes?.GetNamedItem("num_militia_post_raid") != null)
-                this.NumMilitiaPostRaid = Int32.Parse(node!.Attributes!.GetNamedItem("num_militia_post_raid")!.Value!);
-            if (node?.Attributes?.GetNamedItem("num_lvl2_militia") != null)
-                this.NumLvl2Militia = Int32.Parse(node!.Attributes!.GetNamedItem("num_lvl2_militia")!.Value!);
-            if (node?.Attributes?.GetNamedItem("num_lvl3_militia") != null)
-                this.NumLvl3Militia = Int32.Parse(node!.Attributes!.GetNamedItem("num_lvl3_militia")!.Value!);
-            if (node?.Attributes?.GetNamedItem("max_militia") != null)
-                this.MaxMilitia = Int32.Parse(node!.Attributes!.GetNamedItem("max_militia")!.Value!);
-            if (node?.Attributes?.GetNamedItem("clan_gender") != null)
-            {
-                string genderString = node!.Attributes!.GetNamedItem("clan_gender")!.Value!;
-                if (genderString == "Male")
-                {
-                    this.ClanGender = IMFModels.Gender.Male;
-                }
-                else if (genderString == "Female")
-                {
-                    this.ClanGender = IMFModels.Gender.Female;
-                }
-                else if ((genderString == "Any"))
-                {
-                    this.ClanGender = IMFModels.Gender.Any;
-                }
-                else
-                {
-                    throw new Exception($"{genderString} is not a valid gender type for {mfClanId}. " +
-                        $"The only valid options are 'Male', 'Female', or 'Any'");
-                }
-            }
-
-            if (IMFManager.Current?.GetClanMFData(mfClan) != null)
-            {
-                // set values for current data
-                MFData existingData = IMFManager.Current!.GetClanMFData(mfClan)!;
-                existingData.NumActiveHideouts = this.NumActiveHideouts;
-                existingData.NumMilitiaFirstTime = this.NumMilitiaFirstTime;
-                existingData.NumMilitiaPostRaid = this.NumMilitiaPostRaid;
-                existingData.NumLvl2Militia = this.NumLvl2Militia;
-                existingData.NumLvl3Militia = this.NumLvl3Militia;
-                existingData.MaxMilitia = this.MaxMilitia;
-                existingData.ClanGender = this.ClanGender;
-            }
-            else
-            {
-                IMFManager.Current?.AddMFData(mfClan, this);
-            }
-            return;
         }
 
         internal void AddMFHideout(MinorFactionHideout mfh)
@@ -116,6 +83,9 @@ namespace ImprovedMinorFactions
             Hideouts.Add(mfh);
         }
 
+        /// <summary>
+        /// Adds a camp settlement to the clan's list. Throws if the settlement isn't a camp.
+        /// </summary>
         internal void AddMFHideout(Settlement s)
         {
             if (!Helpers.IsMFHideout(s))

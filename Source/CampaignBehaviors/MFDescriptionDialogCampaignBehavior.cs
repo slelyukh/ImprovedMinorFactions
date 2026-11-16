@@ -21,6 +21,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             CampaignEvents.OnAgentJoinedConversationEvent.AddNonSerializedListener(this, new Action<IAgent>(OnConversationStart));
         }
 
+        /// <summary>
+        /// Adds the "who are you" question for camp notables and their answer.
+        /// </summary>
         private void SetDialogs(CampaignGameStarter starter)
         {
             starter.AddPlayerLine("mf_intro_start", "hero_main_options", "mf_intro_continue",
@@ -35,47 +38,73 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
 
         }
 
+        /// <summary>
+        /// Shows the question when talking to a notable in a camp of a clan the player hasn't asked about yet.
+        /// </summary>
         private bool player_intro_on_condition()
         {
             var conversationHero = Hero.OneToOneConversationHero;
+            var ownerClan = conversationHero?.CurrentSettlement?.OwnerClan;
             return conversationHero != null
-                && conversationHero.IsLord
-                && conversationHero.IsMinorFactionHero
-                && !this._playerMetFactions.Contains(conversationHero.Clan);
+                && conversationHero.IsNotable
+                && (conversationHero.CurrentSettlement?.SettlementComponent is MinorFactionHideout)
+                && ownerClan != null
+                && !this._playerMetFactions.Contains(ownerClan);
         }
 
+        /// <summary>
+        /// Remembers that the player asked about this clan.
+        /// </summary>
         private void player_intro_consequence()
         {
-            this._playerMetFactions.Add(Hero.OneToOneConversationHero.Clan);
-            MBTextManager.SetTextVariable("IMF_INTRO_CLAN", Hero.OneToOneConversationHero.Clan.Name);
+            var ownerClan = Hero.OneToOneConversationHero?.CurrentSettlement?.OwnerClan;
+            if (ownerClan != null)
+                this._playerMetFactions.Add(ownerClan);
+            MBTextManager.SetTextVariable("IMF_INTRO_CLAN", ownerClan?.Name ?? new TextObject("{=!}this clan"));
         }
         private void OnSessionLaunched(CampaignGameStarter starter)
         {
             SetDialogs(starter);
         }
 
+        /// <summary>
+        /// Fills in the text for the answer: the clan's own description from imf_faction_texts.xml or one for its type,
+        /// and which kingdoms see it as outlaws.
+        /// </summary>
         private void OnConversationStart(IAgent agent)
         {
-            var agentCharacter = (CharacterObject)agent.Character;
             var conversationHero = ((CharacterObject) agent?.Character)?.HeroObject;
-            if (conversationHero != null && conversationHero.IsLord && conversationHero.IsMinorFactionHero
-                && !this._playerMetFactions.Contains(conversationHero.Clan))
+            var ownerClan = conversationHero?.CurrentSettlement?.OwnerClan;
+            if (conversationHero != null && conversationHero.IsNotable
+                && (conversationHero.CurrentSettlement?.SettlementComponent is MinorFactionHideout)
+                && ownerClan != null
+                && !this._playerMetFactions.Contains(ownerClan))
             {
-                var mfClan = conversationHero.Clan;
+                var mfClan = ownerClan;
                 MBTextManager.SetTextVariable("IMF_INTRO_CLAN", mfClan.Name);
 
                 var factionDesc = IMFTexts.GetFactionText("MFDescription_ClanDescription", mfClan);
-                if (factionDesc != null) {
+                if (factionDesc != null)
+                {
                     MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", factionDesc);
-                } else if (mfClan.IsNomad) {
+                }
+                else if (mfClan.IsNomad)
+                {
                     MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "a traditional nomadic tribe.");
-                } else if (mfClan.IsSect) {
+                }
+                else if (mfClan.IsSect)
+                {
                     MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "a zealous religious movement.");
-                } else if (mfClan.IsMafia) {
-                    MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "a influential mafia clan.");
-                } else if (mfClan.IsClanTypeMercenary) {
+                }
+                else if (mfClan.IsMafia)
+                {
+                    MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "an influential mafia clan.");
+                }
+                else if (mfClan.IsClanTypeMercenary)
+                {
                     MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "a powerful mercenary company.");
-                } else
+                }
+                else
                 {
                     MBTextManager.SetTextVariable("IMF_INTRO_CLAN_DESC", "a minor faction.");
                 }
@@ -88,7 +117,8 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                     MBTextManager.SetTextVariable("OUTLAW_KINGDOMS_TEXT", 
                         new TextObject("{=!} We are currently considered to be outlaws by the ").ToString() + 
                         KingdomListString(rivalKingdoms) + ".");
-                } else
+                }
+                else
                 {
                     MBTextManager.SetTextVariable("OUTLAW_KINGDOMS_TEXT", "");
                 }
@@ -98,6 +128,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         {
         }
 
+        /// <summary>
+        /// Joins kingdom names into "A, B and C".
+        /// </summary>
         private string KingdomListString(List<Kingdom> kingdoms)
         {
             string result = "";
@@ -124,6 +157,5 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
 
         List<Clan> _playerMetFactions;
 
-        private DialogFlow? dialogflow;
     }
 }

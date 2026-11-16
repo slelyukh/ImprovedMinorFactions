@@ -4,6 +4,9 @@ using TaleWorlds.CampaignSystem;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
+    /// <summary>
+    /// Runs the daily tick of minor faction camps along with the game's daily settlement tick.
+    /// </summary>
     [HarmonyPatch(typeof(Campaign), "DailyTickSettlement")]
     public class CampaignSettlementTickPatch
     {

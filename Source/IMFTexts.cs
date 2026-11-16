@@ -3,14 +3,16 @@ using System.Collections.Generic;
 using TaleWorlds.Localization;
 using System.IO;
 using System.Xml.Serialization;
-using TaleWorlds.ModuleManager;
-using TaleWorlds.Engine;
-using System.Text.RegularExpressions;
+using ImprovedMinorFactions.Patches;
 using TaleWorlds.CampaignSystem;
 
 
 namespace ImprovedMinorFactions.Source
 {
+    /// <summary>
+    /// Faction-specific texts from imf_faction_texts.xml, e.g. a camp description written for one clan.
+    /// Loaded once per game start.
+    /// </summary>
     // class to manage faction-specific versions of texts
     internal class IMFTexts
     {
@@ -34,26 +36,22 @@ namespace ImprovedMinorFactions.Source
             return mfTexts[TextId][FactionId];
         }
 
+        /// <summary>
+        /// Gets the faction's version of a text.
+        /// </summary>
+        /// <returns>the text, or null if that faction has no version of it</returns>
         public static TextObject? GetFactionText(string TextId, Clan mFaction)
         {
             return Current!.GetFactionTextInternal(TextId, mFaction.StringId);
         }
 
+        /// <summary>
+        /// Reads imf_faction_texts.xml from the module folder. A missing or broken file just means no faction texts.
+        /// </summary>
         private void DeserializeTexts()
         {
-            // TODO: get path to current dir without ImprovedMinorFactions
-            string filePath = "../../Modules/ImprovedMinorFactions/ModuleData/imf_faction_texts.xml";
-            var moduleNames = Utilities.GetModulesNames();
-            foreach (string module in moduleNames)
-            {
-                if (Regex.IsMatch(module, @"Improved\s?Minor\s?Factions"))
-                {
-                    filePath = ModuleHelper.GetXmlPath(module, "imf_faction_texts");
-                    Console.WriteLine(filePath);
-                }
-            }
-
-            // TODO: make this shit not throw no error
+            string binDir = Path.GetDirectoryName(typeof(IMFTexts).Assembly.Location) ?? ".";
+            string filePath = Path.GetFullPath(Path.Combine(binDir, "..", "..", "ModuleData", "imf_faction_texts.xml"));
             if (!File.Exists(filePath))
                 return;
 
@@ -76,7 +74,7 @@ namespace ImprovedMinorFactions.Source
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"An error occurred while deserializing the XML file: {ex.Message}");
+                IMFDiagnostics.Log("IMFTexts could not read imf_faction_texts.xml:", ex);
             }
             
         }

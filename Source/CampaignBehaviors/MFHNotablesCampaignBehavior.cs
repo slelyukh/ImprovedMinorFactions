@@ -15,6 +15,10 @@ using TaleWorlds.Core;
 
 namespace ImprovedMinorFactions.Source.CampaignBehaviors
 {
+    /// <summary>
+    /// Puts camp notables and visiting lords into the camp scene so the player can talk to them,
+    /// and replaces camp notables who die with a relative.
+    /// </summary>
     internal class MFHNotablesCampaignBehavior : CampaignBehaviorBase
     {
         public override void RegisterEvents()
@@ -36,6 +40,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             //InformationManager.DisplayMessage(new InformationMessage($"{amount} troops recruited by {recruiterHero}"));
         }
 
+        /// <summary>
+        /// Adds the camp's notables and the leaders of parties in the camp to the camp center.
+        /// </summary>
         private void AddMFHLocationCharacters(Settlement settlement)
         {
             if (Helpers.IsMFHideout(settlement))
@@ -49,6 +56,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Adds a party leader to the camp center so the player can talk to them. Skips the player.
+        /// </summary>
         // Adds PartyHero character to MFHideout center to allow dialog
         private void AddPartyHero(MobileParty mobileParty, Settlement settlement)
         {
@@ -72,6 +82,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Adds every notable of the camp to the camp center.
+        /// </summary>
         private void AddNotableLocationCharacters(Settlement settlement)
         {
             if (Campaign.Current.GameMode == CampaignGameMode.Campaign)
@@ -83,6 +96,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Adds one notable to the camp center at the spawn point that fits their occupation.
+        /// </summary>
         private void AddNotableLocationCharacter(Hero notable, Settlement settlement)
         {
             string suffix = notable.IsArtisan ? "_villager_artisan" : notable.IsMerchant ? "_villager_merchant" : notable.IsPreacher ? "_villager_preacher" : Helpers.IsMFNotable(notable) ? "_villager_gangleader" : notable.IsRuralNotable ? "_villager_ruralnotable" : notable.IsFemale ? "_lord" : "_villager_merchant";
@@ -100,6 +116,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             MFHCenter.AddCharacter(locationCharacter);
         }
 
+        /// <summary>
+        /// Moves the new notable into the camp and gives them the dead notable's strong relations and quest.
+        /// </summary>
         // copypasta from NotablesCampaignBehavior.ChangeDeadNotable()
         private void ChangeDeadNotable(Hero deadNotable, Hero newNotable, Settlement notableSettlement)
         {
@@ -121,6 +140,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Replaces a camp notable who died with a relative, unless the camp's clan is gone.
+        /// </summary>
         // copypasta from NotablesCampaignBehavior.OnHeroKilled()
         private void OnHeroKilled(Hero victim, Hero killer, KillCharacterAction.KillCharacterActionDetail detail, bool showNotification)
         {
@@ -135,6 +157,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// When the player enters a camp, marks its notables as met and adds the camp's people to the scene.
+        /// When another party enters while the player is there, adds its leader.
+        /// </summary>
         private void OnSettlementEntered(MobileParty party, Settlement settlement, Hero hero)
         {
             if (!Helpers.IsMFHideout(settlement))
@@ -142,36 +168,27 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             if (party != null && party.IsMainParty)
             {
                 foreach (Hero notable in settlement.Notables)
-                {
                     notable.SetHasMet();
-                    // TODO REMOVE DEBUG
-                    //InformationManager.DisplayMessage(new InformationMessage(notable.Name + " Is gang leader: " + notable.IsGangLeader + " Is notable: " + notable.IsNotable));
 
-                    foreach (Hero h in Hero.AllAliveHeroes)
-                    {
-                        if (h.IsNotable && h.IsGangLeader && h.CurrentSettlement?.IsVillage == true)
-                        {
-                            h.SetNewOccupation(Occupation.Preacher);
-                            // TODO: remove debug
-                            //InformationManager.DisplayMessage(new InformationMessage(h.Name + " Is gang leader: " + h.IsGangLeader + " Is notable: " + h.IsNotable));
-                        }
-
-                    }
-                    // TODO REMOVE DEBUG
-                }
-
-                if (LocationComplex.Current != null && PlayerEncounter.LocationEncounter != null)
+                // village notables can end up as gang leaders, turn them back into preachers
+                foreach (Hero h in Hero.AllAliveHeroes)
                 {
-                    if (party == null)
-                        return;
-                    if (party.IsMainParty)
-                        AddMFHLocationCharacters(settlement);
-                    else if (MobileParty.MainParty.CurrentSettlement == settlement)
-                        AddPartyHero(party, settlement);
+                    if (h.IsNotable && h.IsGangLeader && h.CurrentSettlement?.IsVillage == true)
+                        h.SetNewOccupation(Occupation.Preacher);
                 }
             }
+
+            if (party == null || LocationComplex.Current == null || PlayerEncounter.LocationEncounter == null)
+                return;
+            if (party.IsMainParty)
+                AddMFHLocationCharacters(settlement);
+            else if (MobileParty.MainParty.CurrentSettlement == settlement)
+                AddPartyHero(party, settlement);
         }
 
+        /// <summary>
+        /// Puts the camp's people back into the scene after a mission in the camp ends.
+        /// </summary>
         private void OnMissionEnded(IMission mission)
         {
             if (LocationComplex.Current != null && PlayerEncounter.LocationEncounter != null && Settlement.CurrentSettlement != null && !Hero.MainHero.IsPrisoner && !Settlement.CurrentSettlement.IsUnderSiege)
@@ -180,6 +197,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Puts the camp's people into the scene if the game was saved while the player was in a camp.
+        /// </summary>
         public void OnGameLoadFinished()
         {
             IMFManager.InitManagerIfNone();

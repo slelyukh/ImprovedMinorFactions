@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 using HarmonyLib;
 using TaleWorlds.CampaignSystem;
 using TaleWorlds.CampaignSystem.CharacterDevelopment;
@@ -12,14 +12,25 @@ using static ImprovedMinorFactions.IMFModels;
 
 namespace ImprovedMinorFactions
 {
+    /// <summary>
+    /// The numbers behind camps: volunteers, hearth and militia growth, income, activation delays, militia sizes and relation tiers.
+    /// Most militia numbers can be overridden per faction in mf_data.xml.
+    /// </summary>
     internal static class IMFModels
     {
+        /// <summary>
+        /// Chance per day that a camp notable gets a new volunteer in a slot. Higher hearth means more volunteers, later slots fill less often.
+        /// </summary>
+        /// <param name="index">the volunteer slot</param>
         public static float GetDailyVolunteerProductionProbability(Hero hero, int index, MinorFactionHideout mfh)
         {
             float num = 0.7f * (mfh.Hearth / 400);
             return 0.75f * MathF.Clamp(MathF.Pow(num, (float)(index + 1)), 0f, 1f);
         }
 
+        /// <summary>
+        /// Daily hearth growth of a camp, slower as the hearth gets higher.
+        /// </summary>
         // TODO: maybe increase hearths upon certain actions such as attacking a party for bandits, etc
         public static ExplainedNumber GetHearthChange(MinorFactionHideout mfh, bool includeDescriptions = false)
         {
@@ -29,6 +40,9 @@ namespace ImprovedMinorFactions
 
         }
 
+        /// <summary>
+        /// Daily militia growth of a camp. Nomad camps grow faster, and more hearth adds more.
+        /// </summary>
         public static ExplainedNumber GetMilitiaChange(MinorFactionHideout mfh, bool includeDescriptions = false)
         {
             var eNum = new ExplainedNumber(0f, includeDescriptions);
@@ -44,13 +58,32 @@ namespace ImprovedMinorFactions
             return eNum;
         }
 
+        private const float MaxHideoutIncome = 750f;
+
+        /// <summary>
+        /// Daily gold a camp gives its clan, from hearth above 300 up to 750.
+        /// </summary>
         // TODO: monitor minor faction finances
         public static float CalculateHideoutIncome(MinorFactionHideout mfHideout)
         {
-            return (mfHideout.Hearth - 300) * 2.5f;
+            return MathF.Clamp((mfHideout.Hearth - 300) * 2.5f, 0f, MaxHideoutIncome);
         }
 
-        // copied from bandit hideouts
+        /// <summary>
+        /// Extra daily gold for a minor faction outside a kingdom, landless clans earn less than their parties cost.
+        /// The poorer the clan the more it gets, the same way the kingdom budget tops up clans. Mercenaries and the player get none.
+        /// </summary>
+        public static int CalculateCampSupport(Clan clan)
+        {
+            if (clan.Kingdom != null || clan.IsUnderMercenaryService || clan.Leader == Hero.MainHero)
+                return 0;
+            int gold = clan.Gold;
+            return gold < 5000 ? 2000 : gold < 10000 ? 1500 : gold < 20000 ? 1000 : gold < 30000 ? 500 : 0;
+        }
+
+        /// <summary>
+        /// How many troops the player can take into a camp raid: 10, plus the Small Unit Tactics bonus.
+        /// </summary>
         public static int GetPlayerMaximumTroopCountForRaidMission(MobileParty party)
         {
             float num = 10f;
@@ -68,18 +101,25 @@ namespace ImprovedMinorFactions
             return eNum;
         }
 
+        /// <summary>
+        /// How long a raided clan waits before its next camp opens: 12 days if it has no spare camp, else 5.
+        /// </summary>
         // TODO: maybe add nomad transfer delay?
         internal static CampaignTime HideoutActivationDelay(Clan ownerClan)
         {
             if (Helpers.IsSingleHideoutMF(ownerClan))
             {
                 return CampaignTime.Days(12);
-            } else
+            }
+            else
             {
                 return CampaignTime.Days(5);
             }
         }
 
+        /// <summary>
+        /// How many camps a clan keeps active, 1 if it has no data.
+        /// </summary>
         public static int NumActiveHideouts(Clan c)
         {
             MFData? mfData = IMFManager.Current?.GetClanMFData(c);
@@ -90,6 +130,9 @@ namespace ImprovedMinorFactions
             return 1;
         }
 
+        /// <summary>
+        /// Daily roll for a random militia upgrade, 1 in 4 for nomads and 1 in 8 for others.
+        /// </summary>
         public static bool UpgradeMilitiaRandom(Clan c)
         {
             if (c.IsNomad)
@@ -98,71 +141,84 @@ namespace ImprovedMinorFactions
                 return MBRandom.RandomInt(8) == 1;
         }
 
+        /// <summary>
+        /// Militia a camp starts with the first time it opens. Bigger for nomads and higher tier clans.
+        /// </summary>
         public static int NumMilitiaFirstTime(Clan c)
         {
-            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
-            if (mfData != null)
-                return mfData.NumMilitiaFirstTime;
+            var config = ConfigLoader.For(c?.StringId);
+            if (config?.NumMilitiaFirstTime.HasValue == true)
+                return config.NumMilitiaFirstTime.Value;
 
-            // default values
-            if (c.IsNomad)
-                return 65;
+            if (c != null && c.IsNomad)
+                return MBRandom.RandomInt(85, 116) + (c.Tier * 6);
             else
-                return 28;
+                return MBRandom.RandomInt(25, 41) + (c != null ? c.Tier * 2 : 0);
         }
 
+        /// <summary>
+        /// The lowest militia an active camp is allowed to drop to, also used after a raid.
+        /// </summary>
         public static int NumMilitiaPostRaid(Clan c)
         {
-            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
-            if (mfData != null)
-                return mfData.NumMilitiaPostRaid;
+            var config = ConfigLoader.For(c?.StringId);
+            if (config?.NumMilitiaPostRaid.HasValue == true)
+                return config.NumMilitiaPostRaid.Value;
 
-            // default values
-            if (c.IsNomad)
-                return 40;
+            if (c != null && c.IsNomad)
+                return 60 + (c.Tier * 3);
             else
-                return 20;
+                return 15 + (c != null ? c.Tier : 0);
         }
 
+        /// <summary>
+        /// How many militia get upgraded twice when a camp opens.
+        /// </summary>
         public static int NumLvl3Militia(Clan c)
         {
-            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
-            if (mfData != null)
-                return mfData.NumLvl3Militia;
+            var config = ConfigLoader.For(c?.StringId);
+            if (config?.NumLvl3Militia.HasValue == true)
+                return config.NumLvl3Militia.Value;
 
-            // default values
-            if (c.IsNomad)
-                return 10;
+            if (c != null && c.IsNomad)
+                return 10 + (c.Tier * 2);
             else
-                return 3;
+                return 3 + (c != null ? c.Tier : 0);
         }
 
+        /// <summary>
+        /// How many militia get upgraded once when a camp opens.
+        /// </summary>
         public static int NumLvl2Militia(Clan c)
         {
-            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
-            if (mfData != null)
-                return mfData.NumLvl2Militia;
+            var config = ConfigLoader.For(c?.StringId);
+            if (config?.NumLvl2Militia.HasValue == true)
+                return config.NumLvl2Militia.Value;
 
-            // default values
-            if (c.IsNomad)
-                return 15;
+            if (c != null && c.IsNomad)
+                return 15 + (c.Tier * 3);
             else
-                return 5;
+                return 5 + (c != null ? c.Tier : 0);
         }
 
-        public static int MaxMilitia(Clan c)
+        /// <summary>
+        /// Militia cap of a camp. Grows with clan tier and hearth, nomads have a much higher cap.
+        /// </summary>
+        public static int MaxMilitia(Clan c, float hearth = 200f)
         {
-            MFData? mfData = IMFManager.Current?.GetClanMFData(c);
-            if (mfData != null)
-                return mfData.MaxMilitia;
+            var config = ConfigLoader.For(c?.StringId);
+            if (config?.MaxMilitia.HasValue == true)
+                return config.MaxMilitia.Value;
 
-            // default values
-            if (c.IsNomad)
-                return 120;
+            if (c != null && c.IsNomad)
+                return 140 + (c.Tier * 15) + (int)(hearth * 0.10f);
             else
-                return 40;
+                return 45 + ((c?.Tier ?? 0) * 5) + (int)(hearth * 0.05f);
         }
 
+        /// <summary>
+        /// Which gender a clan's heroes and notables are made as, Any if not set.
+        /// </summary>
         public static Gender ClanGender(Clan c)
         {
             MFData? mfData = IMFManager.Current?.GetClanMFData(c);
@@ -179,6 +235,9 @@ namespace ImprovedMinorFactions
             Any
         }
 
+        /// <summary>
+        /// Turns a relation number into a relation tier.
+        /// </summary>
         public static MFRelation GetRelationLevel(int relation)
         {
             switch (relation)
@@ -202,6 +261,9 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// The lowest relation number that counts as the given tier.
+        /// </summary>
         public static int MinRelationNeeded(MFRelation minRelationship)
         {
             switch (minRelationship)

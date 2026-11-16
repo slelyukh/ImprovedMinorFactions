@@ -5,6 +5,9 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Makes the show hideouts cheat reveal minor faction camps too.
+    /// </summary>
     // make ShowHideouts cheat also show MFHideouts
     [HarmonyPatch(typeof(CampaignCheats), "ShowHideouts")]
     public class ShowHideoutsPatch
@@ -20,7 +23,8 @@ namespace ImprovedMinorFactions.Patches
             foreach (Settlement settlement in Settlement.All)
             {
                 var mfHideout = Helpers.GetMFHideout(settlement); 
-                if (mfHideout != null && (num != 1 || mfHideout.IsActive)) {
+                if (mfHideout != null && (num != 1 || mfHideout.IsActive))
+                {
                     mfHideout.IsSpotted = true;
                     mfHideout.Owner.Settlement.IsVisible = true;
                 }

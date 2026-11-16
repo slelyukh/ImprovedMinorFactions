@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using Helpers;
 using TaleWorlds.CampaignSystem.Actions;
@@ -21,6 +21,9 @@ using static ImprovedMinorFactions.IMFModels;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 {
+    /// <summary>
+    /// Quest from a camp notable who needs recruits: the player brings troops of the clan's culture to the camp.
+    /// </summary>
     // Token... comment means function has not yet been adapted to mod
     public class MFHNotableNeedsRecruitsIssueBehavior : CampaignBehaviorBase
     {
@@ -60,6 +63,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 
         internal const MFRelation RelationLevelNeededForQuest = MFRelation.Neutral;
 
+        /// <summary>
+        /// The issue offered by the notable, can also be solved by sending a companion with troops.
+        /// </summary>
         public class MFHNotableNeedsRecruitsIssue : IssueBase
         {
 
@@ -233,16 +239,16 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 
             public override bool DoTroopsSatisfyAlternativeSolution(TroopRoster troopRoster, out TextObject explanation)
             {
-                explanation = TextObject.Empty;
+                explanation = TextObject.GetEmpty();
                 bool mountedRequired = Helpers.mfIsMounted(base.IssueSettlement.OwnerClan);
-                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
+                return QuestHelper.CheckRosterForAlternativeSolution(troopRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             public override bool AlternativeSolutionCondition(out TextObject explanation)
             {
-                explanation = TextObject.Empty;
+                explanation = TextObject.GetEmpty();
                 bool mountedRequired = Helpers.mfIsMounted(base.IssueSettlement.OwnerClan);
-                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), ref explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
+                return QuestHelper.CheckRosterForAlternativeSolution(MobileParty.MainParty.MemberRoster, base.GetTotalAlternativeSolutionNeededMenCount(), out explanation, AlternativeSolutionTroopTierRequirement, mountedRequired);
             }
 
             public override bool IsTroopTypeNeededByAlternativeSolution(CharacterObject character)
@@ -268,11 +274,12 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                 return _IssueFrequency;
             }
 
-            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero? relationHero, out SkillObject? skill)
+            protected override bool CanPlayerTakeQuestConditions(Hero issueGiver, out PreconditionFlags flag, out Hero? relationHero, out SkillObject? skill, out int requiredGold)
             {
                 flag = PreconditionFlags.None;
                 relationHero = null;
                 skill = null;
+                requiredGold = 0;
 
                 if ((issueGiver?.MapFaction ?? issueGiver?.CurrentSettlement?.OwnerClan
                     ?? Hero.MainHero?.MapFaction) == null)
@@ -337,6 +344,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             private const int CompanionRequiredSkillLevel = 120;
         }
 
+        /// <summary>
+        /// The quest itself: bring the troops to the notable before time runs out.
+        /// </summary>
         public class MFHNotableNeedsRecruitsIssueQuest : QuestBase
         {
             protected override void RegisterEvents()
@@ -367,7 +377,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     if (detail == DeclareWarAction.DeclareWarDetail.CausedByPlayerHostility)
                     {
                         CompleteQuestWithFail(QuestCancelledDueToPlayerHostilityLog);
-                    } else
+                    }
+                    else
                     {
                         base.CompleteQuestWithCancel(QuestCancelledDueToWarLog);
                     }
@@ -513,12 +524,15 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     .BeginNpcOptions()
                     .NpcOption(new TextObject("{=BGgDjRcW}I think that's enough. Here is your payment."), 
                         () => Hero.OneToOneConversationHero == this.QuestGiver && this._playerReachedRequestedAmount)
-                        .Consequence( delegate {
+                        .Consequence(delegate
+                        {
                                     this.ApplyQuestSuccessConsequences();
-                                    this.CompleteQuestWithSuccess(); })
+                            this.CompleteQuestWithSuccess();
+                        })
                         .CloseDialog()
                     .NpcOption(npcDiscussLine, 
-                        delegate () {
+                        delegate ()
+                        {
                             if (Hero.OneToOneConversationHero != this.QuestGiver)
                             {
                                 return false;
@@ -539,7 +553,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     .PlayerOption(new TextObject("{=QbaOoilS}Yes, I have brought you a few men."))
                         .Condition(() => (this.CheckIfThereIsSuitableRecruitInPlayer() && !this._playerReachedRequestedAmount) && changeDialogAfterTransfer)
                         .NpcLine(npcResponseLine)
-                            .Condition(delegate {
+                            .Condition(delegate
+                            {
                                         if (this._playerReachedRequestedAmount)
                                         {
                                             return false;
@@ -549,7 +564,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                                     })
                             .Consequence(new ConversationSentence.OnConsequenceDelegate(this.OpenRecruitDeliveryScreen))
                             .PlayerLine(new TextObject("{=IULW8h03}Sure."))
-                            .Consequence(delegate {
+                            .Consequence(delegate
+                            {
                                             if (this._playerReachedRequestedAmount && Campaign.Current.ConversationManager.IsConversationInProgress)
                                             {
                                                 Campaign.Current.ConversationManager.ContinueConversation();
@@ -558,7 +574,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     .GotoDialogState("quest_discuss")
                     .PlayerOption(new TextObject("{=PZqGagXt}No, not yet. I'm still looking for them."))
                         .Condition(() => !this._playerReachedRequestedAmount & changeDialogAfterTransfer)
-                        .Consequence(delegate {
+                        .Consequence(delegate
+                        {
                                 changeDialogAfterTransfer = false;
                             })
                         .NpcLine(new TextObject("{=L1JyetPq}I am glad to hear that.[ib:closed2]"))
@@ -574,7 +591,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             
             private void OpenRecruitDeliveryScreen()
             {
-                PartyScreenManager.OpenScreenWithCondition(
+                PartyScreenHelper.OpenScreenWithCondition(
                     new IsTroopTransferableDelegate(this.IsTroopTransferable), 
                     new PartyPresentationDoneButtonConditionDelegate(this.DoneButtonCondition), 
                     new PartyPresentationDoneButtonDelegate(this.DoneClicked), 
@@ -585,7 +602,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
                     this._requestedRecruitCount - this._deliveredRecruitCount, 
                     false, 
                     false, 
-                    PartyScreenMode.TroopsManage);
+                    PartyScreenHelper.PartyScreenMode.TroopsManage);
             }
 
             private Tuple<bool, TextObject> DoneButtonCondition(TroopRoster leftMemberRoster, TroopRoster leftPrisonRoster, TroopRoster rightMemberRoster, TroopRoster rightPrisonRoster, int leftLimitNum, int rightLimitNum)
@@ -628,7 +645,8 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 
             private bool IsTroopUsable(CharacterObject character)
             {
-                return (character.Occupation == Occupation.Bandit) == QuestClan().IsOutlaw
+                return !character.IsHero
+                    && (character.Occupation == Occupation.Bandit) == QuestClan().IsOutlaw
                     && (!Helpers.mfIsMounted(QuestClan()) || character.IsMounted);
             }
 
@@ -730,6 +748,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             private JournalLog _questProgressLog;
         }
 
+        /// <summary>
+        /// Registers the issue and quest with the save system.
+        /// </summary>
         public class MFHNotableNeedsRecruitsIssueBehaviorTypeDefiner : SaveableTypeDefiner
         {
             public MFHNotableNeedsRecruitsIssueBehaviorTypeDefiner() : base(229_923_420)
