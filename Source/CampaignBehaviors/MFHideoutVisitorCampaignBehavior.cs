@@ -14,6 +14,11 @@ using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions.Source.CampaignBehaviors
 {
+    /// <summary>
+    /// Sends minor faction parties to their own camps every so often, to pick up recruits or just stay a while.
+    /// Beaten up parties (many wounded or low morale) go to the nearest camp to recover. While a party is on its way
+    /// its AI is locked to the trip, and it is let go when the visit ends, the camp is gone or the trip stops making sense.
+    /// </summary>
     internal class MFHideoutVisitorCampaignBehavior : CampaignBehaviorBase
     {
         private const float EnterDistanceSquared = 9f;
@@ -57,6 +62,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Starts the visit when a tracked party walks into the camp it was sent to.
+        /// </summary>
         private void OnSettlementEntered(MobileParty? party, Settlement? settlement, Hero? hero)
         {
             try
@@ -73,6 +81,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Marks the party as arrived and takes recruits from the camp if that's what it came for.
+        /// </summary>
         private void Arrive(MobileParty visitor, VisitInfo info, Settlement hideout)
         {
             info.Arrived = true;
@@ -83,6 +94,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                                 $", planned stay {info.PlannedStayHours:F0}h");
         }
 
+        /// <summary>
+        /// Checks every tracked party once an hour. Ends visits that are done or no longer make sense (party gone or fighting,
+        /// camp closed, low on food, trip too long, stuck), and walks parties that are next to the camp inside.
+        /// </summary>
         private void UpdateCurrentVisitors()
         {
             if (_visitors.Count == 0)
@@ -157,6 +172,11 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Stops tracking a party and gives its AI back.
+        /// </summary>
+        /// <param name="leave">also make the party leave the camp</param>
+        /// <param name="why">reason for the log</param>
         private void End(MobileParty? visitor, VisitInfo info, bool leave, string why)
         {
             if (visitor != null)
@@ -167,6 +187,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Gives a party its AI back, and makes it leave the settlement if asked.
+        /// </summary>
         private static void Release(MobileParty visitor, bool leave)
         {
             visitor.Ai.SetDoNotMakeNewDecisions(false);
@@ -176,6 +199,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             visitor.RecalculateShortTermBehavior();
         }
 
+        /// <summary>
+        /// Once a day per clan: sends beaten up parties to the nearest camp (at most 2 at a time per clan),
+        /// then, if the clan's cooldown has passed, sends one party on a planned visit.
+        /// </summary>
         private void SendNewVisitors()
         {
             if (IMFManager.Current == null)
@@ -225,6 +252,12 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Sends one free party, the leader's party first, to a random camp within reach on the same land, and starts the clan's cooldown.
+        /// </summary>
+        /// <param name="free">the clan's parties that aren't busy</param>
+        /// <param name="hideouts">the clan's active camps</param>
+        /// <returns>true if a party was sent</returns>
         private bool TrySendScheduledVisit(Clan clan, List<MobileParty> free, List<MinorFactionHideout> hideouts)
         {
             IEnumerable<MobileParty> ordered = free.OrderBy(p => p.LeaderHero == clan.Leader ? 0 : 1).ThenBy(_ => MBRandom.RandomInt(1000));
@@ -252,6 +285,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         private static bool SameLand(MobileParty party, MinorFactionHideout camp) =>
             HideoutPlacement.SameLandAs(party.Position, camp.Settlement.Position);
 
+        /// <summary>
+        /// Gets the closest camp on the party's land that is within reach for this kind of visit.
+        /// </summary>
+        /// <returns>the camp, or null if none is close enough</returns>
         private static MinorFactionHideout? NearestCampInReach(MobileParty party, List<MinorFactionHideout> camps, VisitKind kind)
         {
             var usable = camps.Where(c => SameLand(party, c)).ToList();
@@ -259,6 +296,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return at < 0 ? null : usable[at];
         }
 
+        /// <summary>
+        /// Gets the clan's parties that are free to visit a camp, see IsFree.
+        /// </summary>
         private List<MobileParty> FreePartiesOf(Clan clan)
         {
             var found = new List<MobileParty>();
@@ -277,6 +317,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return found;
         }
 
+        /// <summary>
+        /// Checks that a party isn't busy: not the player's, not at sea, not fighting, besieging or in an army,
+        /// not in a settlement, has a leader and troops, and isn't already locked by something else.
+        /// </summary>
         private bool IsFree(MobileParty p)
         {
             if (!p.IsActive || p.IsMainParty || p.IsDisbanding || p.IsCurrentlyAtSea)
@@ -290,7 +334,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return !_visitors.ContainsKey(p);
         }
 
-        // camps have no market, so only go with food for the trip and the stay
+        /// <summary>
+        /// Sends a party to a camp and starts tracking it. Camps have no market, so the party only goes if it has food for the trip and the stay.
+        /// </summary>
+        /// <returns>true if the party was sent</returns>
         private bool TrySendPartyToHideout(MobileParty party, Settlement targetSettlement, VisitKind kind)
         {
             double distance = party.GetPosition2D.Distance(targetSettlement.GetPosition2D);
@@ -318,6 +365,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return true;
         }
 
+        /// <summary>
+        /// Moves 1 to 3 troops from the camp's militia to the visiting party, never more than half the militia.
+        /// </summary>
+        /// <returns>how many troops moved</returns>
         private int RecruitTroopsFromHideout(MobileParty visitor, Settlement hideout)
         {
             MilitiaPartyComponent? militiaComponent = hideout.MilitiaPartyComponent;
@@ -354,6 +405,11 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return toTransfer;
         }
 
+        /// <summary>
+        /// Sends a planned visit right now, for testing from the console.
+        /// </summary>
+        /// <param name="clanId">only this clan, or every minor faction if empty</param>
+        /// <returns>what happened, one line per clan</returns>
         internal string ForceVisit(string? clanId)
         {
             if (IMFManager.Current == null)
@@ -384,6 +440,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return sb.Length == 0 ? "No minor faction could send a visit." : sb.ToString();
         }
 
+        /// <summary>
+        /// Lists the tracked parties and how far along their visits are, for the console.
+        /// </summary>
         internal string Describe()
         {
             if (_visitors.Count == 0)
@@ -398,7 +457,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return sb.ToString();
         }
 
-        // Saved as parallel lists, the save can't take a dictionary of a private type.
+        /// <summary>
+        /// Saves and loads the tracked visits and each clan's next visit time.
+        /// They're saved as parallel lists, the save can't take a dictionary of a private type.
+        /// </summary>
         public override void SyncData(IDataStore dataStore)
         {
             List<MobileParty>? parties = null;
@@ -446,6 +508,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// A tracked visit: where the party is going, when it left or arrived, why it's going and how long it may take.
+        /// </summary>
         private sealed class VisitInfo
         {
             public CampaignTime VisitStart;
@@ -491,6 +556,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         internal const double CooldownMinDays = 5;
         internal const double CooldownMaxDays = 10;
 
+        /// <summary>
+        /// Checks if a party is beaten up enough to go recover at a camp: 30% wounded, morale under 35, or starving.
+        /// </summary>
         internal static bool NeedsRefuge(int wounded, int total, bool starving, float morale)
         {
             if (total <= 0)
@@ -498,22 +566,39 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return starving || wounded >= HideWoundedShare * total || morale < HideMorale;
         }
 
+        /// <summary>
+        /// Checks if a recovering party is good to leave: at most 10% wounded and morale 50 or more.
+        /// </summary>
         internal static bool Recovered(int wounded, int total, float morale)
         {
             return total <= 0 || (wounded <= RecoveredWoundedShare * total && morale >= RecoveredMorale);
         }
 
+        /// <summary>
+        /// Picks the kind of a planned visit, 60% recruiting and 40% just staying.
+        /// </summary>
+        /// <param name="roll01">random number from 0 to 1</param>
         internal static VisitKind ScheduledKind(double roll01)
         {
             return roll01 < RecruitChance ? VisitKind.Recruit : VisitKind.Hang;
         }
 
+        /// <summary>
+        /// How long a party plans to stay: 2 to 4 days to recover, 1 to 3 days otherwise.
+        /// </summary>
+        /// <param name="roll01">random number from 0 to 1</param>
         internal static double PlanStayHours(VisitKind kind, double roll01)
         {
             double r = Math.Min(Math.Max(roll01, 0.0), 1.0);
             return kind == VisitKind.Hide ? 48 + r * 48 : 24 + r * 48;
         }
 
+        /// <summary>
+        /// Checks if a party in a camp should leave. It stays at least 12 hours and at most 4 days, otherwise until its planned time is up,
+        /// and a recovering party also waits until it has recovered.
+        /// </summary>
+        /// <param name="stayedHours">hours since it arrived</param>
+        /// <param name="plannedHours">from PlanStayHours</param>
         internal static bool ReadyToLeave(VisitKind kind, double stayedHours, double plannedHours, int wounded, int total, float morale)
         {
             if (stayedHours < MinStayHours)
@@ -525,22 +610,38 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return kind != VisitKind.Hide || Recovered(wounded, total, morale);
         }
 
+        /// <summary>
+        /// Checks that the party's food lasts the trip and stay plus one spare day.
+        /// </summary>
+        /// <param name="foodDays">days the party's food lasts</param>
+        /// <param name="tripHours">travel plus stay</param>
         internal static bool HasFoodFor(double foodDays, double tripHours)
         {
             return foodDays * 24 >= tripHours + LeaveWhenFoodDays * 24;
         }
 
+        /// <summary>
+        /// How long a trip is allowed to take before we give up on it, from 1 to 5 days.
+        /// </summary>
+        /// <param name="speedUnitsPerHour">the party's map speed</param>
         internal static double PlanTravelHours(double distance, double speedUnitsPerHour)
         {
             double speed = Math.Max(0.5, speedUnitsPerHour);
             return Math.Min(120, Math.Max(24, distance / speed * 1.8 + 12));
         }
 
+        /// <summary>
+        /// Checks if a camp is close enough for this kind of visit, a recovering party won't go as far.
+        /// </summary>
         internal static bool WithinReach(VisitKind kind, double distance)
         {
             return distance >= 0 && distance <= (kind == VisitKind.Hide ? MaxRefugeDistance : MaxVisitDistance);
         }
 
+        /// <summary>
+        /// Gets the index of the smallest distance that is within reach.
+        /// </summary>
+        /// <returns>the index, or -1 if none is</returns>
         internal static int NearestWithinReach(VisitKind kind, double[] distances)
         {
             int best = -1;
@@ -553,6 +654,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         }
     }
 
+    /// <summary>
+    /// Console commands for testing visits: imf.visit_now [clan] and imf.visits.
+    /// </summary>
     internal static class ImfConsoleCommands
     {
         [CommandLineFunctionality.CommandLineArgumentFunction("visit_now", "imf")]
@@ -570,6 +674,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         }
     }
 
+    /// <summary>
+    /// Why a party is visiting a camp: Recruit picks up troops, Hang just stays a while, Hide recovers after a beating.
+    /// </summary>
     internal enum VisitKind
     {
         Hang = 0,      // just stay a while

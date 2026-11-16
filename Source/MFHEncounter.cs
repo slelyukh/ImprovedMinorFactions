@@ -6,6 +6,9 @@ using TaleWorlds.Core;
 
 namespace ImprovedMinorFactions
 {
+    /// <summary>
+    /// The location encounter used when the player walks around a camp.
+    /// </summary>
     // Not sure why this is needed but it is
     internal class MFHEncounter : LocationEncounter
     {
@@ -13,6 +16,9 @@ namespace ImprovedMinorFactions
         {
         }
 
+        /// <summary>
+        /// Opens the camp center scene when the player goes in or talks to someone there.
+        /// </summary>
         // Base returns null so talking does nothing, open the center like VillageEncounter does.
         public override IMission CreateAndOpenMissionController(Location nextLocation, Location previousLocation = null, CharacterObject talkToChar = null, string playerSpecialSpawnTag = null)
         {

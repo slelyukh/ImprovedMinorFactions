@@ -14,6 +14,9 @@ using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
+    /// <summary>
+    /// Wraps the game's clan finance model to add the daily income of a clan's active camps.
+    /// </summary>
     // gives MF Clans income from their hideouts
     // TODO: attach model
     public class IMFClanFinanceModel : ClanFinanceModel
@@ -44,6 +47,9 @@ namespace ImprovedMinorFactions.Source.Patches
             return eNum;
         }
 
+        /// <summary>
+        /// Adds each active camp's income, and the camp support for clans outside a kingdom.
+        /// </summary>
         private static void AddCampIncome(Clan clan, ref ExplainedNumber eNum)
         {
             var mfHideouts = IMFManager.Current!.GetActiveHideoutsOfClan(clan);

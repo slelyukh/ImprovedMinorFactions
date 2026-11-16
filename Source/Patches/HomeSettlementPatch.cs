@@ -12,6 +12,9 @@ using TaleWorlds.Core;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Keeps a minor faction's home at one of its active camps when something sets it elsewhere, and updates its heroes' homes.
+    /// </summary>
     // Nasty Nasty recursive Harmony patch that moves the HomeSettlement of MF lords after their hideout gets raided
     [HarmonyPatch(typeof(Clan), "set_HomeSettlement")]
     public class ClanSetHomeSettlementPatch

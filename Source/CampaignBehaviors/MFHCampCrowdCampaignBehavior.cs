@@ -16,6 +16,11 @@ using TaleWorlds.MountAndBlade;
 
 namespace ImprovedMinorFactions.Source.CampaignBehaviors
 {
+    /// <summary>
+    /// Fills the camp center scene with the camp's own militia, some standing guard and the rest walking around,
+    /// and gives them a short greeting when the player talks to them. The greeting depends on whether the player
+    /// owns the camp, is a friend of the clan, or a stranger.
+    /// </summary>
     internal class MFHCampCrowdCampaignBehavior : CampaignBehaviorBase
     {
         private const string CenterId = "mf_hideout_center";
@@ -35,6 +40,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             CampaignEvents.OnSessionLaunchedEvent.AddNonSerializedListener(this, new Action<CampaignGameStarter>(SetDialogs));
         }
 
+        /// <summary>
+        /// Adds the militia greeting line.
+        /// </summary>
         private void SetDialogs(CampaignGameStarter starter)
         {
             starter.AddDialogLine("mf_militia_talk", "start", "close_window",
@@ -65,6 +73,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             new TextObject("{=imfMilitiaStranger4}You are among friends here. Just stay out of the supplies."),
         };
 
+        /// <summary>
+        /// Picks the greeting for a camp militiaman the player is talking to. Not used during a raid.
+        /// </summary>
+        /// <returns>true if the greeting should play</returns>
         private static bool MilitiaTalkCondition()
         {
             CharacterObject? who = CharacterObject.OneToOneConversationCharacter;
@@ -93,6 +105,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         {
         }
 
+        /// <summary>
+        /// Takes the militia we added out of the camp location.
+        /// </summary>
+        /// <param name="location">the camp center, or null to look it up</param>
         private void RemoveCrowd(Location? location)
         {
             if (_crowd.Count == 0)
@@ -104,6 +120,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             _crowd.Clear();
         }
 
+        /// <summary>
+        /// Adds the militia to the camp center when its scene is about to spawn people. About a third stand guard.
+        /// </summary>
+        /// <param name="unusedPoints">free spawn points per tag, left over after the game placed its own people</param>
         private void OnReadyToSpawn(Dictionary<string, int> unusedPoints)
         {
             try
@@ -143,6 +163,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Picks which troops to show, in proportion to the camp's militia roster.
+        /// If the roster is empty it uses the clan's entry troops instead.
+        /// </summary>
         private static List<(CharacterObject Troop, int Count)> ChooseMen(Settlement settlement)
         {
             var result = new List<(CharacterObject, int)>();
@@ -174,7 +198,11 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return result;
         }
 
-        // Camp militia wear their own battle gear, troops without any gear are left out.
+        /// <summary>
+        /// Makes one militiaman for the scene. Camp militia wear their own battle gear, troops without any gear are left out.
+        /// </summary>
+        /// <param name="standGuard">stand at a guard point instead of walking around</param>
+        /// <returns>the character, or null if the troop has no gear</returns>
         private static LocationCharacter? MakeMilitiaman(CharacterObject troop, Settlement settlement, bool standGuard)
         {
             Equipment? gear = troop.RandomBattleEquipment;
@@ -195,6 +223,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         internal const int MaxShown = 14;
         private const int MinShown = 4;
 
+        /// <summary>
+        /// How many militia to show: a fifth of the militia, at least 4 if there are that many, and at most 14.
+        /// </summary>
         internal static int CrowdSize(int militia)
         {
             if (militia <= 0)
@@ -204,6 +235,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         }
     }
 
+    /// <summary>
+    /// Removes people who load into the camp scene without clothes, which happens with troops whose gear is broken.
+    /// </summary>
     internal sealed class CampSceneTidy
     {
         private const float CheckEvery = 1f;
@@ -213,6 +247,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         private bool _isCamp;
         private float _wait;
 
+        /// <summary>
+        /// Checks the camp scene about once a second for people without clothes.
+        /// </summary>
         internal void Tick(float dt)
         {
             try
@@ -247,6 +284,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Checks that an equipment set has a body or leg piece.
+        /// </summary>
         internal static bool IsDressed(Equipment? equipment)
         {
             if (equipment == null)
@@ -260,6 +300,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return agent.IsHuman && !agent.IsMainAgent && agent.IsActive() && agent.AgentVisuals != null;
         }
 
+        /// <summary>
+        /// Removes every non-hero agent in the scene that has no body or leg armor.
+        /// </summary>
         private void RemoveUnclothed(Mission mission)
         {
             foreach (Agent agent in mission.Agents.ToList())
@@ -275,6 +318,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Fades an agent out and takes it out of the location so it doesn't come back.
+        /// </summary>
         private static void Remove(Agent agent)
         {
             Location? location = CampaignMission.Current?.Location;

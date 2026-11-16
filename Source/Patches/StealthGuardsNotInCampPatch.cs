@@ -7,6 +7,9 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Stops the game spawning its stealth guards in camp scenes. The patch is skipped if the game has no such behavior.
+    /// </summary>
     [HarmonyPatch]
     internal static class StealthGuardsNotInCampPatch
     {
@@ -55,6 +58,9 @@ namespace ImprovedMinorFactions.Patches
             "disguise_shadow_agent",
         };
 
+        /// <summary>
+        /// Counts the free stealth spawn points in a scene, only for the log.
+        /// </summary>
         internal static int CountStealthPoints(IReadOnlyDictionary<string, int>? unusedPoints)
         {
             if (unusedPoints == null)

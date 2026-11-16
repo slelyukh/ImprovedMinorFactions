@@ -11,6 +11,9 @@ using MHE = Helpers;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
+    /// <summary>
+    /// Lets the camp itself and its own parties join the defending side of a camp raid.
+    /// </summary>
     [HarmonyPatch(typeof(MapEvent), "CanPartyJoinBattle")]
     public class MapEventCanPartyJoinBattlePatch
     {
@@ -36,6 +39,9 @@ namespace ImprovedMinorFactions.Source.Patches
         }
     }
 
+    /// <summary>
+    /// If nobody healthy is left to defend a raided camp, the clan's entry troops defend it instead of the battle starting empty.
+    /// </summary>
     [HarmonyPatch(typeof(MHE.MapEventHelper), "GetPriorityListForHideoutMission")]
     public class GetPriorityListForHideoutMissionPatch
     {

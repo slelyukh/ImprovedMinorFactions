@@ -4,7 +4,10 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Patches
 {
-    // Brings back camp talk options other mods hid, their own conditions still apply.
+    /// <summary>
+    /// Brings back talk options in a camp menu that another mod disabled. The option's own condition still has to pass,
+    /// and only options that open a conversation are touched.
+    /// </summary>
     [HarmonyPatch(typeof(GameMenuOption), "GetConditionsHold")]
     public class MFHideoutTalkEnablePatch
     {

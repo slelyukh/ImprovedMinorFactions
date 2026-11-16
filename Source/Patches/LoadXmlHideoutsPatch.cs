@@ -11,7 +11,10 @@ using TaleWorlds.ObjectSystem;
 
 namespace ImprovedMinorFactions.Patches
 {
-    // turns the map's own bandit hideouts into mf hideouts while settlements are still xml
+    /// <summary>
+    /// Turns the map's own bandit hideouts into minor faction camps while settlements are still being read from XML,
+    /// using the options in imf_hideouts.xml. When a save is loaded, the camps are rebuilt the way they were saved.
+    /// </summary>
     [HarmonyPatch(typeof(MBObjectManager))]
     [HarmonyPatch("LoadXml")]
     public class LoadXmlHideoutsPatch
@@ -19,6 +22,9 @@ namespace ImprovedMinorFactions.Patches
         internal static readonly ClanRegistry Registry = new ClanRegistry();
         internal static readonly HashSet<string> SpawnGatedClans = new HashSet<string>(StringComparer.Ordinal);
 
+        /// <summary>
+        /// Reads the clans other modules only spawn later, so their camps wait for them instead of being made at the start.
+        /// </summary>
         private static void FindSpawnGatedClans()
         {
             SpawnGatedClans.Clear();
@@ -92,6 +98,9 @@ namespace ImprovedMinorFactions.Patches
             }
         }
 
+        /// <summary>
+        /// Checks if the settlements are being read for a saved game rather than a new one.
+        /// </summary>
         // Settlements is reread on load but Factions isn't, so follow the save (HideoutGenerator.ApplySaved)
         private static bool IsSavedCampaign()
         {
@@ -107,6 +116,9 @@ namespace ImprovedMinorFactions.Patches
             }
         }
 
+        /// <summary>
+        /// Rebuilds the camps from the save's own settlements, since Settlements is read again on load but Factions isn't.
+        /// </summary>
         private static void ApplyFromSave(XmlDocument doc)
         {
             int found = 0;
@@ -185,7 +197,11 @@ namespace ImprovedMinorFactions.Patches
 
         private static string OptionsPath() => Path.Combine(ConfigLoader.ModuleDir(), "ModuleData", "imf_hideouts.xml");
 
-        // our rows are for the base map, only trust them when it's loaded read only (or we can't tell)
+        /// <summary>
+        /// Gathers what the generator needs from the loaded settlements, our shipped settlements.xml and the base game's.
+        /// Our shipped rows are for the base map, so they're only used when the map in use is the base one.
+        /// </summary>
+        /// <returns>the context, or null if a file is missing or reading failed</returns>
         private static GeneratorContext? BuildContext(XmlDocument loaded)
         {
             try

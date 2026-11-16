@@ -22,6 +22,10 @@ using TaleWorlds.ObjectSystem;
 namespace ImprovedMinorFactions
 {
 
+    /// <summary>
+    /// Entry point of the mod. Applies the Harmony patches, adds the campaign behaviors and game models,
+    /// and registers the camp and MFData types with the object manager.
+    /// </summary>
     public class SubModule : MBSubModuleBase
     {
         protected override void OnSubModuleLoad()
@@ -34,6 +38,9 @@ namespace ImprovedMinorFactions
             harmony.PatchAllUncategorized(typeof(SubModule).Assembly);
         }
 
+        /// <summary>
+        /// Adds the mod's campaign behaviors and wraps the game's models with ours. Throws if a model it wraps is missing.
+        /// </summary>
         protected override void OnGameStart(Game game, IGameStarter gameStarterObject)
         {
             IMFTexts.InitIMFTexts();
@@ -90,6 +97,9 @@ namespace ImprovedMinorFactions
             starter.AddModel(new IMFBanditDensityModel(banditDensityModel));
             starter.AddModel(new IMFPartySizeLimitModel(partySizeLimitModel));
         }
+        /// <summary>
+        /// Clears everything kept between campaigns: the manager, captured XML, generated camp ids, config, logs and placement data.
+        /// </summary>
         public override void OnGameEnd(Game game)
         {
             IMFManager.ClearManager();
@@ -102,6 +112,9 @@ namespace ImprovedMinorFactions
             ImprovedMinorFactions.Patches.SettlementVisualMFHideoutMapEntityPatch.ForgetModels();
         }
 
+        /// <summary>
+        /// Registers the camp component and MFData types and loads mf_data.xml for campaign games.
+        /// </summary>
         public override void BeginGameStart(Game game)
         {
             base.BeginGameStart(game);
@@ -112,6 +125,9 @@ namespace ImprovedMinorFactions
                 MBObjectManager.Instance.LoadXML("MFDatas", false);
             }
         }
+        /// <summary>
+        /// Warns if another mod replaced one of our models without calling into it, then checks camp positions.
+        /// </summary>
         public override void OnGameInitializationFinished(Game game)
         {
             base.OnGameInitializationFinished(game);
@@ -129,6 +145,9 @@ namespace ImprovedMinorFactions
             HideoutPlacement.ValidateAllHideouts();
         }
 
+        /// <summary>
+        /// Shows a load order warning if a model of ours was replaced by one that doesn't build on the previous model.
+        /// </summary>
         private void ValidateGameModel(GameModel model)
         {
             if (model.GetType().Assembly == GetType().Assembly) { return; }
@@ -139,6 +158,9 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Gets the last added model of a type, so we wrap whatever other mods put there.
+        /// </summary>
         private T? GetGameModel<T>(IGameStarter gameStarterObject) where T : GameModel
         {
             var models = gameStarterObject.Models.ToArray();

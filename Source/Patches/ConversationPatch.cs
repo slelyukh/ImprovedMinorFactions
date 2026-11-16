@@ -13,6 +13,9 @@ using SandBox.CampaignBehaviors;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Uses the bandit boss dialog for the leader in a camp raid.
+    /// </summary>
     // makes sure MFHideout boss fights have correct dialog
     [HarmonyPatch(typeof(HideoutConversationsCampaignBehavior), "bandit_hideout_start_defender_on_condition")]
     public class BanditHideoutStartDefenderOnConditionPatch
@@ -33,6 +36,9 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
+    /// <summary>
+    /// Keeps the castle guard dialog out of camp raids.
+    /// </summary>
     // prevents MFHideout boss fight from using castle guard dialog
     [HarmonyPatch(typeof(GuardsCampaignBehavior), "conversation_guard_start_on_condition")]
     public class GuardStartOnConditionPatch
@@ -52,6 +58,9 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
+    /// <summary>
+    /// Starts talking to a camp notable from the menu overlay in the camp's own location.
+    /// </summary>
     // Start from the hideout's own location, the location complex can't find it.
     [HarmonyPatch(typeof(GameMenuOverlay), "ExecuteTroopAction")]
     public class MFHideoutNotableTalkPatch

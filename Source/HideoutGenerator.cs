@@ -9,6 +9,9 @@ using System;
 
 namespace ImprovedMinorFactions
 {
+    /// <summary>
+    /// What the save remembers about a converted or moved camp, so the next load can rebuild it the same way.
+    /// </summary>
     public sealed class SavedHideout
     {
         public string OwnerId { get; set; } = "";
@@ -18,6 +21,11 @@ namespace ImprovedMinorFactions
         public double Y { get; set; }
     }
 
+    /// <summary>
+    /// Gives minor factions camps on maps that don't ship IMF hideout data. Runs on settlements.xml while the game loads it,
+    /// before any settlement exists: picks bandit hideout rows near each clan's home and rewrites them into minor faction camps.
+    /// On a saved game ApplySaved redoes the conversions the save remembers instead of planning new ones.
+    /// </summary>
     public static class HideoutGenerator
     {
         private const string MfComplexTemplate = "LocationComplexTemplate.mf_hideout_complex";
@@ -25,6 +33,9 @@ namespace ImprovedMinorFactions
 
         private const string UnassignedOwner = "none";
 
+        /// <summary>
+        /// A bandit hideout row that can be turned into a camp.
+        /// </summary>
         private sealed class Donor
         {
             public XmlElement Row = null!;
@@ -33,6 +44,9 @@ namespace ImprovedMinorFactions
             public string Scene = "";
         }
 
+        /// <summary>
+        /// A donor row picked for a clan, with the culture the camp will get.
+        /// </summary>
         private sealed class Planned
         {
             public Donor D = null!;
@@ -40,6 +54,18 @@ namespace ImprovedMinorFactions
             public string Culture = "";
         }
 
+        /// <summary>
+        /// Plans and converts camps for every minor faction that doesn't have one in the document yet.
+        /// Each clan takes the bandit hideouts nearest its home, at most MaxDonorFraction of them in total so bandits keep some.
+        /// When there aren't enough, every clan gets one camp before anyone gets a second. Camp rows for missing or disabled clans are removed.
+        /// </summary>
+        /// <param name="doc">the settlements document, changed in place</param>
+        /// <param name="registry">clans, cultures and mf_data counts read earlier in the load</param>
+        /// <param name="options">settings from imf_hideouts.xml</param>
+        /// <param name="resolveClan">extra lookup for clans the registry doesn't have, e.g. ones another mod adds later</param>
+        /// <param name="context">tells which of our shipped rows belong to a base map that isn't loaded</param>
+        /// <param name="config">per-faction settings from mf_data.xml</param>
+        /// <returns>counts and log lines for IMF.log</returns>
         public static GeneratorReport Apply(XmlDocument doc, ClanRegistry registry, GeneratorOptions options, Func<string, bool>? resolveClan = null,
             GeneratorContext? context = null, ConfigView? config = null)
         {
@@ -270,7 +296,10 @@ namespace ImprovedMinorFactions
             return report;
         }
 
-        // An active MF hideout with a bandit culture crashes, so it gets the culture of the area.
+        /// <summary>
+        /// Picks the camp's culture. An active camp with a bandit culture crashes, so bandit-culture clans get
+        /// the culture of their home, or of the nearest town to the camp.
+        /// </summary>
         private static string CultureFor(ClanInfo clan, Donor donor, Func<string, bool> isBanditCulture,
             List<XmlElement> rows, Dictionary<string, Vec2> coords)
         {
@@ -287,6 +316,10 @@ namespace ImprovedMinorFactions
             return NearestRegularCulture(donor.Pos, isBanditCulture, rows, coords, clan.Culture);
         }
 
+        /// <summary>
+        /// Gets the culture of the closest non-bandit settlement to a point.
+        /// </summary>
+        /// <param name="fallback">returned when there is no such settlement</param>
         private static string NearestRegularCulture(Vec2 at, Func<string, bool> isBanditCulture,
             List<XmlElement> rows, Dictionary<string, Vec2> coords, string fallback)
         {
@@ -315,6 +348,11 @@ namespace ImprovedMinorFactions
                 && !HasMfComponent(row);
         }
 
+        /// <summary>
+        /// Rewrites a bandit hideout row into a minor faction camp owned by the clan: swaps the Hideout component for
+        /// MinorFactionHideout, keeps its icon and scene, and gives it the camp location complex.
+        /// </summary>
+        /// <param name="keepName">keep the map's name for the row, used when the row is the clan's own home</param>
         private static void ConvertRow(XmlDocument doc, Donor d, string clanId, string culture, bool keepName = false)
         {
             XmlElement row = d.Row;
@@ -361,6 +399,9 @@ namespace ImprovedMinorFactions
             locs.AppendChild(center);
         }
 
+        /// <summary>
+        /// Checks if a settlement row is already a minor faction camp.
+        /// </summary>
         private static bool HasMfComponent(XmlElement settlement)
         {
             XmlElement? comps = settlement["Components"];
@@ -382,6 +423,10 @@ namespace ImprovedMinorFactions
             return comps != null && comps.ChildNodes.OfType<XmlElement>().Any(c => c.Name == name);
         }
 
+        /// <summary>
+        /// Gets the first scene a settlement row lists, from its locations or its hideout component.
+        /// </summary>
+        /// <returns>the scene name, or an empty string</returns>
         private static string FirstScene(XmlElement settlement)
         {
             XmlElement? locs = settlement["Locations"];
@@ -397,6 +442,9 @@ namespace ImprovedMinorFactions
             return hide?.GetAttribute("scene_name") ?? "";
         }
 
+        /// <summary>
+        /// Reads posX and posY from a settlement row.
+        /// </summary>
         private static bool TryPos(XmlElement r, out Vec2 p)
         {
             p = default;
@@ -408,7 +456,9 @@ namespace ImprovedMinorFactions
             return true;
         }
 
-        // Ties keep file order so every load plans the same.
+        /// <summary>
+        /// Gets the free donor closest to a point. Ties keep file order so every load plans the same.
+        /// </summary>
         private static Donor Nearest(List<Donor> free, Vec2 anchor)
         {
             Donor best = free[0];
@@ -437,6 +487,10 @@ namespace ImprovedMinorFactions
 
         private static readonly string[] SceneAttributes = { "scene_name", "scene_name_1", "scene_name_2", "scene_name_3" };
 
+        /// <summary>
+        /// Sets the scenes mf_data.xml lists for a faction on that faction's camps, going through the list in order.
+        /// </summary>
+        /// <returns>how many rows changed</returns>
         internal static int ApplyConfigScenes(XmlDocument doc, ConfigView config)
         {
             XmlElement? root = doc.DocumentElement;
@@ -470,6 +524,10 @@ namespace ImprovedMinorFactions
             return changed;
         }
 
+        /// <summary>
+        /// Puts one scene on a camp row's component and its location's scene slots.
+        /// </summary>
+        /// <returns>true if anything changed</returns>
         private static bool SetScene(XmlElement row, string scene)
         {
             bool changed = false;
@@ -501,6 +559,16 @@ namespace ImprovedMinorFactions
 
         private const double PositionEpsilon = 0.01;
 
+        /// <summary>
+        /// Rebuilds camps on a saved game. settlements.xml is reread on every load but the conversions aren't in it,
+        /// so rows the save remembers as camps are converted again and moved camps get their saved position back.
+        /// Camp rows the save doesn't know are dropped if they belong to another map, a disabled faction or a missing clan.
+        /// </summary>
+        /// <param name="savedHideout">gets what the save stored for a row id, or null</param>
+        /// <param name="settlementSaved">true if the save has a settlement with that id</param>
+        /// <param name="clanExists">true if the clan exists in the save</param>
+        /// <param name="isBanditCulture">true for bandit cultures, those can't be used on a camp</param>
+        /// <returns>counts and log lines for IMF.log</returns>
         public static GeneratorReport ApplySaved(XmlDocument doc,
             Func<string, SavedHideout?> savedHideout,
             Func<string, bool> settlementSaved,
@@ -592,6 +660,10 @@ namespace ImprovedMinorFactions
             return report;
         }
 
+        /// <summary>
+        /// Writes the saved position into a row and clears its gate position so the game puts the gate on the camp.
+        /// </summary>
+        /// <returns>true if the position changed</returns>
         private static bool RestorePosition(XmlElement row, SavedHideout saved)
         {
             bool had = TryPos(row, out Vec2 current);
@@ -605,7 +677,9 @@ namespace ImprovedMinorFactions
         }
     }
 
-    // The rows we ship are for the base map, only trust them when it's actually loaded.
+    /// <summary>
+    /// Tells which of the camp rows we ship belong to the base map. They're only trusted when that map is actually loaded.
+    /// </summary>
     public sealed class GeneratorContext
     {
         public ISet<string> ShippedRowIds { get; set; } = new HashSet<string>(StringComparer.Ordinal);
@@ -615,7 +689,14 @@ namespace ImprovedMinorFactions
         public bool IsForeign(string rowId) =>
             BaseMapPresent == false && ShippedRowIds.Contains(rowId);
 
-        // Matching ids isn't enough, the towns also have to be where the base map has them.
+        /// <summary>
+        /// Checks if the loaded map is the base map. Matching ids isn't enough, the towns also have to be where the base map has them.
+        /// </summary>
+        /// <param name="baseRegular">town, castle and village positions of the base map</param>
+        /// <param name="loaded">the same for the loaded map</param>
+        /// <param name="minFraction">share of base settlements that must be found</param>
+        /// <param name="tolerance">how far a settlement may be from its base map position</param>
+        /// <returns>true or false, or null if there's nothing to compare</returns>
         public static bool? DetectBaseMap(IReadOnlyDictionary<string, Vec2> baseRegular,
             IReadOnlyDictionary<string, Vec2> loaded, double minFraction = 0.5, double tolerance = 1.0)
         {
@@ -634,6 +715,10 @@ namespace ImprovedMinorFactions
         public static HashSet<string> SettlementIds(XmlDocument doc, bool regularOnly) =>
             new HashSet<string>(Rows(doc, regularOnly).Select(r => r.GetAttribute("id")), StringComparer.Ordinal);
 
+        /// <summary>
+        /// Gets the position of each settlement row in a document.
+        /// </summary>
+        /// <param name="regularOnly">skip hideouts and camps</param>
         public static Dictionary<string, Vec2> SettlementPositions(XmlDocument doc, bool regularOnly)
         {
             var positions = new Dictionary<string, Vec2>(StringComparer.Ordinal);
@@ -668,9 +753,11 @@ namespace ImprovedMinorFactions
         }
     }
 
-    // Optional ModuleData/imf_hideouts.xml, for example.
-    //   <HideoutGenerator enabled="true" force="false" per_clan="" max_donor_fraction="0.4"/>
-    // Everything is optional, no file (or one we can't read) just means the defaults.
+    /// <summary>
+    /// Settings from the optional ModuleData/imf_hideouts.xml, e.g.
+    /// &lt;HideoutGenerator enabled="true" force="false" per_clan="" max_donor_fraction="0.4"/&gt;
+    /// Everything is optional, no file (or one we can't read) just means the defaults.
+    /// </summary>
     public sealed class GeneratorOptions
     {
         public bool Enabled { get; set; } = true;
@@ -683,6 +770,9 @@ namespace ImprovedMinorFactions
 
         public double MaxDonorFraction { get; set; } = 0.4;
 
+        /// <summary>
+        /// Reads the options file, or returns the defaults if it's missing or broken.
+        /// </summary>
         public static GeneratorOptions Load(string path)
         {
             var o = new GeneratorOptions();
@@ -721,6 +811,9 @@ namespace ImprovedMinorFactions
         }
     }
 
+    /// <summary>
+    /// What the generator did, written to IMF.log after each load.
+    /// </summary>
     public sealed class GeneratorReport
     {
         public string? Skipped { get; set; }
@@ -751,6 +844,9 @@ namespace ImprovedMinorFactions
                 : $"[Hideouts] saved game: converted={Converted} positions_restored={PositionsRestored} orphans_dropped={OrphansDropped} foreign_dropped={ForeignDropped} disabled_dropped={DisabledDropped} scenes_set={ScenesSet}";
     }
 
+    /// <summary>
+    /// Ids of camps converted from bandit hideouts. These keep the spot the map gave them and are never moved by HideoutPlacement.
+    /// </summary>
     public static class GeneratedHideouts
     {
         private static readonly HashSet<string> Ids = new HashSet<string>(StringComparer.Ordinal);
@@ -766,6 +862,9 @@ namespace ImprovedMinorFactions
         public static void Clear() => Ids.Clear();
     }
 
+    /// <summary>
+    /// A clan as read from the factions XML, before any Clan object exists.
+    /// </summary>
     public sealed class ClanInfo
     {
         public string Id { get; set; } = "";
@@ -777,6 +876,9 @@ namespace ImprovedMinorFactions
         public bool IsPlayer { get; set; }
     }
 
+    /// <summary>
+    /// Clans, bandit cultures and mf_data camp counts captured from the XML as it loads, for the generator to plan with.
+    /// </summary>
     public sealed class ClanRegistry
     {
         private readonly Dictionary<string, ClanInfo> _clans = new Dictionary<string, ClanInfo>(StringComparer.Ordinal);
@@ -812,6 +914,9 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Reads every clan from a factions document.
+        /// </summary>
         public void Capture(XmlDocument factionsDoc)
         {
             foreach (XmlElement f in factionsDoc.GetElementsByTagName("Faction"))
@@ -834,6 +939,9 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Reads num_active_hideouts per clan from mf_data.xml.
+        /// </summary>
         public void CaptureMfData(XmlDocument mfDoc)
         {
             foreach (XmlElement m in mfDoc.GetElementsByTagName("MFData"))
@@ -853,10 +961,16 @@ namespace ImprovedMinorFactions
             string.Equals(e.GetAttribute(attr), "true", StringComparison.OrdinalIgnoreCase);
     }
 
+    /// <summary>
+    /// Reads clan ids from another mod's CustomPartySpawns.xml, those clans spawn their own parties.
+    /// </summary>
     public static class ExternalSpawns
     {
         public const string FileName = "CustomPartySpawns.xml";
 
+        /// <summary>
+        /// Gets each spawn_clan id in the file once, in file order. Broken XML gives an empty list.
+        /// </summary>
         public static IEnumerable<string> ParseClanIds(string xml)
         {
             var found = new List<string>();

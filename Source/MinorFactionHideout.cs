@@ -21,6 +21,9 @@ using MathF = TaleWorlds.Library.MathF;
 namespace ImprovedMinorFactions
 {
 
+    /// <summary>
+    /// Registers the camp component and its saved lists with the save system.
+    /// </summary>
     public class MFHideoutTypeDefiner : SaveableTypeDefiner
     {
         public MFHideoutTypeDefiner() : base(792_346_751)
@@ -39,6 +42,10 @@ namespace ImprovedMinorFactions
             base.ConstructContainerDefinition(typeof(Dictionary<string, MinorFactionHideout>));
         }
     }
+    /// <summary>
+    /// The settlement component of a minor faction camp. Holds the camp's state (active, spotted, hearth, owner, saved position),
+    /// handles activating it with notables and militia, moving to another camp after a raid or a nomad move, and the daily militia and hearth growth.
+    /// </summary>
     // ISpottable is gone since 1.5.4 so we track IsSpotted ourselves
     public class MinorFactionHideout : SettlementComponent
     {
@@ -61,6 +68,10 @@ namespace ImprovedMinorFactions
             IMFManager.Current!.AddLoadedMFHideout(this);
         }
 
+        /// <summary>
+        /// Activates the camp at the start of a campaign or when a clan first needs one: creates two preacher notables,
+        /// sets up the militia and hearth. Does nothing if the camp has no owner, is already active or has no usable ground.
+        /// </summary>
         public void ActivateHideoutFirstTime()
         {
             if (this.OwnerClan == null)
@@ -94,6 +105,11 @@ namespace ImprovedMinorFactions
             this.Hearth = 350;
         }
 
+        /// <summary>
+        /// Creates a preacher notable in the camp, picking a culture that has preacher templates first.
+        /// </summary>
+        /// <param name="tag">label for the log, e.g. "#1"</param>
+        /// <returns>the notable, or null if it couldn't be made</returns>
         // CreateNotable throws on a null template, so make sure there is one.
         private Hero? TryCreatePreacher(string tag)
         {
@@ -114,6 +130,9 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Counts a culture's preacher notable templates.
+        /// </summary>
         internal static int PreacherTemplateCount(CultureObject? culture)
         {
             if (culture == null || culture.NotableTemplates == null)
@@ -121,6 +140,9 @@ namespace ImprovedMinorFactions
             return culture.NotableTemplates.Count(t => t != null && t.Occupation == Occupation.Preacher);
         }
 
+        /// <summary>
+        /// If the camp's culture can't make preachers, switches it to the owner's culture, the nearest town's, or any culture that can.
+        /// </summary>
         // settlement culture, owner's culture, nearest town with preachers, then any culture with preachers
         private void EnsureNotableCulture()
         {
@@ -164,6 +186,11 @@ namespace ImprovedMinorFactions
             s.Culture = pick;
         }
 
+        /// <summary>
+        /// Moves the notables of the old camp here and activates this camp. After a raid the activation waits for the usual delay.
+        /// </summary>
+        /// <param name="newNotables">notables from the camp being left</param>
+        /// <param name="reason">why the old camp closed</param>
         private void ActivateHideout(List<Hero> newNotables, DeactivationReason reason)
         {
             // move notables to this hideout
@@ -180,12 +207,18 @@ namespace ImprovedMinorFactions
                 ActivateHideout();
         }
 
+        /// <summary>
+        /// Marks the camp to activate once the wait time has passed, DailyTick does the activation.
+        /// </summary>
         private void ScheduleHideoutActivation(CampaignTime waitTime)
         {
             _nextPossibleActivationTime = CampaignTime.Now + waitTime;
             _activationScheduled = true;
         }
 
+        /// <summary>
+        /// Activates the camp: places it on the map, picks a scene for the ground, fills the militia and makes it the clan's home.
+        /// </summary>
         private void ActivateHideout()
         {
             HideoutPlacement.PlaceOnActivation(this);
@@ -221,6 +254,9 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// After a raid, moves the notables to the clan's next camp and shuts this one.
+        /// </summary>
         public void MoveHideoutsPostRaid(MinorFactionHideout newHideout)
         {
             List<Hero> notables = this.Settlement.Notables.ToList();
@@ -228,7 +264,9 @@ namespace ImprovedMinorFactions
             this.DeactivateHideout(true);
         }
 
-        // nowhere else to move, reopen after the delay. empty it now so the raid counts
+        /// <summary>
+        /// Nowhere else to move, so this camp reopens after the delay. It is emptied now so the raid still counts.
+        /// </summary>
         internal void RespawnAfterRaid()
         {
             List<Hero> notables = this.Settlement.Notables.ToList();
@@ -236,6 +274,9 @@ namespace ImprovedMinorFactions
             ActivateHideout(notables, DeactivationReason.Raid);
         }
 
+        /// <summary>
+        /// Moves a nomad camp: notables, hearth and militia go to the new camp and this one shuts. A player waiting at the old camp gets told they left.
+        /// </summary>
         public void MoveHideoutsNomad(MinorFactionHideout newHideout)
         {
             List<Hero> notables = this.Settlement.Notables.ToList();
@@ -259,6 +300,9 @@ namespace ImprovedMinorFactions
                         .SetTextVariable("MINOR_FACTION", this.OwnerClan.Name).ToString()));
         }
 
+        /// <summary>
+        /// Gives the other camp the same number of militia of each tier as this one.
+        /// </summary>
         // Method counts how many militia of each tier there are and gives otherHideout that number of militia of that tier
         internal void CopyMilitiaToHideout(MinorFactionHideout otherHideout)
         {
@@ -283,6 +327,10 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Shuts the camp: removes its notables, militia and hearth and hides it on the map.
+        /// </summary>
+        /// <param name="createEvent">fire the game's hideout deactivated event, which things like quests listen to</param>
         internal void DeactivateHideout(bool createEvent)
         {
             if (createEvent)
@@ -299,6 +347,9 @@ namespace ImprovedMinorFactions
             this._activationScheduled = false;
         }
 
+        /// <summary>
+        /// Upgrades up to count militia troops to one of their upgrade targets.
+        /// </summary>
         public void UpgradeMilitia(int count)
         {
             if (this.Settlement.MilitiaPartyComponent?.Party == null)
@@ -333,6 +384,9 @@ namespace ImprovedMinorFactions
 
         }
 
+        /// <summary>
+        /// Marks the camp as found by the player and shows it on the map.
+        /// </summary>
         public void PlayerSpotHideout()
         {
             this.IsSpotted = true;
@@ -340,6 +394,10 @@ namespace ImprovedMinorFactions
             CampaignEventDispatcher.Instance.OnHideoutSpotted(MobileParty.MainParty.Party, this.Settlement.Party);
         }
 
+        /// <summary>
+        /// Activates a scheduled camp once its time comes. For active camps, grows militia and hearth, and upgrades militia
+        /// when they are over the cap or by a daily random chance.
+        /// </summary>
         public void DailyTick()
         {
             if (_activationScheduled && _nextPossibleActivationTime.IsPast)
@@ -389,6 +447,9 @@ namespace ImprovedMinorFactions
             _nextPossibleAttackTime = CampaignTime.Now + CampaignTime.Hours(12f);
         }
 
+        /// <summary>
+        /// Gets the parties that defend the camp: the camp itself, its militia, and parties of the owner's faction inside it.
+        /// </summary>
         public IEnumerable<PartyBase> GetDefenderParties(MapEvent.BattleTypes battleType)
         {
             yield return base.Settlement.Party;
@@ -413,6 +474,11 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Gets defenders one at a time, the camp first and then the owner's parties inside it.
+        /// </summary>
+        /// <param name="partyIndex">where the last call stopped, moved on by this call</param>
+        /// <returns>the next defender, or null when there are no more</returns>
         public PartyBase? GetNextDefenderParty(ref int partyIndex, MapEvent.BattleTypes battleType)
         {
             partyIndex++;
@@ -453,6 +519,9 @@ namespace ImprovedMinorFactions
 
         private Vec2 _sceneCheckedAt = new Vec2(float.NaN, float.NaN);
 
+        /// <summary>
+        /// Swaps the camp's scene for one that fits the ground it is on now. Only checks again after the camp moved.
+        /// </summary>
         internal void EnsureTerrainFittingScene()
         {
             try
@@ -508,6 +577,9 @@ namespace ImprovedMinorFactions
             base.Settlement.IsVisible = false;
         }
 
+        /// <summary>
+        /// Reads the camp's scene and background from its settlements.xml row.
+        /// </summary>
         public override void Deserialize(MBObjectManager objectManager, XmlNode node)
         {
             base.BackgroundCropPosition = float.Parse(node!.Attributes!.GetNamedItem("background_crop_position")!.Value!);
@@ -622,6 +694,9 @@ namespace ImprovedMinorFactions
 
         internal TaleWorlds.Library.Vec2 SavedPosition => new TaleWorlds.Library.Vec2(_savedPosX, _savedPosY);
 
+        /// <summary>
+        /// Stores the camp's position in the save, the game doesn't save settlement positions.
+        /// </summary>
         internal void RememberPosition(TaleWorlds.Library.Vec2 position)
         {
             _savedPosX = position.X;
@@ -630,6 +705,9 @@ namespace ImprovedMinorFactions
         }
     }
 
+    /// <summary>
+    /// Why a camp is being closed.
+    /// </summary>
     public enum DeactivationReason
     {
         Raid,

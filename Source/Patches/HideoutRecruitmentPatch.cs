@@ -8,6 +8,9 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Lets lord parties waiting in an active camp recruit from its notables, like they do in towns and villages.
+    /// </summary>
     [HarmonyPatch(typeof(RecruitmentCampaignBehavior), "HourlyTickParty")]
     public class HideoutVolunteerRecruitmentPatch
     {

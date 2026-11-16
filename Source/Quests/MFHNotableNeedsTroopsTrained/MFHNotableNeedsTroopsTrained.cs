@@ -22,7 +22,9 @@ using static ImprovedMinorFactions.IMFModels;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 {
-    // Token... comment means function has not yet been adapted to mod
+    /// <summary>
+    /// Quest from a camp notable who wants new recruits trained: the player takes them along and brings them back upgraded.
+    /// </summary>
     public class MFHNotableNeedsTroopsTrainedIssueBehavior : CampaignBehaviorBase
     {
         public override void RegisterEvents()
@@ -64,6 +66,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
 
         internal const MFRelation RelationLevelNeededForQuest = MFRelation.Neutral;
 
+        /// <summary>
+        /// The issue offered by the notable, can also be solved by sending a companion with troops.
+        /// </summary>
         public class MFHNotableNeedsTroopsTrainedIssue : IssueBase
         {
             public override AlternativeSolutionScaleFlag AlternativeSolutionScaleFlags
@@ -332,6 +337,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             private const int CompanionRequiredSkillLevel = 120;
         }
 
+        /// <summary>
+        /// The quest itself: train the borrowed recruits to the wanted tier and return them.
+        /// </summary>
         public class MFHNotableNeedsTroopsTrainedIssueQuest : QuestBase
         {
             protected override void RegisterEvents()
@@ -860,6 +868,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
             private int _upgradedTroopsCount;
         }
 
+        /// <summary>
+        /// Registers the issue and quest with the save system.
+        /// </summary>
         public class MFHNotableNeedsTroopsTrainedIssueBehaviorTypeDefiner : SaveableTypeDefiner
         {
             public MFHNotableNeedsTroopsTrainedIssueBehaviorTypeDefiner() : base(112_953_420)

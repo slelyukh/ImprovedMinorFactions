@@ -10,6 +10,9 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Adds minor faction camps to the settlements the AI considers visiting.
+    /// </summary>
     // Vanilla only indexes forts and villages, add mf hideouts too
     [HarmonyPatch(typeof(AiVisitSettlementBehavior), "RefreshTheTargetingSettlementDictionary")]
     public class RefreshTheTargetingSettlementDictionaryPatch
@@ -36,6 +39,9 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
+    /// <summary>
+    /// Lets a party visit an active camp of its own faction, or of a clan serving its kingdom as mercenaries, when the camp isn't under attack.
+    /// </summary>
     [HarmonyPatch(typeof(AiVisitSettlementBehavior), "IsSettlementSuitableForVisitingCondition")]
     public class IsSettlementSuitableForVisitingConditionPatch
     {
@@ -51,6 +57,9 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
+    /// <summary>
+    /// Wraps the game's target score model so minor faction lords patrol around their camps more often.
+    /// </summary>
     // make minor faction lords more likely to patrol their hideouts
     internal class IMFTargetScoreCalculatingModel : TargetScoreCalculatingModel
     {

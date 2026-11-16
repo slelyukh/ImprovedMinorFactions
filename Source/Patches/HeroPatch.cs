@@ -12,6 +12,9 @@ using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
+    /// <summary>
+    /// Camp notables aren't gang leaders to the game, which expects gang leaders to live in towns.
+    /// </summary>
     // patch to prevent crashes from assumption about Gang Leaders living in Towns. Use Helpers.IsMFGangLeader instead.
     [HarmonyPatch(typeof(Hero), "get_IsGangLeader")]
     public class HeroIsGangLeaderPatch
@@ -23,6 +26,9 @@ namespace ImprovedMinorFactions.Source.Patches
         }
     }
 
+    /// <summary>
+    /// Makes camp notables count as notables.
+    /// </summary>
     [HarmonyPatch(typeof(Hero), "get_IsNotable")]
     public class HeroIsNotablePatch
     {
@@ -33,6 +39,9 @@ namespace ImprovedMinorFactions.Source.Patches
         }
     }
 
+    /// <summary>
+    /// Ignores setting a trait that doesn't exist instead of crashing.
+    /// </summary>
     [HarmonyPatch(typeof(Hero), "SetTraitLevel")]
     public class HeroSetTraitLevelPatch
     {
@@ -44,6 +53,9 @@ namespace ImprovedMinorFactions.Source.Patches
         }
     }
 
+    /// <summary>
+    /// Gives the player 100 relation with notables of their own minor faction.
+    /// </summary>
     [HarmonyPatch(typeof(Hero), "GetRelation")]
     public class HeroGetRelationPatch
     {
@@ -64,6 +76,9 @@ namespace ImprovedMinorFactions.Source.Patches
         }
     }
 
+    /// <summary>
+    /// Gives the player 100 relation with heroes of their own minor faction.
+    /// </summary>
     [HarmonyPatch(typeof(Hero), "GetRelationWithPlayer")]
     public class HeroGetRelationWithPlayerPatch
     {

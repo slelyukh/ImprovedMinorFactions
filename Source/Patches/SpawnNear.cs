@@ -14,11 +14,18 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Patches
 {
-    // mf parties start near their hideout and never in it (that opens its menu)
+    /// <summary>
+    /// Puts minor faction parties on open ground next to their camp, never inside it (that would open its menu).
+    /// </summary>
     internal static class SpawnNear
     {
         private static readonly MethodInfo? PositionSetter = AccessTools.PropertySetter(typeof(MobileParty), "Position");
 
+        /// <summary>
+        /// Moves a party next to the camp. The player is stopped and the camera follows them.
+        /// </summary>
+        /// <param name="slot">which spot around the camp, so parties don't stack on each other</param>
+        /// <returns>false if there was no open ground near the camp</returns>
         internal static bool Place(MobileParty party, Settlement hideout, int slot)
         {
             if (party == null || hideout == null || PositionSetter == null)
@@ -51,6 +58,9 @@ namespace ImprovedMinorFactions.Patches
             }
         }
 
+        /// <summary>
+        /// Takes a party out of the settlement it is in, closing the player's encounter if it's the player.
+        /// </summary>
         internal static void LeaveSettlement(MobileParty party)
         {
             if (party == MobileParty.MainParty && PlayerEncounter.Current != null)
@@ -65,7 +75,9 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
-    // mf lord parties spawn next to their own camp instead of anywhere near home
+    /// <summary>
+    /// Spawns minor faction lord parties next to their clan's camp instead of anywhere near their home. Not for nomads.
+    /// </summary>
     [HarmonyPatch(typeof(MobilePartyHelper), nameof(MobilePartyHelper.SpawnLordParty), new Type[] { typeof(Hero), typeof(CampaignVec2), typeof(float) })]
     internal static class SpawnLordPartyAtCampPatch
     {

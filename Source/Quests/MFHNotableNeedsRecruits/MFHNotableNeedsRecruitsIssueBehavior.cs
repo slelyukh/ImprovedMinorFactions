@@ -21,7 +21,9 @@ using static ImprovedMinorFactions.IMFModels;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 {
-    // Token... comment means function has not yet been adapted to mod
+    /// <summary>
+    /// Quest from a camp notable who needs recruits: the player brings troops of the clan's culture to the camp.
+    /// </summary>
     public class MFHNotableNeedsRecruitsIssueBehavior : CampaignBehaviorBase
     {
         public override void RegisterEvents()
@@ -60,6 +62,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
 
         internal const MFRelation RelationLevelNeededForQuest = MFRelation.Neutral;
 
+        /// <summary>
+        /// The issue offered by the notable, can also be solved by sending a companion with troops.
+        /// </summary>
         public class MFHNotableNeedsRecruitsIssue : IssueBase
         {
 
@@ -338,6 +343,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             private const int CompanionRequiredSkillLevel = 120;
         }
 
+        /// <summary>
+        /// The quest itself: bring the troops to the notable before time runs out.
+        /// </summary>
         public class MFHNotableNeedsRecruitsIssueQuest : QuestBase
         {
             protected override void RegisterEvents()
@@ -739,6 +747,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
             private JournalLog _questProgressLog;
         }
 
+        /// <summary>
+        /// Registers the issue and quest with the save system.
+        /// </summary>
         public class MFHNotableNeedsRecruitsIssueBehaviorTypeDefiner : SaveableTypeDefiner
         {
             public MFHNotableNeedsRecruitsIssueBehaviorTypeDefiner() : base(229_923_420)

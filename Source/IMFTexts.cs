@@ -9,6 +9,10 @@ using TaleWorlds.CampaignSystem;
 
 namespace ImprovedMinorFactions.Source
 {
+    /// <summary>
+    /// Faction-specific texts from imf_faction_texts.xml, e.g. a camp description written for one clan.
+    /// Loaded once per game start.
+    /// </summary>
     // class to manage faction-specific versions of texts
     internal class IMFTexts
     {
@@ -32,11 +36,18 @@ namespace ImprovedMinorFactions.Source
             return mfTexts[TextId][FactionId];
         }
 
+        /// <summary>
+        /// Gets the faction's version of a text.
+        /// </summary>
+        /// <returns>the text, or null if that faction has no version of it</returns>
         public static TextObject? GetFactionText(string TextId, Clan mFaction)
         {
             return Current!.GetFactionTextInternal(TextId, mFaction.StringId);
         }
 
+        /// <summary>
+        /// Reads imf_faction_texts.xml from the module folder. A missing or broken file just means no faction texts.
+        /// </summary>
         private void DeserializeTexts()
         {
             string binDir = Path.GetDirectoryName(typeof(IMFTexts).Assembly.Location) ?? ".";

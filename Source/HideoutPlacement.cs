@@ -12,8 +12,11 @@ using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions
 {
-    // camps go near the clan's home town on reachable land, placed on activation, loading never moves them.
-    // map lookups throw off the navmesh, those spots count as unusable unless marked otherwise
+    /// <summary>
+    /// Decides where minor faction camps sit on the campaign map and where parties appear next to them.
+    /// Camps go near the clan's home town on land parties can actually reach, and are placed when they activate.
+    /// Loading a save never moves a camp. Map lookups throw off the navmesh, so those spots count as unusable.
+    /// </summary>
     internal static class HideoutPlacement
     {
         private const float MinHideoutDistanceFromSettlement = 8f;
@@ -48,9 +51,17 @@ namespace ImprovedMinorFactions
 
         private static readonly Dictionary<string, CampaignVec2> Anchors = new Dictionary<string, CampaignVec2>();
 
+        /// <summary>
+        /// Clears the remembered home positions. Called when a campaign starts or loads.
+        /// </summary>
         internal static void ForgetAnchors() => Anchors.Clear();
 
-        // In a loaded save the home can already be the active camp itself, that one doesn't count.
+        /// <summary>
+        /// Remembers which town a camp belongs near. In a loaded save the clan's home can be the camp itself,
+        /// so that case falls back to the clan's initial home, and a camp with no real town gets no anchor.
+        /// </summary>
+        /// <param name="hideout">the camp settlement</param>
+        /// <param name="home">the clan's current home settlement</param>
         internal static void RegisterAnchor(Settlement hideout, Settlement home)
         {
             try
@@ -72,6 +83,10 @@ namespace ImprovedMinorFactions
             return home != null && home != hideout && !home.IsHideout && !Helpers.IsMFHideout(home);
         }
 
+        /// <summary>
+        /// Gets the clan's home town or castle, skipping hideouts and the camp itself.
+        /// </summary>
+        /// <returns>the home settlement, or null if the clan has no real one</returns>
         private static Settlement? RegularHomeOf(Settlement hideout, Clan? ownerClan)
         {
             if (IsRegularHome(ownerClan?.HomeSettlement, hideout))
@@ -81,6 +96,9 @@ namespace ImprovedMinorFactions
             return null;
         }
 
+        /// <summary>
+        /// Gets the point a camp should stay near: the registered anchor, else the clan's home, else the camp's own position.
+        /// </summary>
         private static CampaignVec2 ResolveAnchor(Settlement hideout, Clan ownerClan)
         {
             if (Anchors.TryGetValue(hideout.StringId, out CampaignVec2 anchor))
@@ -94,12 +112,20 @@ namespace ImprovedMinorFactions
             return Anchors.ContainsKey(hideout.StringId) || RegularHomeOf(hideout, ownerClan) != null;
         }
 
-        // some maps report open sea as valid, so land needs dry terrain on 3 of 4 probes
+        /// <summary>
+        /// Checks that a point is dry land a normal party can walk on. Some maps report open sea as valid,
+        /// so the point itself and 3 of 4 nearby probes must also be on land terrain.
+        /// </summary>
         internal static bool IsValidLandPosition(CampaignVec2 position)
         {
             return IsValidLandPositionInternal(position, null);
         }
 
+        /// <summary>
+        /// Land check behind IsValidLandPosition. With an anchor it also rejects points on a different island than the anchor.
+        /// </summary>
+        /// <param name="anchor">the home position to compare islands with, or null to skip that check</param>
+        /// <returns>true for usable land, false for water, bad terrain or anything off the navmesh</returns>
         private static bool IsValidLandPositionInternal(CampaignVec2 position, CampaignVec2? anchor)
         {
             try
@@ -142,7 +168,10 @@ namespace ImprovedMinorFactions
             }
         }
 
-        // A camp up a mountain passes the water checks but parties can't reach its icon.
+        /// <summary>
+        /// Checks for mountain terrain or a spot parties can't reach. A camp up a mountain passes the water checks
+        /// but parties can't get to its icon.
+        /// </summary>
         private static bool IsOnHill(CampaignVec2 position)
         {
             try
@@ -163,6 +192,11 @@ namespace ImprovedMinorFactions
         private static float GetNearestSettlementDistanceSquared(CampaignVec2 position, Settlement? ignoreSettlement = null)
             => NearestSettlementDistanceSquared(position, ignoreSettlement, skipHideouts: false);
 
+        /// <summary>
+        /// Squared distance from a point to the closest settlement.
+        /// </summary>
+        /// <param name="ignoreSettlement">a settlement to leave out, usually the camp being placed</param>
+        /// <param name="skipHideouts">leave out bandit hideouts and minor faction camps, so only towns, castles and villages count</param>
         private static float NearestSettlementDistanceSquared(CampaignVec2 position, Settlement? ignoreSettlement, bool skipHideouts)
         {
             float nearestDistanceSq = float.MaxValue;
@@ -179,6 +213,11 @@ namespace ImprovedMinorFactions
             return nearestDistanceSq;
         }
 
+        /// <summary>
+        /// Checks that a point is a good camp spot: usable land, not on a hill, 8 to 55 units from the nearest town,
+        /// castle or village, and not right on top of another settlement.
+        /// </summary>
+        /// <param name="ignoreSettlement">the camp being placed, so it doesn't count as being in its own way</param>
         internal static bool IsGoodHideoutPosition(CampaignVec2 position, Settlement? ignoreSettlement = null)
         {
             if (!IsValidLandPosition(position) || IsOnHill(position))
@@ -191,6 +230,9 @@ namespace ImprovedMinorFactions
             return spacingSq >= MinSpacingFromOtherSettlements * MinSpacingFromOtherSettlements;
         }
 
+        /// <summary>
+        /// Same as IsGoodHideoutPosition, but the spot must also be on the home town's island with no water in between.
+        /// </summary>
         private static bool IsGoodHideoutPositionForAnchor(CampaignVec2 position, CampaignVec2 anchor, Settlement? ignoreSettlement = null)
         {
             if (!IsValidLandPositionInternal(position, anchor) || IsOnHill(position))
@@ -206,6 +248,11 @@ namespace ImprovedMinorFactions
             return spacingSq >= MinSpacingFromOtherSettlements * MinSpacingFromOtherSettlements;
         }
 
+        /// <summary>
+        /// Samples the straight line between two points and checks if it goes over sea or wide water.
+        /// With War Sails loaded the sea layer is asked too, since over the sea the land layer just says Plain.
+        /// </summary>
+        /// <returns>true if the line crosses water, false if not or if the check failed</returns>
         private static bool SegmentCrossesWater(CampaignVec2 a, CampaignVec2 b)
         {
             try
@@ -231,6 +278,10 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Checks if two points are on the same navmesh island.
+        /// </summary>
+        /// <returns>true if they are, or if it can't tell</returns>
         internal static bool SameLandAs(CampaignVec2 a, CampaignVec2 b)
         {
             try
@@ -249,7 +300,10 @@ namespace ImprovedMinorFactions
             }
         }
 
-        // walkable point far from where we asked = small unreachable navmesh island
+        /// <summary>
+        /// Checks that parties can get to a point. If the nearest walkable point is far from the one we asked about,
+        /// the point is on a small navmesh island nobody can reach.
+        /// </summary>
         private static bool IsReachable(CampaignVec2 position)
         {
             try
@@ -265,6 +319,10 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Tries random spots around the anchor at camp distance and returns the first good, reachable one.
+        /// </summary>
+        /// <returns>the spot, or null after 90 failed tries</returns>
         private static CampaignVec2? FindRandomPositionNearAnchor(CampaignVec2 anchor, Settlement? ignoreSettlement = null)
         {
             if (Campaign.Current?.MapSceneWrapper == null)
@@ -285,6 +343,11 @@ namespace ImprovedMinorFactions
             return null;
         }
 
+        /// <summary>
+        /// Backup for when random tries fail: asks the navmesh for walkable points at growing distances from the anchor
+        /// and keeps the closest one that passes the camp checks.
+        /// </summary>
+        /// <returns>the spot, or null if none passed</returns>
         private static CampaignVec2? FindFallbackPositionNearAnchor(CampaignVec2 anchor, Settlement? ignoreSettlement = null)
         {
             try
@@ -319,7 +382,10 @@ namespace ImprovedMinorFactions
             return null;
         }
 
-        // settled camps keep their saved spot unless the ground stops being usable, nomads move
+        /// <summary>
+        /// Places a camp when it activates. Settled camps keep their saved spot unless the ground stopped being usable,
+        /// nomad camps move every time. Converted hideouts (see GeneratedHideouts) never move.
+        /// </summary>
         internal static void PlaceOnActivation(MinorFactionHideout mfh)
         {
             Settlement settlement = mfh.Settlement;
@@ -338,6 +404,11 @@ namespace ImprovedMinorFactions
             return IsValidLandPosition(position) && !IsOnHill(position);
         }
 
+        /// <summary>
+        /// Moves a camp to a good spot near its clan's home if where it is now isn't good.
+        /// </summary>
+        /// <param name="reroll">move even if the current spot is fine, used for nomads</param>
+        /// <returns>true if the camp moved</returns>
         internal static bool EnsureValidHideoutPosition(Settlement settlement, Clan ownerClan, bool reroll = false)
         {
             try
@@ -378,12 +449,20 @@ namespace ImprovedMinorFactions
         private const int AnglesPerRing = 16;
         private const float MinSpawnDistanceFromHideout = 6f;
 
+        /// <summary>
+        /// Checks that a point is land a party can stand on and reach.
+        /// </summary>
         internal static bool IsPassable(CampaignVec2 position)
         {
             return IsValidLandPositionInternal(position, null) && IsReachable(position);
         }
 
-        // on an exception this says placeable, a clan on bad ground beats a clan with no camp
+        /// <summary>
+        /// Checks if a camp has nowhere usable to be, so IMFManager skips it when picking camps to activate.
+        /// Converted hideouts count as unplaceable if they are on bad ground or on another island than their home.
+        /// On an exception this says placeable, a clan on bad ground beats a clan with no camp.
+        /// </summary>
+        /// <param name="ownerClan">the clan that would own the camp, used to find its home</param>
         internal static bool IsUnplaceable(Settlement settlement, Clan? ownerClan)
         {
             try
@@ -424,6 +503,14 @@ namespace ImprovedMinorFactions
         private const int OpenProbeDirections = 8;
         private const float PartyScanRadius = 70f;
 
+        /// <summary>
+        /// Finds a spot next to a camp where a party can appear. Tries the scored search first and falls back to the first passable spot.
+        /// </summary>
+        /// <param name="slot">number of the party being placed, turns the search so several parties don't land on the same spot</param>
+        /// <param name="ignore">the camp itself, so it doesn't count as a nearby settlement</param>
+        /// <param name="placing">the party being placed, it is left out of the crowding check and decides who counts as hostile</param>
+        /// <param name="close">look right next to the camp first, used for the player's start</param>
+        /// <returns>the spot, or null if nothing near the camp is passable</returns>
         internal static CampaignVec2? FindSpawnNear(CampaignVec2 hideoutPosition, int slot, Settlement? ignore, MobileParty? placing = null, bool close = false)
         {
             try
@@ -451,6 +538,13 @@ namespace ImprovedMinorFactions
         private const float CloseMinSpawnDistance = 5f;
         private const int CenterProbeWeight = 4;
 
+        /// <summary>
+        /// Checks points on rings around the camp and returns the one with the best SpawnSpotScore.
+        /// Stops early on a spot good enough to count as excellent.
+        /// </summary>
+        /// <param name="rings">ring radii to try, closest first</param>
+        /// <param name="minDistanceFromHideout">points closer to the camp than this are skipped</param>
+        /// <param name="shoreMargin">also require land all around the point, keeps the player off the shoreline</param>
         private static CampaignVec2? FindBestSpawn(CampaignVec2 hideoutPosition, int slot, Settlement? ignore, MobileParty? placing,
             int[] rings, float minDistanceFromHideout, bool shoreMargin = false)
         {
@@ -519,6 +613,9 @@ namespace ImprovedMinorFactions
 
         private const float ShoreMarginRadius = 1.5f;
 
+        /// <summary>
+        /// Checks that there is land in all 8 directions a short way from the spot.
+        /// </summary>
         private static bool HasShoreMargin(CampaignVec2 spot)
         {
             Vec2 c = spot.ToVec2();
@@ -532,6 +629,10 @@ namespace ImprovedMinorFactions
             return true;
         }
 
+        /// <summary>
+        /// Lists active parties near a point that aren't in a settlement.
+        /// </summary>
+        /// <returns>each party's position, paired with true if it is at war with the party being placed</returns>
         private static List<KeyValuePair<Vec2, bool>> NearbyParties(Vec2 around, MobileParty? placing)
         {
             var result = new List<KeyValuePair<Vec2, bool>>();
@@ -550,6 +651,11 @@ namespace ImprovedMinorFactions
             return result;
         }
 
+        /// <summary>
+        /// Counts how many points around a spot are open ground (plain, steppe, desert, snow, farmland). The center counts 4 times.
+        /// </summary>
+        /// <param name="total">how many probes were checked, with the center counted 4 times</param>
+        /// <returns>how many of those were open</returns>
         private static int CountOpenProbes(CampaignVec2 center, out int total)
         {
             total = 0;
@@ -588,6 +694,9 @@ namespace ImprovedMinorFactions
             return open;
         }
 
+        /// <summary>
+        /// Checks if a point is on the same navmesh island as the camp. Returns true when it can't tell.
+        /// </summary>
         private static bool SameIsland(PathFaceRecord hideoutFace, CampaignVec2 candidate)
         {
             try
@@ -604,6 +713,9 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Simple backup spawn search: the first passable point on rings around the camp that isn't too close to a settlement.
+        /// </summary>
         private static CampaignVec2? FindFirstFitSpawn(CampaignVec2 hideoutPosition, int slot, Settlement? ignore)
         {
             if (Campaign.Current?.MapSceneWrapper == null)
@@ -626,7 +738,9 @@ namespace ImprovedMinorFactions
             return null;
         }
 
-        // checks active camps once at game start, bad ones move on their next activation
+        /// <summary>
+        /// Checks active camps once at game start and logs the ones on bad ground. They get moved on their next activation.
+        /// </summary>
         internal static void ValidateAllHideouts()
         {
             try
@@ -654,6 +768,10 @@ namespace ImprovedMinorFactions
         private static readonly MethodInfo? PositionSetter = AccessTools.PropertySetter(typeof(Settlement), nameof(Settlement.Position));
         private static readonly MethodInfo? GatePositionSetter = AccessTools.PropertySetter(typeof(Settlement), nameof(Settlement.GatePosition));
 
+        /// <summary>
+        /// Moves a settlement and its gate to a new position. The game doesn't save settlement positions,
+        /// so the camp also remembers it for the next load.
+        /// </summary>
         internal static void SetSettlementPosition(Settlement settlement, CampaignVec2 newPosition)
         {
             PositionSetter?.Invoke(settlement, new object[] { newPosition });
@@ -663,7 +781,13 @@ namespace ImprovedMinorFactions
             Helpers.GetMFHideout(settlement)?.RememberPosition(newPosition.ToVec2());
         }
 
-        // Keep the authored spot only if parties can stand there and get home from it.
+        /// <summary>
+        /// Keep the spot a camp came with only if parties can stand there and get home from it.
+        /// </summary>
+        /// <param name="passableHere">parties can stand at the camp's position</param>
+        /// <param name="hasRealHome">the clan has a real home town to compare with</param>
+        /// <param name="sameLandAsHome">the camp is on the same island as that home</param>
+        /// <returns>true if the camp should move</returns>
         public static bool NeedsRelocation(bool passableHere, bool hasRealHome, bool sameLandAsHome) =>
             !passableHere || (hasRealHome && !sameLandAsHome);
 
@@ -675,6 +799,13 @@ namespace ImprovedMinorFactions
         public const double DistancePenaltyPerUnit = 1.0;
         public const double ExcellentOpenFraction = 0.9;
 
+        /// <summary>
+        /// Checks if a spawn spot is good enough to stop searching: mostly open ground, no enemies close and on the camp's island.
+        /// </summary>
+        /// <param name="openProbes">open probes from CountOpenProbes</param>
+        /// <param name="totalProbes">all probes from CountOpenProbes</param>
+        /// <param name="nearestHostile">distance to the closest enemy party</param>
+        /// <param name="sameIsland">the spot is on the same island as the camp</param>
         public static bool IsExcellentSpawn(int openProbes, int totalProbes, float nearestHostile, bool sameIsland)
         {
             return totalProbes > 0
@@ -683,6 +814,17 @@ namespace ImprovedMinorFactions
                 && sameIsland;
         }
 
+        /// <summary>
+        /// Scores a spawn spot. Open ground and being on the camp's island add points, enemies nearby and distance from the camp take them away.
+        /// A spot right next to another party is never used.
+        /// </summary>
+        /// <param name="openProbes">open probes from CountOpenProbes</param>
+        /// <param name="totalProbes">all probes from CountOpenProbes</param>
+        /// <param name="nearestParty">distance to the closest party of any side</param>
+        /// <param name="nearestHostile">distance to the closest enemy party</param>
+        /// <param name="distanceFromHideout">distance from the spot to the camp</param>
+        /// <param name="sameIsland">the spot is on the same island as the camp</param>
+        /// <returns>the score, higher is better, negative infinity if the spot is too crowded</returns>
         public static double SpawnSpotScore(int openProbes, int totalProbes, float nearestParty, float nearestHostile,
             float distanceFromHideout, bool sameIsland)
         {
@@ -698,7 +840,12 @@ namespace ImprovedMinorFactions
             return openness + hostile - distanceFromHideout * DistancePenaltyPerUnit + (sameIsland ? SameIslandBonus : 0.0);
         }
 
-        // over the sea the land layer says Plain, so ask the sea layer there
+        /// <summary>
+        /// Tells what kind of water a map sample is. Over the sea the land layer says Plain, so the sea layer is asked there.
+        /// </summary>
+        /// <param name="landFaceValid">the point is on the land navmesh</param>
+        /// <param name="terrain">terrain type on the land navmesh</param>
+        /// <param name="seaFaceValid">the point is on the sea navmesh</param>
         internal static WaterKind ClassifyWater(bool landFaceValid, TerrainType terrain, bool seaFaceValid)
         {
             if (landFaceValid)
@@ -719,7 +866,13 @@ namespace ImprovedMinorFactions
             return seaFaceValid ? WaterKind.Open : WaterKind.None;
         }
 
-        // One open sample, or minShallowRun shallow ones in a row, counts as crossing water.
+        /// <summary>
+        /// Samples a line and checks if it crosses water. One open water sample, or minShallowRun shallow ones in a row, counts as crossing.
+        /// </summary>
+        /// <param name="classify">tells what kind of water is at a point</param>
+        /// <param name="spacing">distance between samples</param>
+        /// <param name="minShallowRun">how many shallow samples in a row count as a crossing</param>
+        /// <param name="maxSamples">cap on samples for long lines</param>
         internal static bool SegmentCrossesWater(float ax, float ay, float bx, float by, Func<float, float, WaterKind> classify,
             float spacing = 2f, int minShallowRun = 3, int maxSamples = 64)
         {
@@ -731,6 +884,9 @@ namespace ImprovedMinorFactions
             return Crosses(ax, ay, bx, by, samples, classify, minShallowRun);
         }
 
+        /// <summary>
+        /// Walks the samples along the line for SegmentCrossesWater.
+        /// </summary>
         private static bool Crosses(float ax, float ay, float bx, float by, int samples, Func<float, float, WaterKind> classify, int minShallowRun)
         {
             if (samples < 2)
@@ -750,6 +906,9 @@ namespace ImprovedMinorFactions
         }
     }
 
+    /// <summary>
+    /// What a point on a line counts as when checking for water crossings.
+    /// </summary>
     internal enum WaterKind
     {
         None = 0,      // land, rivers, fords, beaches, swamps, bridges
@@ -757,7 +916,9 @@ namespace ImprovedMinorFactions
         Open = 2       // sea or lake, land parties can't cross
     }
 
-    // No hard dependency on War Sails, we just check once if it's loaded.
+    /// <summary>
+    /// Checks once whether the War Sails DLC is loaded. There's no hard dependency on it.
+    /// </summary>
     internal static class WarSails
     {
         internal const string ModuleId = "NavalDLC";

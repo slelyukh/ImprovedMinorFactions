@@ -18,6 +18,10 @@ using TaleWorlds.ObjectSystem;
 
 namespace ImprovedMinorFactions
 {
+    /// <summary>
+    /// Keeps track of every minor faction's camps for the running campaign: which clan owns which camp, how many should be active,
+    /// and which camp a clan moves to after a raid. There is one instance per campaign in IMFManager.Current.
+    /// </summary>
     internal class IMFManager
     {
         public IMFManager() 
@@ -26,6 +30,9 @@ namespace ImprovedMinorFactions
             _mfData = new Dictionary<Clan, MFData>();
         }
 
+        /// <summary>
+        /// Creates the manager if there isn't one and tries to build the camp lists.
+        /// </summary>
         private static void InitManager()
         {
             if (IMFManager.Current == null)
@@ -42,6 +49,10 @@ namespace ImprovedMinorFactions
             IMFManager.Current = null;
         }
 
+        /// <summary>
+        /// Records a camp read from a save. Duplicate saves of the same camp keep the first one and show a warning,
+        /// camps whose clan has no leader are skipped.
+        /// </summary>
         public void AddLoadedMFHideout(MinorFactionHideout mfh)
         {
             if (_LoadedMFHideouts.ContainsKey(mfh.StringId))
@@ -59,6 +70,10 @@ namespace ImprovedMinorFactions
             _LoadedMFHideouts[mfh.StringId] = mfh;
         }
 
+        /// <summary>
+        /// Gets a camp read from the save by its settlement id.
+        /// </summary>
+        /// <returns>the camp, or null if the save didn't have it</returns>
         public MinorFactionHideout? GetLoadedMFHideout(string stringId)
         {
             MinorFactionHideout? mfh = null;
@@ -80,6 +95,10 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Groups every camp settlement under its owning clan. Only works once all settlements are loaded.
+        /// </summary>
+        /// <returns>true if the lists are ready</returns>
         // should only be done when all Settlements are loaded in
         public bool TryInitMFHideoutsLists()
         {
@@ -111,6 +130,12 @@ namespace ImprovedMinorFactions
             return true;
         }
 
+        /// <summary>
+        /// Compares two camps for how much a clan wants them: its own active camps first, then its own camps,
+        /// then the one closer to its home. Camps already active for another clan come last.
+        /// </summary>
+        /// <param name="c">the clan choosing</param>
+        /// <returns>positive if mfh1 is better, negative if mfh2 is</returns>
         private static int mfhComparator(Clan c, MinorFactionHideout mfh1, MinorFactionHideout mfh2)
         {
             int priority1 = 0;
@@ -148,6 +173,15 @@ namespace ImprovedMinorFactions
             return priority1 - priority2;
         }
 
+        /// <summary>
+        /// Works out how many camps each settled clan gets out of the free pool. Clans that already own camps get their
+        /// minimum first, then other clans, and what's left is shared out one at a time.
+        /// Clans that can't get their minimum are taken out of NonNomadMFClans and set to 0 active camps.
+        /// </summary>
+        /// <param name="numFreeHideouts">camps in the pool</param>
+        /// <param name="hideoutAssignedNonNomadClans">clans that already own camps</param>
+        /// <param name="NonNomadMFClans">every clan that wants camps, changed in place</param>
+        /// <returns>the number of camps per clan</returns>
         private Dictionary<Clan, int> DetermineHideoutCountsPostReassignment(
             int numFreeHideouts, HashSet<Clan> hideoutAssignedNonNomadClans, ref List<Clan> NonNomadMFClans)
         {
@@ -202,6 +236,9 @@ namespace ImprovedMinorFactions
             return numHideoutsToGive;
         }
 
+        /// <summary>
+        /// Gives a camp to another clan and renames it. Throws if the camp is active.
+        /// </summary>
         // Transfer ownership of an mfh from one clan to another or do nothing.
         private void AssignHideoutToClan(Clan newOwner, MinorFactionHideout mfh)
         {
@@ -223,6 +260,14 @@ namespace ImprovedMinorFactions
                 GetClanMFData(oldOwner)!.Hideouts.Remove(mfh);
         }
 
+        /// <summary>
+        /// Hands out camps from the pool one per clan per round, each clan taking its best remaining camp, until clans have
+        /// their share or the pool is empty.
+        /// </summary>
+        /// <param name="receivingClans">clans to give camps to, changed in place</param>
+        /// <param name="hideoutPool">free camps, taken camps are removed</param>
+        /// <param name="numHideoutsToGive">camps still owed per clan</param>
+        /// <param name="priorityLists">each clan's camps sorted best first</param>
         private void AssignHideoutsForList(List<Clan> receivingClans, ref HashSet<MinorFactionHideout> hideoutPool,
             ref Dictionary<Clan, int> numHideoutsToGive, Dictionary<Clan, List<MinorFactionHideout>> priorityLists)
         {
@@ -268,6 +313,10 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Shares the settled camps between all minor factions, including ones settlements.xml doesn't give camps to.
+        /// Nomads keep their own camps unless they have none.
+        /// </summary>
         // This function dynamically distributes MFHs to all Minor factions whether or not they are listed in settlements.xml
         private void ReassignHideouts()
         {
@@ -326,6 +375,9 @@ namespace ImprovedMinorFactions
             AssignHideoutsForList(NonNomadMFClans, ref hideoutPool, ref numHideoutsToGive, priorityLists);
         }
 
+        /// <summary>
+        /// Activates a random usable camp for a clan that has none active yet, used when its first party appears.
+        /// </summary>
         public void ActivateFirstHideoutFor(Clan clan)
         {
             if (!_mfData.TryGetValue(clan, out MFData? data) || data == null || NumActiveOrScheduledHideouts(clan) > 0)
@@ -339,6 +391,10 @@ namespace ImprovedMinorFactions
             camp.ActivateHideoutFirstTime();
             IMFDiagnostics.Info($"[Spawn] {clan.StringId}: first party appeared, camp {camp.Settlement.StringId} is now active");
         }
+        /// <summary>
+        /// Redistributes camps and then activates or deactivates camps until each clan has as many active as it should.
+        /// A clan's home camp is picked first if it is usable. Throws if called before the camp lists exist.
+        /// </summary>
         public void ActivateAllFactionHideouts()
         {
             if (!TryInitMFHideoutsLists())
@@ -402,6 +458,10 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Gets a clan's camp data.
+        /// </summary>
+        /// <returns>the data, or null if the clan has none</returns>
         public MFData? GetClanMFData(Clan c)
         {
             MFData? mfData = null;
@@ -409,6 +469,11 @@ namespace ImprovedMinorFactions
             return mfData;
         }
 
+        /// <summary>
+        /// Shuts a camp after a raid or a nomad move and opens another free camp of the same clan.
+        /// If there is no other free camp, a raided camp reopens after the usual delay and a nomad camp stays where it is.
+        /// </summary>
+        /// <param name="reason">why the camp is being cleared, raid or nomad movement</param>
         public void ClearHideout(MinorFactionHideout oldHideout, DeactivationReason reason)
         {
             if (!TryInitMFHideoutsLists())
@@ -466,6 +531,9 @@ namespace ImprovedMinorFactions
             
         }
 
+        /// <summary>
+        /// Gets a clan's active camps. Empty for clans that aren't minor factions.
+        /// </summary>
         public List<MinorFactionHideout> GetActiveHideoutsOfClan(Clan minorFaction)
         {
             var result = new List<MinorFactionHideout>();
@@ -485,6 +553,9 @@ namespace ImprovedMinorFactions
             return GetActiveHideoutsOfClan(c).Count > 0;
         }
 
+        /// <summary>
+        /// Counts a clan's camps that are active or waiting to become active.
+        /// </summary>
         public int NumActiveOrScheduledHideouts(Clan c)
         {
             if (c == null || !c.IsMinorFaction || !this.HasFaction(c))
@@ -504,12 +575,18 @@ namespace ImprovedMinorFactions
             return NumActiveOrScheduledHideouts(c) > 0;
         }
 
+        /// <summary>
+        /// Checks if the manager tracks camps for this clan.
+        /// </summary>
         public bool HasFaction(Clan minorFaction)
         {
             if (!TryInitMFHideoutsLists())
                 throw new Exception("can't initialize hideouts list in Hideout Manager");
             return _mfData.ContainsKey(minorFaction);
         }
+        /// <summary>
+        /// Shuts every camp of a destroyed clan, removes their notables and hands the camps to other clans.
+        /// </summary>
         // Removes clan from MF data and other shit if its destroyed... DONT do this anymore, just give it activeHideouts of 0
         // TODO: remove owner of clans
         internal void RemoveClan(Clan destroyedClan)
@@ -532,6 +609,9 @@ namespace ImprovedMinorFactions
             ReassignHideouts();
         }
 
+        /// <summary>
+        /// Marks a clan to declare war on the player when its mercenary contract ends.
+        /// </summary>
         public void RegisterClanForPlayerWarOnEndingMercenaryContract(Clan minorFaction)
         {
             if (!minorFaction.IsMinorFaction)
@@ -540,6 +620,9 @@ namespace ImprovedMinorFactions
                 _mfData[minorFaction].IsWaitingForWarWithPlayer = true;
         }
 
+        /// <summary>
+        /// Declares the war set up by RegisterClanForPlayerWarOnEndingMercenaryContract, if the clan is waiting for it.
+        /// </summary>
         public void DeclareWarOnPlayerIfNeeded(Clan minorFaction)
         {
             if (HasFaction(minorFaction) && _mfData[minorFaction].IsWaitingForWarWithPlayer)
@@ -549,6 +632,9 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Checks if every camp a clan owns is active.
+        /// </summary>
         internal bool IsFullHideoutOccupationMF(Clan? c)
         {
             return c != null && _mfData.ContainsKey(c) && _mfData[c].NumTotalHideouts == _mfData[c].NumActiveHideouts;
@@ -559,6 +645,9 @@ namespace ImprovedMinorFactions
             get => this._hideouts;
         }
 
+        /// <summary>
+        /// Turns gang leader notables in camps into preachers, camp notables are meant to be preachers.
+        /// </summary>
         public static void ConvertGangLeaderMFNotablesToPreachers()
         {
             if (Campaign.Current == null)
@@ -587,6 +676,13 @@ namespace ImprovedMinorFactions
 
         public IEnumerable<Tuple<Settlement, GameEntity>> _allMFHideouts;
 
+        /// <summary>
+        /// How many camps a clan should have active, capped by how many it owns.
+        /// </summary>
+        /// <param name="isRealMinorClan">the clan is still a minor faction</param>
+        /// <param name="expected">the clan's num_active_hideouts</param>
+        /// <param name="totalHideouts">camps the clan owns</param>
+        /// <returns>the number to activate, or -1 if the clan should have none</returns>
         public static int ExpectedActive(bool isRealMinorClan, int expected, int totalHideouts)
         {
             if (!isRealMinorClan || totalHideouts <= 0)
@@ -594,6 +690,14 @@ namespace ImprovedMinorFactions
             return Math.Min(Math.Max(expected, 0), totalHideouts);
         }
 
+        /// <summary>
+        /// Picks a random free camp other than the one just cleared.
+        /// </summary>
+        /// <param name="count">number of camps the clan owns</param>
+        /// <param name="clearedIdx">index of the camp that was just cleared</param>
+        /// <param name="busy">true for camps that can't be used (active, scheduled or on bad ground)</param>
+        /// <param name="random">random number below the given count, passed in so tests can fix it</param>
+        /// <returns>the index of the next camp, or -1 if none is free</returns>
         public static int PickNextHideout(int count, int clearedIdx, IReadOnlyList<bool> busy, Func<int, int> random)
         {
             var free = new List<int>();

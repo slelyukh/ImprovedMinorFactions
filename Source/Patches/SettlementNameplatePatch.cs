@@ -13,6 +13,9 @@ using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Adds nameplates for camps.
+    /// </summary>
     // adds nameplates for MFHideouts
     [HarmonyPatch(typeof(SettlementNameplatesVM), "Initialize")]
     public class SettlementNameplatesVMInitializePatch

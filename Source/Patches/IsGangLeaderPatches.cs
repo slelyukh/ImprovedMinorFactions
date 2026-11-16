@@ -15,6 +15,10 @@ using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
+    /// <summary>
+    /// Camp notables use gang leader faces and poses, titles, dialog tags and intro lines.
+    /// This one picks their idle face from their mercy and calculating traits.
+    /// </summary>
     [HarmonyPatch(typeof(CharacterHelper), "GetNonconversationFacialIdle")]
     public class NonConversationFacialIdlePatch
     {
@@ -146,6 +150,9 @@ namespace ImprovedMinorFactions.Source.Patches
         }
     }
 
+    /// <summary>
+    /// Keeps camp notables out of lord conversations.
+    /// </summary>
     [HarmonyPatch(typeof(LordConversationsCampaignBehavior), "UsesLordConversations")]
     public class UsesLordConversationsPatch
     {

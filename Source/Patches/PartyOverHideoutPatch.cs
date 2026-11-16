@@ -13,7 +13,10 @@ using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions.Patches
 {
-    // lift party visuals onto the camp model, at terrain height they sink in
+    /// <summary>
+    /// Lifts parties standing on a camp onto its model on the map, at ground height they sink into it.
+    /// The lift follows the top of the camp's rock, fades out towards its edge and is smoothed so parties don't jump.
+    /// </summary>
     [HarmonyPatch(typeof(MobilePartyVisual), nameof(MobilePartyVisual.GetVisualPosition))]
     internal static class PartyOverHideoutPatch
     {
@@ -89,6 +92,10 @@ namespace ImprovedMinorFactions.Patches
             }
         }
 
+        /// <summary>
+        /// How high to lift a party at this spot. Uses ray casts on the camp's model, or a fixed lift if those don't work on this map.
+        /// </summary>
+        /// <param name="distanceToCamp">how far the party is from the camp's center</param>
         private static float TargetLift(Settlement camp, MobilePartyVisual visual, Vec2 at, float groundZ, float distanceToCamp)
         {
             Scene? scene = (Campaign.Current.MapSceneWrapper as MapScene)?.Scene;
@@ -153,6 +160,10 @@ namespace ImprovedMinorFactions.Patches
             return false;
         }
 
+        /// <summary>
+        /// Gets how high the solid part of the camp's model reaches above the ground, and remembers its footprint.
+        /// </summary>
+        /// <returns>the height, or 0 if it couldn't be read</returns>
         private static float SolidTop(GameEntity root, float groundZ, string campId)
         {
             float top = float.MinValue;
@@ -173,6 +184,9 @@ namespace ImprovedMinorFactions.Patches
             return ok ? height : 0f;
         }
 
+        /// <summary>
+        /// The footprint of a camp's model, used to fade the lift out towards its edge.
+        /// </summary>
         private sealed class Area
         {
             internal float MinX = float.MaxValue, MaxX = float.MinValue, MinY = float.MaxValue, MaxY = float.MinValue;
@@ -186,6 +200,9 @@ namespace ImprovedMinorFactions.Patches
                 MaxY = Math.Max(MaxY, p.y);
             }
 
+            /// <summary>
+            /// 1 at the center of the footprint, falling to 0 at its edge.
+            /// </summary>
             internal float Dome(Vec2 at)
             {
                 float rx = (MaxX - MinX) / 2f, ry = (MaxY - MinY) / 2f;
@@ -347,6 +364,9 @@ namespace ImprovedMinorFactions.Patches
             }
         }
 
+        /// <summary>
+        /// Moves a party's lift towards the target a bit each frame instead of all at once.
+        /// </summary>
         private static float Follow(string partyId, float target)
         {
             double now = Clock.Elapsed.TotalSeconds;

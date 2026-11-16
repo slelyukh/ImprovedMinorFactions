@@ -6,6 +6,9 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Wraps the game's encounter menu model so meeting or waiting at a camp opens our camp menus.
+    /// </summary>
     internal class IMFEncounterGameMenuModel : EncounterGameMenuModel
     {
         EncounterGameMenuModel _previousModel;
@@ -14,6 +17,9 @@ namespace ImprovedMinorFactions.Patches
             _previousModel = previousModel;
         }
 
+        /// <summary>
+        /// Opens the camp menu when the encounter is with a camp and the game had no menu for it.
+        /// </summary>
         public override string? GetEncounterMenu(PartyBase attackerParty, PartyBase defenderParty, out bool startBattle, out bool joinBattle)
         {
             string result = _previousModel.GetEncounterMenu(attackerParty, defenderParty, out startBattle, out joinBattle);
@@ -30,6 +36,9 @@ namespace ImprovedMinorFactions.Patches
             return result;
         }
 
+        /// <summary>
+        /// Returns the camp wait menu or camp menu when the player is at a camp and the game had no menu for it.
+        /// </summary>
         public override string GetGenericStateMenu()
         {
             string result = _previousModel.GetGenericStateMenu();

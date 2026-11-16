@@ -11,6 +11,9 @@ using System;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// A camp's faction is its owner clan.
+    /// </summary>
     [HarmonyPatch(typeof(Settlement))]
     [HarmonyPatch("MapFaction", MethodType.Getter)]
     public class SettlementMapFactionPatch
@@ -23,6 +26,9 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
+    /// <summary>
+    /// A camp's owner is its owner clan.
+    /// </summary>
     [HarmonyPatch(typeof(Settlement))]
     [HarmonyPatch("OwnerClan", MethodType.Getter)]
     public class SettlementOwnerClanPatch
@@ -56,6 +62,10 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
+    /// <summary>
+    /// After a camp's settlements.xml row is read, connects it to the loaded camp data and finds its owner clan
+    /// if the owner reference didn't resolve.
+    /// </summary>
     // XML deserialization for MFHideouts
     [HarmonyPatch(typeof(Settlement), "Deserialize")]
     public class SettlementDeserializePatch

@@ -11,6 +11,10 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
+    /// <summary>
+    /// Gives minor faction lords quests. Same as the game's version for clan nobles, but the cap is 25% of the lords
+    /// since minor factions are small.
+    /// </summary>
     // copypasta, quest cap is 25% (not 20%) since mf clans have 4 members
     [HarmonyPatch(typeof(IssuesCampaignBehavior), "DailyTickClan")]
     public class DailyTickClanPatch

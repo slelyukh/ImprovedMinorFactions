@@ -11,7 +11,10 @@ using TaleWorlds.Core;
 
 namespace ImprovedMinorFactions.Source.CampaignBehaviors
 {
-    // template heroes with no skills or gear get commander skills and their clan's best troop gear
+    /// <summary>
+    /// Fixes minor faction heroes made from templates that have no skills or gear. They get commander skills
+    /// for their clan's tier and the gear of their clan's best troop. Runs once on load and then daily per clan.
+    /// </summary>
     internal class MFProvisionBehavior : CampaignBehaviorBase
     {
         private static readonly EquipmentIndex[] WeaponSlots =
@@ -35,6 +38,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 ProvisionClanSafe(clan);
         }
 
+        /// <summary>
+        /// Provisions every hero of a minor faction clan. Errors are logged, not thrown.
+        /// </summary>
         private void ProvisionClanSafe(Clan clan)
         {
             try
@@ -51,6 +57,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Gives a hero gear and skills if their template had none. The player is only touched if made from a minor faction template.
+        /// </summary>
+        /// <param name="horde">the clan runs very big parties, so its heroes get extra leadership and steward</param>
         private static void ProvisionHero(Hero hero, Clan clan, bool horde)
         {
             if (hero == null || hero.IsTemplate || !hero.IsAlive)
@@ -85,6 +95,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 IMFDiagnostics.Verbose($"[Provision] {hero.Name} ({clan.StringId}) {string.Join(" ", report)}");
         }
 
+        /// <summary>
+        /// Copies the battle gear of the clan's best troop to the hero, and to their civilian set if that is empty.
+        /// </summary>
+        /// <returns>the troop id used, or null if there was no gear to give</returns>
         private static string? GiveGear(Hero hero, Clan clan)
         {
             CharacterObject? troop = BestTroop(clan);
@@ -97,6 +111,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return troop.StringId;
         }
 
+        /// <summary>
+        /// Gets the highest tier troop in the clan's party template, or the basic troop.
+        /// </summary>
         private static CharacterObject? BestTroop(Clan clan)
         {
             CharacterObject? best = null;
@@ -112,6 +129,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return best ?? clan.BasicTroop;
         }
 
+        /// <summary>
+        /// Raises the hero's skills to the targets from SkillTargets, never lowers them.
+        /// </summary>
+        /// <returns>how many skills were raised</returns>
         private static int GiveSkills(Hero hero, Clan clan, bool horde)
         {
             var weaponSkills = new List<string>();
@@ -146,12 +167,20 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         public const int HordeLeadershipFloor = 300;
         public const int HordeStewardFloor = 300;
 
+        /// <summary>
+        /// Checks if a template has all skills at 0.
+        /// </summary>
         public static bool SkillsBlank(IEnumerable<int> templateSkillValues)
         {
             int[] values = templateSkillValues.ToArray();
             return values.Length > 0 && values.All(v => v <= 0);
         }
 
+        /// <summary>
+        /// Checks if the hero and every equipment set of their template are empty.
+        /// </summary>
+        /// <param name="templateSetsEmpty">one value per template equipment set, true if it is empty</param>
+        /// <param name="heroEquipmentEmpty">the hero's battle equipment is empty</param>
         public static bool EquipmentBlank(IEnumerable<bool> templateSetsEmpty, bool heroEquipmentEmpty) =>
             heroEquipmentEmpty && templateSetsEmpty.All(e => e);
 
@@ -159,6 +188,14 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
 
         public static int SecondaryTarget(int clanTier) => (int)Math.Round(PrimaryTarget(clanTier) * 0.6);
 
+        /// <summary>
+        /// Skill levels a provisioned hero should have. Leadership, steward and their weapon skills get the main value (70 to 200 by clan tier),
+        /// medicine, scouting and tactics 60% of that, riding the main value if they have a horse, and horde leaders at least 300 leadership and steward.
+        /// </summary>
+        /// <param name="weaponSkillIds">skills of the weapons the hero carries</param>
+        /// <param name="mounted">the hero has a horse</param>
+        /// <param name="horde">the clan runs very big parties</param>
+        /// <returns>skill id to target level</returns>
         public static Dictionary<string, int> SkillTargets(int clanTier, IEnumerable<string> weaponSkillIds, bool mounted, bool horde)
         {
             int primary = PrimaryTarget(clanTier);
@@ -207,12 +244,18 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         }
     }
 
+    /// <summary>
+    /// Tells if a minor faction runs very big parties (700 troops or more), from its party template or its actual parties.
+    /// </summary>
     internal static class HordeHelper
     {
         private static readonly Dictionary<string, bool> TemplateCache = new Dictionary<string, bool>(StringComparer.Ordinal);
 
         internal static void ClearCache() => TemplateCache.Clear();
 
+        /// <summary>
+        /// Checks if the clan's party template can make a party of 700 or more. Cached per clan.
+        /// </summary>
         internal static bool IsHordeTemplate(Clan? clan)
         {
             if (clan == null || !clan.IsMinorFaction)
@@ -231,6 +274,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return horde;
         }
 
+        /// <summary>
+        /// Checks if a minor faction party is that big, or its clan's template is.
+        /// </summary>
         internal static bool IsHordeParty(MobileParty? party)
         {
             if (party == null)
@@ -241,6 +287,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return MFProvisionBehavior.IsHorde(party.MemberRoster?.TotalManCount ?? 0) || IsHordeTemplate(clan);
         }
 
+        /// <summary>
+        /// Checks if any of the clan's parties is that big, or its template is.
+        /// </summary>
         internal static bool IsHordeClan(Clan? clan)
         {
             if (clan == null || !clan.IsMinorFaction)

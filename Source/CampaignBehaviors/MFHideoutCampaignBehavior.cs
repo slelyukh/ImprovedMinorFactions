@@ -20,10 +20,16 @@ using Options = TaleWorlds.CampaignSystem.GameMenus.GameMenuOption;
 
 namespace ImprovedMinorFactions.Source.CampaignBehaviors
 {
+    /// <summary>
+    /// The main camp behavior: the camp menus (enter, attack, hostile action, recruit, wait), raiding a camp and what it costs
+    /// in relations, spotting camps on the map, and activating every clan's camps on a new game or load.
+    /// </summary>
     internal class MFHideoutCampaignBehavior : CampaignBehaviorBase
     {
 
-        // a clan another mod spawns gets its camp with its first party
+        /// <summary>
+        /// A clan another mod spawns gets its camp with its first party, see LoadXmlHideoutsPatch.SpawnGatedClans.
+        /// </summary>
         private void OnPartyCreated(MobileParty party)
         {
             try
@@ -57,6 +63,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 IMFManager.Current!.RemoveClan(destroyedClan);
         }
 
+        /// <summary>
+        /// When a minor faction's mercenary contract ends, starts the war with the player it was holding back.
+        /// </summary>
         private void OnClanChangedKingdom(Clan clan, Kingdom oldKingdom, Kingdom newKingdom, ChangeKingdomAction.ChangeKingdomActionDetail detail, bool showNotification = true)
         {
             if (clan.IsMinorFaction && detail == ChangeKingdomAction.ChangeKingdomActionDetail.LeaveAsMercenary)
@@ -71,6 +80,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         }
 
 
+        /// <summary>
+        /// Gives starting volunteers if we refill them ourselves, and lets the player spot an active camp
+        /// with a chance that grows the closer they are.
+        /// </summary>
         public void HourlyTickSettlement(Settlement settlement)
         {
 
@@ -93,6 +106,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Adds all camp menus and their options.
+        /// </summary>
         protected void AddGameMenus(CampaignGameStarter campaignGameStarter)
         {
             // TODO: Better nomad texts
@@ -152,6 +168,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 new Options.OnConsequenceDelegate(menu_nomad_leave_on_consequence));
         }
 
+        /// <summary>
+        /// Sets the attack option's icon and tooltip, and disables it while the player is wounded.
+        /// </summary>
         private void ProcessMenusForAttack(MenuCallbackArgs args)
         {
             args.optionLeaveType = Options.LeaveType.Raid;
@@ -167,6 +186,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Checks if a camp is friendly to the player: not at war, and either the player's own faction or friendly by Helpers.IsFriendlyCamp.
+        /// </summary>
         private static bool IsFriendlyToPlayer(Settlement? camp)
         {
             if (camp == null)
@@ -178,6 +200,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 || camp.MapFaction == Hero.MainHero.MapFaction;
         }
 
+        /// <summary>
+        /// Shows the attack option for active camps of clans at war with the player that aren't the player's own.
+        /// </summary>
         public bool menu_attack_on_condition(MenuCallbackArgs args)
         {
             ProcessMenusForAttack(args);
@@ -188,6 +213,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 && camp.MapFaction.IsAtWarWith(Hero.MainHero.MapFaction);
         }
 
+        /// <summary>
+        /// Starts the raid. Nomad camps are a field battle in a village scene that fits the ground,
+        /// other camps open the troop selection for a hideout battle. Friendly camps just go back to the camp menu.
+        /// </summary>
         public void menu_attack_on_consequence(MenuCallbackArgs args)
         {
             var curSettlement = CurrentCamp()!;
@@ -222,6 +251,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             );
         }
 
+        /// <summary>
+        /// Applies the raid's relation costs, makes sure the camp has defenders and sets up the encounter with the player as attacker.
+        /// </summary>
         public void PrepareForBattle()
         {
             var curSettlement = Settlement.CurrentSettlement;
@@ -251,6 +283,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             Helpers.SetPlayerEncounterSides(PlayerEncounter.Current, BattleSideEnum.Attacker, BattleSideEnum.Defender);
         }
 
+        /// <summary>
+        /// Shows the hostile action option for active camps the player isn't at war with and that aren't friendly or the player's own.
+        /// </summary>
         public bool menu_hostile_action_on_condition(MenuCallbackArgs args)
         {
             args.optionLeaveType = Options.LeaveType.Submenu;
@@ -294,6 +329,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Shows recruiting at camps not at war with the player. Disabled until the player is a friend of the clan.
+        /// </summary>
         public bool recruit_troops_on_condition(MenuCallbackArgs args)
         {
             args.optionLeaveType = Options.LeaveType.Recruit;
@@ -315,6 +353,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         {
         }
 
+        /// <summary>
+        /// Shows waiting at camps not at war with the player. Disabled until the player is a friend of the clan.
+        /// </summary>
         private bool menu_wait_on_condition(MenuCallbackArgs args)
         {
             args.optionLeaveType = Options.LeaveType.Wait;
@@ -348,6 +389,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             MobileParty.MainParty.SetMoveModeHold();
         }
 
+        /// <summary>
+        /// Leaves a nomad camp that just moved away and hides it. The party is stopped, otherwise waiting walks it back into the camp.
+        /// </summary>
         private void menu_nomad_leave_on_consequence(MenuCallbackArgs args)
         {
             Settlement.CurrentSettlement.IsVisible = false;
@@ -373,7 +417,6 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             _hideoutWaitProgressHours += (float)dt.ToHours;
             if (_hideoutWaitTargetHours.ApproximatelyEqualsTo(0f, 1E-05f))
                 CalculateHideoutAttackTime();
-            //args.MenuContext.GameMenu.SetProgressOfWaitingInMenu(this._hideoutWaitProgressHours / this._hideoutWaitTargetHours); NIGHT MODE
 
             SwitchToMenuIfThereIsAnInterrupt(args.MenuContext.GameMenu.StringId);
         }
@@ -384,6 +427,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             SwitchToMenuIfThereIsAnInterrupt(args.MenuContext.GameMenu.StringId);
         }
 
+        /// <summary>
+        /// Leaves the wait menu if the game wants to show another menu, e.g. because of an attack.
+        /// </summary>
         // Moves player out of wait menu if anything of note occurs
         private void SwitchToMenuIfThereIsAnInterrupt(string currentMenuId)
         {
@@ -431,6 +477,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 Campaign.Current.GameMenuManager.MenuLocations.Add(settlement.LocationComplex.GetLocationWithId("mf_hideout_center"));
         }
 
+        /// <summary>
+        /// Sets up the camp menu: background, locations and the text, which depends on the camp type and the player's standing with the clan.
+        /// </summary>
         private void game_menu_hideout_place_on_init(MenuCallbackArgs args)
         {
             Settlement curSettlement = Settlement.CurrentSettlement;
@@ -509,6 +558,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             return camp != null && !friendly;
         }
 
+        /// <summary>
+        /// Gets the camp the player is at, from the current settlement or the encounter.
+        /// </summary>
         private static Settlement? CurrentCamp()
         {
             return Settlement.CurrentSettlement ?? PlayerEncounter.EncounterSettlement ?? MobileParty.MainParty?.CurrentSettlement;
@@ -519,6 +571,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             _hideoutWaitTargetHours = CanAttackHideoutStart > CampaignTime.Now.CurrentHourInDay ? CanAttackHideoutStart - CampaignTime.Now.CurrentHourInDay : 24f - CampaignTime.Now.CurrentHourInDay + CanAttackHideoutStart;
         }
 
+        /// <summary>
+        /// After clearing an outlaw camp, raises the player's relation with notables of nearby villages,
+        /// and with the nearest town's owner if the player has Effort for the People.
+        /// </summary>
         private void SetCleanHideoutRelations(MinorFactionHideout mfHideout)
         {
             if (!mfHideout.OwnerClan.IsOutlaw)
@@ -549,6 +605,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             MBInformationManager.AddQuickInformation(new TextObject("{=o0qwDa0q}Your relation increased by {RELATION_VALUE} with nearby notables.", null), 0, null, null, "");
         }
 
+        /// <summary>
+        /// Makes sure the camp has militia to fight. SelectBossAgent crashes on an empty militia roster, so the clan's entry troops are put in.
+        /// </summary>
         private void ArrangeHideoutTroopCountsForMission()
         {
             Settlement settlement = Settlement.CurrentSettlement;
@@ -577,6 +636,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             ApplyHideoutRaidConsequences(Settlement.CurrentSettlement);
         }
 
+        /// <summary>
+        /// Makes the player hostile to the camp's clan and lowers relations with its leader and notables.
+        /// A clan in mercenary service loses more and declares war on the player when the contract ends.
+        /// </summary>
         public static void ApplyHideoutRaidConsequences(Settlement mfHideout)
         {
             Clan mfClan = mfHideout.OwnerClan;
@@ -597,6 +660,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Opens the hideout battle with the troops the player picked.
+        /// </summary>
         private void OnTroopRosterManageDone(TroopRoster playerTroops)
         {
             PrepareForBattle();
@@ -606,6 +672,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             CampaignMission.OpenHideoutBattleMission(mfHideout!.SceneName, playerTroops.ToFlattenedRoster(), false);
         }
 
+        /// <summary>
+        /// Checks if a troop can be picked for the raid, the player always goes.
+        /// </summary>
         private bool CanChangeStatusOfTroop(CharacterObject character)
         {
             return !character.IsPlayerCharacter && !character.IsNotTransferableInHideouts;
@@ -627,6 +696,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             dataStore.SyncData("_mfHideoutWaitTargetHours", ref _hideoutWaitTargetHours);
         }
 
+        /// <summary>
+        /// Adds the menus and activates every clan's camps on a new game, then runs a second pass a few ticks later.
+        /// </summary>
         public void OnNewGameCreated(CampaignGameStarter campaignGameStarter)
         {
             _ticksSinceNewGame = 0;
@@ -639,6 +711,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         // Some clans aren't ready when the game is created, a second pass catches them.
         private int _ticksSinceNewGame;
 
+        /// <summary>
+        /// Some clans aren't ready when the game is created, so camps are activated again 5 ticks later.
+        /// </summary>
         private void OnTickAfterNewGame(float dt)
         {
             if (++_ticksSinceNewGame < 5)
@@ -647,6 +722,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             ActivateAllSafely();
         }
 
+        /// <summary>
+        /// Adds the menus and fixes the active camp counts after a load.
+        /// </summary>
         public void OnGameLoaded(CampaignGameStarter campaignGameStarter)
         {
             AddGameMenus(campaignGameStarter);
@@ -654,6 +732,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             ActivateAllSafely();
         }
 
+        /// <summary>
+        /// Activates every clan's camps, logging errors instead of crashing the load.
+        /// </summary>
         private static void ActivateAllSafely()
         {
             try
@@ -669,6 +750,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         // some overhauls replace vanilla recruitment, then nothing refills camp volunteers
         private bool _refillVolunteersOurselves;
 
+        /// <summary>
+        /// Refills camp volunteers each day when another mod replaced the game's recruitment.
+        /// </summary>
         private void DailyTickSettlement(Settlement settlement)
         {
             if (_refillVolunteersOurselves && Helpers.IsMFHideout(settlement))
@@ -679,6 +763,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         private readonly HashSet<string> _gotStartingVolunteers = new HashSet<string>();
         private const int StartingVolunteerRolls = 3;
 
+        /// <summary>
+        /// Gives a camp its first volunteers during the first day of a new game. The game fills volunteers once on a new game,
+        /// but the player's camp only activates after character creation.
+        /// </summary>
         private void GiveStartingVolunteers(Settlement camp)
         {
             if (Campaign.Current.Models.CampaignTimeModel.CampaignStartTime.ElapsedDaysUntilNow >= 1f)
@@ -689,6 +777,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 RecruitmentUpdateNotableVolunteersPatch.RefillCampVolunteers(camp);
         }
 
+        /// <summary>
+        /// Checks if the game's recruitment behavior is still there, if not we refill camp volunteers ourselves.
+        /// </summary>
         public void OnAfterSessionLaunched(CampaignGameStarter starter)
         {
             _refillVolunteersOurselves = Campaign.Current.GetCampaignBehavior<TaleWorlds.CampaignSystem.CampaignBehaviors.RecruitmentCampaignBehavior>() == null;
@@ -703,6 +794,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 AlignWithClan(hero);
         }
 
+        /// <summary>
+        /// Runs AlignWithClan for every hero of every minor faction except the player's.
+        /// </summary>
         private static void EnsureClanHeroesAligned()
         {
             foreach (Clan clan in Clan.All)
@@ -714,6 +808,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Makes a hero created into a minor faction the same race and culture as the clan leader, and names them "Name of Clan".
+        /// Only for clans whose leader isn't the default race.
+        /// </summary>
         internal static void AlignWithClan(Hero hero)
         {
             try
@@ -741,24 +839,4 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
     }
-
-    // NIGHT MODE archive
-
-    //public void hideout_wait_menu_on_consequence(MenuCallbackArgs args)
-    //{
-    //    GameMenu.SwitchToMenu("hideout_after_wait");
-    //}
-
-    // wait until nightfall menu
-    //campaignGameStarter.AddWaitGameMenu("mf_hideout_wait", "Waiting until nightfall to attack.",
-    //    null,
-    //    new OnConditionDelegate(this.wait_menu_start_on_condition),
-    //    null,
-    //    new OnTickDelegate(this.wait_menu_on_tick),
-    //    GameMenu.MenuAndOptionType.WaitMenuShowOnlyProgressOption,
-    //    GameOverlays.MenuOverlayType.SettlementWithCharacters,
-    //    this._hideoutWaitTargetHours);
-    //campaignGameStarter.AddGameMenuOption("mf_hideout_wait", "leave", "Leave",
-    //    new Options.OnConditionDelegate(this.menu_leave_on_condition),
-    //    new Options.OnConsequenceDelegate(this.menu_leave_on_consequence));
 }

@@ -5,6 +5,10 @@ using System.Text;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Writes IMF.log next to the mod's dll, for bug reports. Errors and info lines are always written, Verbose only in debug builds.
+    /// The file is rotated to IMF.log.old past 5 MB. Writing never throws, a log problem shouldn't break the game.
+    /// </summary>
     internal static class IMFDiagnostics
     {
         private const long MaxLogBytes = 5L * 1024 * 1024;
@@ -38,7 +42,9 @@ namespace ImprovedMinorFactions.Patches
             }
         }
 
-        // keeps one old log, a locked file isn't worth breaking the game over
+        /// <summary>
+        /// Moves the log to IMF.log.old when it's too big. Keeps one old log, a locked file isn't worth breaking the game over.
+        /// </summary>
         private static void RotateIfTooBig()
         {
             try
@@ -68,6 +74,10 @@ namespace ImprovedMinorFactions.Patches
             _writer = null;
         }
 
+        /// <summary>
+        /// Writes an exception with its stack trace.
+        /// </summary>
+        /// <param name="label">what was being done when it failed</param>
         internal static void Log(string label, Exception e)
         {
             if (e == null)
@@ -78,6 +88,9 @@ namespace ImprovedMinorFactions.Patches
         // per-frame code would fill the log, so only the first error of each kind is written
         private static readonly HashSet<string> LoggedOnce = new HashSet<string>();
 
+        /// <summary>
+        /// Writes an exception only the first time this label is seen. Per-frame code would fill the log otherwise.
+        /// </summary>
         internal static void LogOnce(string label, Exception e)
         {
             lock (Gate)
@@ -88,17 +101,26 @@ namespace ImprovedMinorFactions.Patches
             Log(label, e);
         }
 
+        /// <summary>
+        /// Lets LogOnce labels be written again, called when a new game starts.
+        /// </summary>
         internal static void ResetLogOnce()
         {
             lock (Gate)
                 LoggedOnce.Clear();
         }
 
+        /// <summary>
+        /// Writes an info line.
+        /// </summary>
         internal static void Info(string message)
         {
             Write($"[{DateTime.Now:HH:mm:ss.fff}] [INFO] {message}{Environment.NewLine}");
         }
 
+        /// <summary>
+        /// Writes a debug line. Calls to this are compiled out of release builds.
+        /// </summary>
         [System.Diagnostics.Conditional("DEBUG")]
         internal static void Verbose(string message)
         {

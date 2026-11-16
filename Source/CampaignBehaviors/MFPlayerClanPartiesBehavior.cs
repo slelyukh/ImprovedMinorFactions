@@ -10,7 +10,10 @@ using TaleWorlds.ObjectSystem;
 
 namespace ImprovedMinorFactions.Source.CampaignBehaviors
 {
-    // free lords get their war parties when you take over a minor faction
+    /// <summary>
+    /// Free lords get their war parties when you take over a minor faction. Runs when character creation ends
+    /// and when the player switches to another character.
+    /// </summary>
     internal class MFPlayerClanPartiesBehavior : CampaignBehaviorBase
     {
         private static readonly string[] Foods = { "grain", "cheese", "meat", "fish" };
@@ -38,6 +41,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Gives a party to each lord of the player's minor faction who can lead one, up to the clan's party limit.
+        /// </summary>
         private static void SpawnMissingParties()
         {
             Clan clan = Clan.PlayerClan;
@@ -57,6 +63,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Checks that a hero is an adult lord who is free: not the player, not a prisoner, not in a party and not a governor.
+        /// </summary>
         private static bool CanGetParty(Hero hero)
         {
             return hero != Hero.MainHero && hero.IsAlive && !hero.IsDisabled && !hero.IsPrisoner
@@ -65,6 +74,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 && hero.CharacterObject.Occupation == Occupation.Lord;
         }
 
+        /// <summary>
+        /// Spawns a lord's party at the clan's camp, or next to the player if there isn't one, with some food to start with.
+        /// </summary>
         private static void SpawnParty(Hero hero, Clan clan)
         {
             Settlement? camp = IMFManager.Current!.GetActiveHideoutsOfClan(clan).Select(h => h.Settlement).FirstOrDefault(s => s != null);

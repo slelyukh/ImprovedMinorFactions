@@ -15,7 +15,9 @@ using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
-    // Doomstack armies would lose 25% a day on the normal cap, so give them a huge limit.
+    /// <summary>
+    /// Wraps the game's party size model to give horde parties a huge limit. On the normal limit they'd lose a quarter of their troops a day.
+    /// </summary>
     internal class IMFPartySizeLimitModel : PartySizeLimitModel
     {
         private readonly PartySizeLimitModel _previousModel;

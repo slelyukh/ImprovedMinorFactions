@@ -13,13 +13,23 @@ using Utilities = TaleWorlds.Engine.Utilities;
 
 namespace ImprovedMinorFactions
 {
+    /// <summary>
+    /// Picks a battle scene for a camp that fits the ground it stands on. A camp moved inland shouldn't keep
+    /// a pirate cove scene, and nomad camps get a village scene matching the terrain around them.
+    /// </summary>
     internal static class HideoutScenes
     {
         private static List<string>? _pool;
 
+        /// <summary>
+        /// All hideout scenes we can pick from: the known vanilla ones that exist plus hideout scenes found in loaded modules.
+        /// </summary>
         private static List<string> Pool() =>
             _pool ??= SceneBiomes.KnownScenes.Where(ConfigLoader.SceneExists).Concat(SceneCatalog.Hideouts()).Distinct().ToList();
 
+        /// <summary>
+        /// Looks at the map around a point: whether there's sea, a lake or a beach nearby, and what dry terrain is most common.
+        /// </summary>
         internal static HideoutTerrain Sample(CampaignVec2 center)
         {
             var wrapper = Campaign.Current.MapSceneWrapper;
@@ -47,6 +57,12 @@ namespace ImprovedMinorFactions
             return SceneBiomes.Classify(dry, coastal);
         }
 
+        /// <summary>
+        /// Gets the scene a camp should use. Keeps its current scene if it fits the ground, otherwise picks a better one,
+        /// preferring the scenes mf_data.xml lists for the clan.
+        /// </summary>
+        /// <param name="terrain">the ground around the camp, for logging</param>
+        /// <returns>the scene name, the current one if nothing fits better</returns>
         internal static string Resolve(MinorFactionHideout hideout, out HideoutTerrain terrain)
         {
             terrain = default;
@@ -66,6 +82,10 @@ namespace ImprovedMinorFactions
         private static List<string> NomadPool() =>
             _nomadPool ??= SceneBiomes.KnownNomadVillageScenes.Where(ConfigLoader.SceneExists).Concat(SceneCatalog.Villages()).Distinct().ToList();
 
+        /// <summary>
+        /// Picks a village scene for a nomad camp's battles, matching the terrain around it.
+        /// </summary>
+        /// <returns>the scene name, or an empty string if there's no camp or map</returns>
         internal static string ResolveNomadVillage(MinorFactionHideout hideout)
         {
             Settlement? settlement = hideout.Settlement;
@@ -77,6 +97,9 @@ namespace ImprovedMinorFactions
             return scene;
         }
 
+        /// <summary>
+        /// Hash that's the same every run, so a camp always picks the same scene among equally good ones.
+        /// </summary>
         private static int StableHash(string text)
         {
             unchecked
@@ -89,11 +112,19 @@ namespace ImprovedMinorFactions
         }
     }
 
-    // scenes have no terrain info, so sort them by name (prefixes, then the word lists)
+    /// <summary>
+    /// What kind of place a scene shows. Scenes have no terrain info, so this goes by name: known prefixes first, then the word lists.
+    /// </summary>
     internal enum SceneFamily { Unknown, Coastal, Forest, Mountain, Desert, Steppe }
 
+    /// <summary>
+    /// The main dry terrain around a camp.
+    /// </summary>
     internal enum Ground { Plain, Desert, Forest, Mountain, Steppe, Snow, Swamp }
 
+    /// <summary>
+    /// The ground around a camp, as found by HideoutScenes.Sample.
+    /// </summary>
     internal readonly struct HideoutTerrain
     {
         public HideoutTerrain(bool coastal, Ground ground)
@@ -108,6 +139,9 @@ namespace ImprovedMinorFactions
         public override string ToString() => (Coastal ? "coastal " : "landlocked ") + Ground;
     }
 
+    /// <summary>
+    /// Matches scene names to terrain. Pure functions over names, nothing here touches the game.
+    /// </summary>
     internal static class SceneBiomes
     {
         internal static readonly string[] KnownScenes = new[]
@@ -128,6 +162,11 @@ namespace ImprovedMinorFactions
         internal static readonly string[] KnownNomadVillageScenes =
             SteppeVillages.Concat(DesertVillages).Concat(ForestVillages).Concat(ColdVillages).Concat(PlainVillages).ToArray();
 
+        /// <summary>
+        /// Picks a village scene that fits the terrain, e.g. desert villages for desert camps. Falls back to any available scene.
+        /// </summary>
+        /// <param name="tieBreak">picks among equally good scenes, keeps the choice the same between loads</param>
+        /// <param name="available">village scenes that actually exist</param>
         internal static string ChooseNomadVillageScene(HideoutTerrain terrain, int tieBreak, IReadOnlyList<string> available)
         {
             if (available == null || available.Count == 0)
@@ -176,6 +215,10 @@ namespace ImprovedMinorFactions
         private static readonly string[] SteppeVillageWords = { "steppe", "khuzait", "nomad" };
         private static readonly string[] PlainVillageWords = { "empire", "vlandia", "plain", "plains", "farm", "meadow" };
 
+        /// <summary>
+        /// Guesses the terrain of a village scene from words in its name.
+        /// </summary>
+        /// <returns>the terrain, or null if the name doesn't say</returns>
         internal static Ground? VillageGround(string? scene)
         {
             string[] w = SceneContent.Words(scene);
@@ -187,6 +230,9 @@ namespace ImprovedMinorFactions
             return null;
         }
 
+        /// <summary>
+        /// Guesses what kind of place a hideout scene shows from its name.
+        /// </summary>
         internal static SceneFamily FamilyOf(string? scene)
         {
             string s = (scene ?? "").Trim().ToLowerInvariant();
@@ -205,6 +251,10 @@ namespace ImprovedMinorFactions
             return SceneFamily.Unknown;
         }
 
+        /// <summary>
+        /// How well a kind of scene fits the ground. 0 means it doesn't fit, e.g. a desert scene in a forest.
+        /// </summary>
+        /// <returns>0 to 4, higher is better</returns>
         internal static int Fit(SceneFamily family, HideoutTerrain terrain)
         {
             switch (family)
@@ -240,6 +290,10 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Maps a game terrain type name to our coarser Ground.
+        /// </summary>
+        /// <returns>the ground, or null for water and anything else that isn't dry land</returns>
         internal static Ground? GroundOfTerrain(string? terrainName)
         {
             switch (terrainName)
@@ -272,6 +326,11 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Turns sampled terrain names into one ground type. Anything other than plain has to make up at least 30% of the samples to win.
+        /// </summary>
+        /// <param name="dryTerrainNames">terrain type names sampled around the camp</param>
+        /// <param name="coastal">water or beach was found nearby</param>
         internal static HideoutTerrain Classify(IEnumerable<string>? dryTerrainNames, bool coastal)
         {
             var counts = new Dictionary<Ground, int>();
@@ -299,6 +358,15 @@ namespace ImprovedMinorFactions
             return new HideoutTerrain(coastal, best);
         }
 
+        /// <summary>
+        /// Picks the best scene for the terrain. The current scene stays if it fits or we can't tell what it shows.
+        /// Scenes from the clan's own list rank higher, and the same _sv variant as the current scene is preferred.
+        /// </summary>
+        /// <param name="current">the camp's scene now</param>
+        /// <param name="preferred">scenes mf_data.xml lists for the clan</param>
+        /// <param name="pool">all other usable hideout scenes</param>
+        /// <param name="tieBreak">picks among equally good scenes, keeps the choice the same between loads</param>
+        /// <returns>the scene to use</returns>
         internal static string Choose(string? current, IReadOnlyList<string>? preferred, IReadOnlyList<string>? pool, HideoutTerrain terrain, int tieBreak)
         {
             string cur = current ?? "";
@@ -334,6 +402,9 @@ namespace ImprovedMinorFactions
         }
     }
 
+    /// <summary>
+    /// Finds hideout and village scenes in the loaded modules' SceneObj folders, so camps can use scenes a map ships.
+    /// </summary>
     internal static class SceneCatalog
     {
         private sealed class Found
@@ -357,6 +428,10 @@ namespace ImprovedMinorFactions
             return _villages!.Select(f => f.Name).ToList();
         }
 
+        /// <summary>
+        /// Checks that a scene exists in a loaded module and has the spawn points a hideout or field battle needs.
+        /// Scenes from official modules are trusted without reading the file.
+        /// </summary>
         internal static bool Usable(string scene)
         {
             if (string.IsNullOrWhiteSpace(scene))
@@ -382,6 +457,9 @@ namespace ImprovedMinorFactions
             return false;
         }
 
+        /// <summary>
+        /// Scans every loaded module once for scenes that look like hideouts or villages by name and have the right spawn tags.
+        /// </summary>
         private static void Build()
         {
             if (_hideouts != null)
@@ -420,6 +498,9 @@ namespace ImprovedMinorFactions
             }
         }
 
+        /// <summary>
+        /// Checks that a scene file contains all the given tags.
+        /// </summary>
         private static bool Passes(string file, string[] tags)
         {
             try
@@ -433,6 +514,9 @@ namespace ImprovedMinorFactions
         }
     }
 
+    /// <summary>
+    /// Checks scene names and scene files for what they look like.
+    /// </summary>
     internal static class SceneContent
     {
         internal static readonly string[] HideoutTags = { "sp_hideout_group_attacker", "sp_hideout_group_defender", "hideout_boss_fight" };
@@ -446,18 +530,28 @@ namespace ImprovedMinorFactions
         internal static string[] Words(string? name) =>
             Regex.Split((name ?? "").ToLowerInvariant(), "[^a-z]+").Where(w => w.Length > 0).ToArray();
 
+        /// <summary>
+        /// Checks if a scene name sounds like a hideout and not like an interior, town or village.
+        /// </summary>
         internal static bool LooksLikeHideout(string? name)
         {
             string[] w = Words(name);
             return w.Any(x => HideoutWords.Contains(x)) && !w.Any(x => NotHideoutWords.Contains(x));
         }
 
+        /// <summary>
+        /// Checks if a scene name sounds like a village's outdoor scene and not a raid, interior or cutscene.
+        /// </summary>
         internal static bool LooksLikeVillage(string? name)
         {
             string[] w = Words(name);
             return w.Contains("village") && !w.Any(x => NotVillageWords.Contains(x));
         }
 
+        /// <summary>
+        /// Reads lines until every tag has been seen.
+        /// </summary>
+        /// <returns>true if all tags are in the file</returns>
         internal static bool HasAllTags(IEnumerable<string> lines, IReadOnlyCollection<string> tags)
         {
             var missing = new HashSet<string>(tags, StringComparer.Ordinal);
@@ -473,6 +567,9 @@ namespace ImprovedMinorFactions
         }
     }
 
+    /// <summary>
+    /// Modules whose scenes we use without checking them: the game, its DLCs and this mod.
+    /// </summary>
     public static class OfficialModules
     {
         private static readonly string[] Ids =

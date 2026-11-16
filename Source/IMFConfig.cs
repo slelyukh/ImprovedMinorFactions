@@ -11,6 +11,10 @@ using TaleWorlds.ModuleManager;
 
 namespace ImprovedMinorFactions
 {
+    /// <summary>
+    /// Loads mf_data.xml from the IMF module folder once per campaign and hands out each faction's settings.
+    /// If the file is missing or broken the mod runs on its defaults.
+    /// </summary>
     internal static class ConfigLoader
     {
         private static IMFConfig? _config;
@@ -22,6 +26,10 @@ namespace ImprovedMinorFactions
             get { Ensure(); return _view; }
         }
 
+        /// <summary>
+        /// Gets the merged settings for a clan.
+        /// </summary>
+        /// <returns>the settings, or null if mf_data.xml has no row for it</returns>
         internal static FactionConfig? For(string? clanId)
         {
             if (string.IsNullOrEmpty(clanId))
@@ -32,7 +40,9 @@ namespace ImprovedMinorFactions
 
         internal static bool IsEnabled(string clanId) => For(clanId)?.Enabled ?? true;
 
-        // read once per campaign, cleared in OnGameEnd
+        /// <summary>
+        /// Forgets the loaded file so the next campaign reads it again. Called in OnGameEnd.
+        /// </summary>
         internal static void Reset()
         {
             _config = null;
@@ -70,7 +80,9 @@ namespace ImprovedMinorFactions
 
         internal static bool SceneExists(string scene) => SceneCatalog.Usable(scene);
 
-        // <module>\bin\Win64_Shipping_Client\ImprovedMinorFactions.dll gives us <module>
+        /// <summary>
+        /// Gets the IMF module folder from where the dll is: &lt;module&gt;\bin\Win64_Shipping_Client\ImprovedMinorFactions.dll gives &lt;module&gt;.
+        /// </summary>
         internal static string ModuleDir()
         {
             string dll = typeof(ConfigLoader).Assembly.Location;
@@ -78,6 +90,9 @@ namespace ImprovedMinorFactions
         }
     }
 
+    /// <summary>
+    /// One faction's settings from mf_data.xml. Anything not set in the file is null and the mod's default is used.
+    /// </summary>
     public sealed class FactionConfig
     {
         public bool? Enabled { get; set; }
@@ -93,6 +108,10 @@ namespace ImprovedMinorFactions
         public string? Ship { get; set; }          // ship hull the faction's parties get (War Sails only)
     }
 
+    /// <summary>
+    /// The parsed mf_data.xml. A faction can have several rows: rows with a module attribute only count when that module is loaded,
+    /// and later modules in the load order override earlier ones, so a map mod can change settings for its own factions.
+    /// </summary>
     public sealed class IMFConfig
     {
         private sealed class Row
@@ -115,6 +134,11 @@ namespace ImprovedMinorFactions
         public int RowCount { get; private set; }
         public IEnumerable<string> FactionIds => _rows.Keys;
 
+        /// <summary>
+        /// Reads the file. Bad rows and values are skipped and noted in Log, an unreadable file gives an empty config.
+        /// </summary>
+        /// <param name="xml">contents of mf_data.xml</param>
+        /// <param name="loadedModules">module ids in load order</param>
         public static IMFConfig Parse(string xml, IReadOnlyList<string> loadedModules)
         {
             var cfg = new IMFConfig();
@@ -148,6 +172,10 @@ namespace ImprovedMinorFactions
             return cfg;
         }
 
+        /// <summary>
+        /// Merges all rows for a clan: rows without a module first, then by load order of their module, then file order.
+        /// </summary>
+        /// <returns>the merged settings, or null if there are no rows for the clan</returns>
         public FactionConfig? For(string clanId)
         {
             if (_merged.TryGetValue(clanId, out FactionConfig? cached))
@@ -178,6 +206,10 @@ namespace ImprovedMinorFactions
             if (from.Ship != null) into.Ship = from.Ship;
         }
 
+        /// <summary>
+        /// Reads one MFData row. Skips rows with no minor_faction and rows for modules that aren't loaded.
+        /// </summary>
+        /// <param name="order">position of the row in the file, breaks ties between rows of the same module</param>
         private void AddRow(XmlElement e, IReadOnlyList<string> loadedModules, int order)
         {
             string id = e.GetAttribute("minor_faction").Trim();
@@ -279,6 +311,9 @@ namespace ImprovedMinorFactions
             return s.Length == 0 ? null : s;
         }
 
+        /// <summary>
+        /// Reads clan_gender as Male, Female or Any, in any case.
+        /// </summary>
         private string? ReadGender(XmlElement e, string id)
         {
             if (!e.HasAttribute("clan_gender"))
@@ -292,6 +327,9 @@ namespace ImprovedMinorFactions
         }
     }
 
+    /// <summary>
+    /// Read-only access to the config for the hideout generator and scene picking. Checks that listed scenes actually exist.
+    /// </summary>
     public sealed class ConfigView
     {
         private static readonly IReadOnlyList<string> NoScenes = new List<string>();
@@ -314,7 +352,9 @@ namespace ImprovedMinorFactions
 
         public int? NumActiveHideouts(string clanId) => _config.For(clanId)?.NumActiveHideouts;
 
-        // Only scenes from a loaded module count, so a typo can't make it into an attack.
+        /// <summary>
+        /// Gets the scenes listed for a clan. Only scenes from a loaded module count, so a typo can't make it into an attack.
+        /// </summary>
         public IReadOnlyList<string> Scenes(string clanId)
         {
             if (_scenes.TryGetValue(clanId, out IReadOnlyList<string>? cached))

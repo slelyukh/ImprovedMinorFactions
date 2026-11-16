@@ -5,12 +5,17 @@ using SandBox.Objects;
 
 namespace ImprovedMinorFactions.Patches
 {
-    // some TC village scenes have no patrol points, skip the null list
+    /// <summary>
+    /// Skips patrol behavior for agents in scenes that have no patrol points, instead of crashing on the missing list.
+    /// </summary>
     [HarmonyPatch(typeof(PatrolAgentBehavior))]
     internal static class PatrolAgentBehaviorNullPointsFix
     {
         private static readonly FieldInfo PatrolPointsField = AccessTools.Field(typeof(PatrolAgentBehavior), "_patrolPoints");
 
+        /// <summary>
+        /// Checks if the behavior's patrol point list is missing or empty.
+        /// </summary>
         private static bool HasNoPatrolPoints(PatrolAgentBehavior behavior)
         {
             if (behavior == null)

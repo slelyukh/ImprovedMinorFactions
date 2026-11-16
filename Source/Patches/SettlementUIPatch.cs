@@ -47,6 +47,9 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
+    /// <summary>
+    /// Builds the settlement menu overlay for camps, a copy of the game's version without the parts that crash at camps.
+    /// </summary>
     // another crash preventer copypasta
     [HarmonyPatch(typeof(SettlementMenuOverlayVM), "UpdateProperties")]
     public class SettlementMenuOverlayVMPatch

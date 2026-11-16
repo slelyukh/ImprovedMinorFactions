@@ -14,6 +14,9 @@ using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Uses our location encounter when the player goes into a camp.
+    /// </summary>
     [HarmonyPatch(typeof(PlayerEncounter), "CreateLocationEncounter")]
     public class CreateLocationEncounterPatch
     {
@@ -24,6 +27,9 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
+    /// <summary>
+    /// Starts a hideout battle when the player raids a camp.
+    /// </summary>
     // allows MFHideouts to have a HideoutBattle
     [HarmonyPatch(typeof(PlayerEncounter), "StartBattleInternal")]
     public class StartBattleInternalPatch
@@ -48,6 +54,10 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
+    /// <summary>
+    /// Ends an encounter at a camp. A copy of the game's version without the parts that crash at camps,
+    /// and the camp is only cleared if the player won.
+    /// </summary>
     // copypasta with crash causing parts removed
     [HarmonyPatch(typeof(PlayerEncounter), "DoEnd")]
     public class DoEndPatch
@@ -106,6 +116,9 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
+    /// <summary>
+    /// Waiting in a camp. A copy of the game's version without the parts that crash at camps.
+    /// </summary>
     // copypasta with crash causing parts removed
     [HarmonyPatch(typeof(PlayerEncounter), "DoWait")]
     public class DoWaitPatch

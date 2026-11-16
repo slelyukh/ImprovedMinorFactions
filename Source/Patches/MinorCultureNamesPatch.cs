@@ -9,6 +9,9 @@ using TaleWorlds.ObjectSystem;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Adds extra names to minor cultures with short name lists, so their heroes don't all share a few names.
+    /// </summary>
     [HarmonyPatch(typeof(MBObjectManager))]
     [HarmonyPatch("LoadXml")]
     public class MinorCultureNamesPatch
@@ -73,6 +76,9 @@ namespace ImprovedMinorFactions.Patches
             return cultureId != null && table.TryGetValue(cultureId, out string[]? names) ? names : Array.Empty<string>();
         }
 
+        /// <summary>
+        /// Gets the extra names the culture doesn't have yet.
+        /// </summary>
         internal static List<string> MissingNames(IEnumerable<string>? existing, IEnumerable<string>? extras)
         {
             var have = new HashSet<string>(StringComparer.OrdinalIgnoreCase);

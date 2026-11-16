@@ -7,6 +7,9 @@ using TaleWorlds.CampaignSystem;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
+    /// <summary>
+    /// Declares war between the Forest People and Sturgia once per campaign.
+    /// </summary>
     // Vanilla misses the Forest People's war with Sturgia, so declare it here.
     internal class MFOutlawWarCampaignBehavior : CampaignBehaviorBase
     {

@@ -6,6 +6,9 @@ using TaleWorlds.Core;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
+    /// <summary>
+    /// Wraps the game's bandit density model to raise the troop limit of the first fight in a camp raid. Everything else is passed on.
+    /// </summary>
     internal class IMFBanditDensityModel : BanditDensityModel
     {
         BanditDensityModel _previousModel;

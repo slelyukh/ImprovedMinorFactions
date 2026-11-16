@@ -12,6 +12,9 @@ namespace ImprovedMinorFactions.Source.Patches
 {
     internal class ClanPatch
     {
+        /// <summary>
+        /// A clan always has 100 relation with itself, which matters when the player's clan is the minor faction.
+        /// </summary>
         [HarmonyPatch(typeof(Clan), "GetRelationWithClan")]
         public class ClanGetRelationWithClanPatch
         {

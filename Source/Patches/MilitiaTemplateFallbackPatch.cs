@@ -8,7 +8,10 @@ using TaleWorlds.ObjectSystem;
 
 namespace ImprovedMinorFactions.Patches
 {
-    // some cultures have no militia template, fall back to the clan culture, its party template, then any
+    /// <summary>
+    /// Some cultures have no militia template. Militia of such a camp use the owner clan's culture template, its party template,
+    /// or the first culture that has one.
+    /// </summary>
     [HarmonyPatch]
     public class MilitiaTemplateFallbackPatch
     {
@@ -30,6 +33,10 @@ namespace ImprovedMinorFactions.Patches
             return false;
         }
 
+        /// <summary>
+        /// Picks the template to use, see the class summary.
+        /// </summary>
+        /// <returns>the template, or null if no culture has a militia template</returns>
         private static PartyTemplateObject FallbackTemplate(Settlement settlement)
         {
             Clan owner = settlement?.OwnerClan;

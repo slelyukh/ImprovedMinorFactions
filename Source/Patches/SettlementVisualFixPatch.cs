@@ -15,7 +15,10 @@ using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions.Patches
 {
-    // OnStartup throws for runtime camps, make an icon prefab under that id first
+    /// <summary>
+    /// Gives camps made at load time a map model. The game expects a map icon for every settlement and throws without one,
+    /// so we make one from the hideout icon that fits the camp's culture.
+    /// </summary>
     [HarmonyPatch(typeof(SettlementVisual), "OnStartup")]
     public class SettlementVisualMFHideoutMapEntityPatch
     {
@@ -108,6 +111,9 @@ namespace ImprovedMinorFactions.Patches
             }
         }
 
+        /// <summary>
+        /// For generated camps, puts the gate on the camp's position when that ground is passable.
+        /// </summary>
         private static void AlignGate(Settlement settlement)
         {
             try
@@ -178,6 +184,9 @@ namespace ImprovedMinorFactions.Patches
 
         internal static void ForgetModels() => Known.Clear();
 
+        /// <summary>
+        /// Moves a camp's map model to its new position after the camp moved.
+        /// </summary>
         internal static void MoveExistingEntity(Settlement settlement, CampaignVec2 position, CampaignVec2? oldPosition = null)
         {
             try
@@ -231,7 +240,9 @@ namespace ImprovedMinorFactions.Patches
         }
     }
 
-    // camps made at runtime get no map level, so they vanish at some zoom levels
+    /// <summary>
+    /// Gives camps made at load time a map level, without one they disappear at some zoom levels.
+    /// </summary>
     [HarmonyPatch(typeof(SettlementVisual), "RefreshLevelMask")]
     public class MFHideoutLevelMaskPatch
     {

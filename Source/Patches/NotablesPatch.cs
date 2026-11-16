@@ -16,6 +16,9 @@ using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
+    /// <summary>
+    /// Keeps camp notables from leaving for having too little power.
+    /// </summary>
     // prevents MFNotables from disappearing for having too little Power
     [HarmonyPatch(typeof(NotablesCampaignBehavior), "CheckAndMakeNotableDisappear")]
     public class CheckAndMakeNotableDisappearPatch
@@ -28,6 +31,9 @@ namespace ImprovedMinorFactions.Source.Patches
         }
     }
 
+    /// <summary>
+    /// Skips the game's dead notable handling for camp notables, MFHNotablesCampaignBehavior replaces them instead.
+    /// </summary>
     // method prevents default OnHeroKilled from running with a similar version running in MFHNotablesCampaignBehavior instead
     [HarmonyPatch(typeof(NotablesCampaignBehavior), "OnHeroKilled")]
     public class OnHeroKilledPatch
@@ -40,6 +46,9 @@ namespace ImprovedMinorFactions.Source.Patches
         }
     }
 
+    /// <summary>
+    /// Skips the daily power loss for camp notables.
+    /// </summary>
     // prevent usual Power degradation for MFHideout Notables
     [HarmonyPatch(typeof(NotablePowerManagementBehavior), "DailyTickHero")]
     public class DailyTickHeroPatch
@@ -53,6 +62,10 @@ namespace ImprovedMinorFactions.Source.Patches
         }
     }
 
+    /// <summary>
+    /// Creates notables for camps from the camp culture's templates, picking gender by the clan's settings
+    /// and fixing names for cultures whose templates have the wrong ones.
+    /// </summary>
     [HarmonyBefore(new string[] {"BannerKings"})]
     [HarmonyPatch(typeof(HeroCreator), "CreateNotable")]
     public class CreateHeroAtOccupationPatch

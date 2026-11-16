@@ -7,6 +7,9 @@ using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Fills volunteers of camp notables when the game updates a settlement's volunteers.
+    /// </summary>
     // allows MFHideouts to have recruits
     [HarmonyPatch(typeof(RecruitmentCampaignBehavior), "UpdateVolunteersOfNotablesInSettlement")]
     class RecruitmentUpdateNotableVolunteersPatch
@@ -16,6 +19,9 @@ namespace ImprovedMinorFactions.Patches
             RefillCampVolunteers(settlement);
         }
 
+        /// <summary>
+        /// Gives camp notables new volunteers with the same chance and tier rules as the game uses for towns and villages.
+        /// </summary>
         internal static void RefillCampVolunteers(Settlement settlement)
         {
             var mfHideout = Helpers.GetMFHideout(settlement);

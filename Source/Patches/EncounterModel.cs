@@ -18,6 +18,10 @@ using TaleWorlds.Localization;
 
 namespace ImprovedMinorFactions.Source.Patches
 {
+    /// <summary>
+    /// Wraps the game's encounter model so a camp's defenders come from the camp itself (its militia and the owner's parties in it).
+    /// Everything else is passed on.
+    /// </summary>
     internal class IMFEncounterModel : EncounterModel
     {
         EncounterModel _previousModel;

@@ -20,6 +20,9 @@ using MathF = TaleWorlds.Library.MathF;
 
 namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
 {
+    /// <summary>
+    /// Quest from a village notable troubled by a minor faction camp nearby: the player clears the camp.
+    /// </summary>
     public class NearbyMFHideoutIssueBehavior : CampaignBehaviorBase
     {
         // TODO: use locatablesearchdata instead
@@ -97,6 +100,9 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
         {
         }
 
+        /// <summary>
+        /// The issue offered by the notable, can also be solved by sending a companion with troops.
+        /// </summary>
         public class NearbyMFHideoutIssue : IssueBase
         {
             protected Clan MFClan
@@ -434,6 +440,9 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
             private Settlement _issueSettlement;
         }
 
+        /// <summary>
+        /// The quest itself: raid the camp. Raiding or forcing the notable's village fails it.
+        /// </summary>
         public class NearbyMFHideoutIssueQuest : QuestBase
         {
             private Clan QuestClan()
@@ -706,6 +715,9 @@ namespace ImprovedMinorFactions.Source.Quests.NearbyHideout
         private const IssueBase.IssueFrequency NearbyHideoutIssueFrequency = IssueBase.IssueFrequency.Common;
 
         internal const MFRelation RelationLevelNeededForQuest = MFRelation.Neutral;
+        /// <summary>
+        /// Registers the issue and quest with the save system.
+        /// </summary>
         public class NearbyMFHideoutIssueTypeDefiner : SaveableTypeDefiner
         {
             public NearbyMFHideoutIssueTypeDefiner() : base(404_322_929)

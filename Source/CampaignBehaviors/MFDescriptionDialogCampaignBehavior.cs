@@ -21,6 +21,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             CampaignEvents.OnAgentJoinedConversationEvent.AddNonSerializedListener(this, new Action<IAgent>(OnConversationStart));
         }
 
+        /// <summary>
+        /// Adds the "who are you" question for camp notables and their answer.
+        /// </summary>
         private void SetDialogs(CampaignGameStarter starter)
         {
             starter.AddPlayerLine("mf_intro_start", "hero_main_options", "mf_intro_continue",
@@ -35,6 +38,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
 
         }
 
+        /// <summary>
+        /// Shows the question when talking to a notable in a camp of a clan the player hasn't asked about yet.
+        /// </summary>
         private bool player_intro_on_condition()
         {
             var conversationHero = Hero.OneToOneConversationHero;
@@ -46,6 +52,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 && !this._playerMetFactions.Contains(ownerClan);
         }
 
+        /// <summary>
+        /// Remembers that the player asked about this clan.
+        /// </summary>
         private void player_intro_consequence()
         {
             var ownerClan = Hero.OneToOneConversationHero?.CurrentSettlement?.OwnerClan;
@@ -58,6 +67,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             SetDialogs(starter);
         }
 
+        /// <summary>
+        /// Fills in the text for the answer: the clan's own description from imf_faction_texts.xml or one for its type,
+        /// and which kingdoms see it as outlaws.
+        /// </summary>
         private void OnConversationStart(IAgent agent)
         {
             var conversationHero = ((CharacterObject) agent?.Character)?.HeroObject;
@@ -115,6 +128,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
         {
         }
 
+        /// <summary>
+        /// Joins kingdom names into "A, B and C".
+        /// </summary>
         private string KingdomListString(List<Kingdom> kingdoms)
         {
             string result = "";

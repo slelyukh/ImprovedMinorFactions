@@ -21,7 +21,9 @@ using TaleWorlds.MountAndBlade;
 
 namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 {
-    // Token... comment means function has not yet been adapted to mod
+    /// <summary>
+    /// Quest from a minor faction lord who needs recruits for his party.
+    /// </summary>
     public class MFHLordNeedsRecruitsIssueBehavior : CampaignBehaviorBase
     {
         public override void RegisterEvents()
@@ -66,6 +68,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
 
         internal const MFRelation RelationLevelNeededForQuest = MFRelation.Neutral;
 
+        /// <summary>
+        /// The issue offered by the lord, can also be solved by sending a companion with troops.
+        /// </summary>
         public class MFHLordNeedsRecruitsIssue : IssueBase
         {
 
@@ -336,6 +341,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
             private const int CompanionRequiredSkillLevel = 120;
         }
 
+        /// <summary>
+        /// The quest itself: bring the troops to the lord before time runs out.
+        /// </summary>
         public class MFHLordNeedsRecruitsIssueQuest : QuestBase
         {
             protected override void RegisterEvents()
@@ -729,6 +737,9 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
             private JournalLog _questProgressLogTest;
         }
 
+        /// <summary>
+        /// Registers the issue and quest with the save system.
+        /// </summary>
         public class MFHLordNeedsRecruitsIssueBehaviorTypeDefiner : SaveableTypeDefiner
         {
             public MFHLordNeedsRecruitsIssueBehaviorTypeDefiner() : base(020_723_929)

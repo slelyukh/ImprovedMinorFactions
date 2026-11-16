@@ -6,6 +6,9 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Lets the player travel to a camp whose gate point is unreachable by using the camp's own position as the gate.
+    /// </summary>
     [HarmonyPatch(typeof(global::Helpers.NavigationHelper), "GetInteractionDataForMainParty")]
     internal static class HideoutGatePatch
     {

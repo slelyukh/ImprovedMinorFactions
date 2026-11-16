@@ -10,7 +10,10 @@ using TaleWorlds.Library;
 
 namespace ImprovedMinorFactions.Source.CampaignBehaviors
 {
-    // play as a minor faction: camp active, notables on your side, start beside the camp
+    /// <summary>
+    /// Sets things up when the player plays as a minor faction: makes sure the clan has an active camp the player knows about,
+    /// makes the camp notables support the player's clan, and on a new game moves the player next to the camp instead of inside it.
+    /// </summary>
     internal class PlayAsMFBehavior : CampaignBehaviorBase
     {
         private const float StartMaxDistanceFromCamp = 5.5f;
@@ -50,6 +53,10 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Activates one of the player clan's camps if none is active, marks its camps as found and makes the notables supporters.
+        /// The start position is handled on the first map tick, see OnTick.
+        /// </summary>
         private void SetUpPlayerClanCamps()
         {
             Clan playerClan = Clan.PlayerClan;
@@ -84,6 +91,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             _campsToStartBeside = activeCamps;
         }
 
+        /// <summary>
+        /// Makes the notables in the player's camps supporters of the player's clan.
+        /// </summary>
         private static void SupportPlayerClan()
         {
             try
@@ -98,6 +108,9 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
 
+        /// <summary>
+        /// Places the player next to their camp once the map is ready, retrying each tick until it worked.
+        /// </summary>
         private void OnTick(float dt)
         {
             if (_campsToStartBeside == null)
@@ -115,7 +128,11 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
                 _campsToStartBeside = null;
         }
 
-        // new game only. false while in a battle or encounter, retried next tick
+        /// <summary>
+        /// On a new game, moves the player out of the camp, or next to the closest camp if they start far away.
+        /// Only runs in the first day of a new game.
+        /// </summary>
+        /// <returns>false while a battle or encounter is in the way so it is tried again next tick, true when done</returns>
         private bool PlacePlayerBesideCamp(List<MinorFactionHideout> camps)
         {
             if (_startPlacementDone)

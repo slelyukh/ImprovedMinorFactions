@@ -12,6 +12,9 @@ using ImprovedMinorFactions.Patches;
 
 namespace ImprovedMinorFactions
 {
+    /// <summary>
+    /// A minor faction's camp settings and its list of camps. The numbers come from IMFModels defaults with mf_data.xml on top.
+    /// </summary>
     public class MFData : MBObjectBase
     {
         public MFData()
@@ -23,6 +26,9 @@ namespace ImprovedMinorFactions
             InitData(c);
         }
 
+        /// <summary>
+        /// Fills in the defaults for the clan and applies mf_data.xml. Clans that are destroyed or have no faction get no active camps.
+        /// </summary>
         private void InitData(Clan c)
         {
             // Only want to set the current manager here because if we try to call init our new hideouts are not loaded in yet.
@@ -44,6 +50,9 @@ namespace ImprovedMinorFactions
                 NumActiveHideouts = 0;
         }
 
+        /// <summary>
+        /// Overrides the defaults with the clan's settings from mf_data.xml, if there are any.
+        /// </summary>
         private void ApplyConfig()
         {
             FactionConfig? f = ConfigLoader.For(mfClan?.StringId);
@@ -74,6 +83,9 @@ namespace ImprovedMinorFactions
             Hideouts.Add(mfh);
         }
 
+        /// <summary>
+        /// Adds a camp settlement to the clan's list. Throws if the settlement isn't a camp.
+        /// </summary>
         internal void AddMFHideout(Settlement s)
         {
             if (!Helpers.IsMFHideout(s))

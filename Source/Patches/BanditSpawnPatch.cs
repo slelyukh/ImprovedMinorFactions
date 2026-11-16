@@ -6,7 +6,10 @@ using TaleWorlds.CampaignSystem.Settlements;
 
 namespace ImprovedMinorFactions.Patches
 {
-    // When every hideout of a bandit culture became a minor faction camp, vanilla looks the culture up and throws.
+    /// <summary>
+    /// Counts a bandit faction's infested hideouts without crashing. When every hideout of a bandit culture
+    /// became a minor faction camp, the game's own lookup throws.
+    /// </summary>
     [HarmonyPatch(typeof(BanditSpawnCampaignBehavior), "GetInfestedHideoutCount")]
     internal static class BanditSpawnPatch
     {

@@ -4,6 +4,9 @@ using TaleWorlds.Core;
 
 namespace ImprovedMinorFactions.Patches
 {
+    /// <summary>
+    /// Loads the game texts if something asks for one before they were loaded.
+    /// </summary>
     // taken from Bannerlord Co-op mod to prevent gametext crashes with some patches
     [HarmonyPatchCategory("HarmonyStaticFixes")]
     [HarmonyPatch(typeof(GameTexts))]
