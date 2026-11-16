@@ -28,7 +28,16 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             // Location events
             CampaignEvents.OnMissionEndedEvent.AddNonSerializedListener(this, new Action<IMission>(OnMissionEnded));
 
+            // Debug listeners
+            CampaignEvents.OnTroopRecruitedEvent.AddNonSerializedListener(this, new Action<Hero, Settlement, Hero, CharacterObject, int>(OnTroopRecruited));
             CampaignEvents.HeroKilledEvent.AddNonSerializedListener(this, new Action<Hero, Hero, KillCharacterAction.KillCharacterActionDetail, bool>(OnHeroKilled));
+        }
+
+        private void OnTroopRecruited(Hero recruiterHero, Settlement settlement, Hero troopSource, CharacterObject troop, int amount)
+        {
+            if (!Helpers.IsMFHideout(settlement))
+                return;
+            //InformationManager.DisplayMessage(new InformationMessage($"{amount} troops recruited by {recruiterHero}"));
         }
 
         /// <summary>

@@ -25,6 +25,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsTroopsTrained
     /// <summary>
     /// Quest from a camp notable who wants new recruits trained: the player takes them along and brings them back upgraded.
     /// </summary>
+    // Token... comment means function has not yet been adapted to mod
     public class MFHNotableNeedsTroopsTrainedIssueBehavior : CampaignBehaviorBase
     {
         public override void RegisterEvents()

@@ -24,6 +24,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHNotableNeedsRecruits
     /// <summary>
     /// Quest from a camp notable who needs recruits: the player brings troops of the clan's culture to the camp.
     /// </summary>
+    // Token... comment means function has not yet been adapted to mod
     public class MFHNotableNeedsRecruitsIssueBehavior : CampaignBehaviorBase
     {
         public override void RegisterEvents()

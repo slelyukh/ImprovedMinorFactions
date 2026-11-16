@@ -417,6 +417,7 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             _hideoutWaitProgressHours += (float)dt.ToHours;
             if (_hideoutWaitTargetHours.ApproximatelyEqualsTo(0f, 1E-05f))
                 CalculateHideoutAttackTime();
+            //args.MenuContext.GameMenu.SetProgressOfWaitingInMenu(this._hideoutWaitProgressHours / this._hideoutWaitTargetHours); NIGHT MODE
 
             SwitchToMenuIfThereIsAnInterrupt(args.MenuContext.GameMenu.StringId);
         }
@@ -839,4 +840,24 @@ namespace ImprovedMinorFactions.Source.CampaignBehaviors
             }
         }
     }
+
+    // NIGHT MODE archive
+
+    //public void hideout_wait_menu_on_consequence(MenuCallbackArgs args)
+    //{
+    //    GameMenu.SwitchToMenu("hideout_after_wait");
+    //}
+
+    // wait until nightfall menu
+    //campaignGameStarter.AddWaitGameMenu("mf_hideout_wait", "Waiting until nightfall to attack.",
+    //    null,
+    //    new OnConditionDelegate(this.wait_menu_start_on_condition),
+    //    null,
+    //    new OnTickDelegate(this.wait_menu_on_tick),
+    //    GameMenu.MenuAndOptionType.WaitMenuShowOnlyProgressOption,
+    //    GameOverlays.MenuOverlayType.SettlementWithCharacters,
+    //    this._hideoutWaitTargetHours);
+    //campaignGameStarter.AddGameMenuOption("mf_hideout_wait", "leave", "Leave",
+    //    new Options.OnConditionDelegate(this.menu_leave_on_condition),
+    //    new Options.OnConsequenceDelegate(this.menu_leave_on_consequence));
 }

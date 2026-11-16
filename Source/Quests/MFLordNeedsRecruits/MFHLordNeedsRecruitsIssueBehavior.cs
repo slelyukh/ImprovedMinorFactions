@@ -24,6 +24,7 @@ namespace ImprovedMinorFactions.Source.Quests.MFHLordNeedsRecruits
     /// <summary>
     /// Quest from a minor faction lord who needs recruits for his party.
     /// </summary>
+    // Token... comment means function has not yet been adapted to mod
     public class MFHLordNeedsRecruitsIssueBehavior : CampaignBehaviorBase
     {
         public override void RegisterEvents()
